@@ -2,16 +2,16 @@
 {
     public class CORS : MiddlewareBase
     {
-        public CORS(Action<string> nextFunction) : base(nextFunction)
+        public CORS(Func<WebContext, Task> nextFunction) : base(nextFunction)
         {
             _nextFunction = nextFunction;
         }
 
-        public override void Invoke(string data)
+        public override async Task Invoke(WebContext webContext)
         {
-            Console.WriteLine($"[CORS] logic performed on {data}");
-            _nextFunction(data);
-            Console.WriteLine($"[CORS] logic performed on {data}");
+            Console.WriteLine($"[CORS] logic performed on {webContext.WebRequest.Payload}");
+            await _nextFunction(webContext);
+            Console.WriteLine($"[CORS] logic performed on {webContext.WebResponse.Payload}");
         }
     }
 }

@@ -16,10 +16,14 @@
             return this; //allows method chaining
         }
 
-        public Action<string> Build()
+        public Func<WebContext, Task> Build()
         {
             //default delegate returned if no middleware is added to the pipeline
-            Action<string>? function = data => Console.WriteLine($"Default Endpoint (no middleware): {data}");
+            Func<WebContext, Task> function = async (webContext) =>
+            {
+                Console.WriteLine($"Default Endpoint (no middleware): {webContext.WebRequest.Payload}");
+                await Task.CompletedTask;
+            };
 
             //loop through the middleware in reverse order
             for (int i = _middlewareTypes.Count - 1; i >= 0; i--)

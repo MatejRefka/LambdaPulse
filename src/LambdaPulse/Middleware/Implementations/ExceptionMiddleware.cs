@@ -2,16 +2,16 @@
 {
     public class ExceptionHandler : MiddlewareBase
     {
-        public ExceptionHandler(Action<string> nextFunction) : base(nextFunction)
+        public ExceptionHandler(Func<WebContext, Task> nextFunction) : base(nextFunction)
         {
             _nextFunction = nextFunction;
         }
 
-        public override void Invoke(string data)
+        public override async Task Invoke(WebContext webContext)
         {
-            Console.WriteLine($"[ExceptionHandler] logic performed on {data}");
-            _nextFunction(data);
-            Console.WriteLine($"[ExceptionHandler] logic performed on {data}");
+            Console.WriteLine($"[ExceptionHandler] logic performed on {webContext.WebRequest.Payload}");
+            await _nextFunction(webContext);
+            Console.WriteLine($"[ExceptionHandler] logic performed on {webContext.WebResponse.Payload}");
         }
     }
 }

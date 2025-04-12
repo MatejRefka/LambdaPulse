@@ -2,14 +2,15 @@
 {
     public class Endpoint : MiddlewareBase
     {
-        public Endpoint(Action<string> nextFunction) : base(nextFunction)
+        public Endpoint(Func<WebContext, Task> nextFunction) : base(nextFunction)
         {
             _nextFunction = nextFunction;
         }
 
-        public override void Invoke(string data)
+        public override async Task Invoke(WebContext webContext)
         {
-            Console.WriteLine($"[Endpoint] logic performed on {data}");
+            Console.WriteLine($"[Endpoint] logic performed on {webContext.WebRequest.Payload}");
+            await Task.CompletedTask;
         }
     }
 }
