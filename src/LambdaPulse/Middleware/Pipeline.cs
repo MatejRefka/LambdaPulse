@@ -2,11 +2,19 @@
 {
     public class Pipeline
     {
-        private List<Type> _middlewareTypes;
+        private Func<WebContext, Task> _func;
+        private readonly List<Type> _middlewareTypes;
 
-        public Pipeline()
+        public Pipeline(Func<WebContext, Task>? func = null)
         {
-            _middlewareTypes = new List<Type>();
+            _middlewareTypes = [];
+
+            //set the default delegate if no middleware is added to the pipeline
+            _func = func ?? (async (webContext) =>
+            {
+                Console.WriteLine($"Default Endpoint (no middleware): {webContext.WebRequest.Payload}");
+                await Task.CompletedTask;
+            });
         }
 
         public Pipeline AddMiddleware<T>()
@@ -18,28 +26,21 @@
 
         public Func<WebContext, Task> Build()
         {
-            //default delegate returned if no middleware is added to the pipeline
-            Func<WebContext, Task> function = async (webContext) =>
-            {
-                Console.WriteLine($"Default Endpoint (no middleware): {webContext.WebRequest.Payload}");
-                await Task.CompletedTask;
-            };
-
             //loop through the middleware in reverse order
             for (int i = _middlewareTypes.Count - 1; i >= 0; i--)
             {
                 //create the middleware instance, passing in the previously built delegate
-                if (Activator.CreateInstance(_middlewareTypes[i], function) is MiddlewareBase middlewareInstance)
+                if (Activator.CreateInstance(_middlewareTypes[i], _func) is MiddlewareBase middlewareInstance)
                 {
                     //points to the Invoke function of the middleware that's currently in context 
-                    function = middlewareInstance.Invoke;
+                    _func = middlewareInstance.Invoke;
                 }
                 else
                 {
                     throw new InvalidOperationException($"Failed to create instance of type {_middlewareTypes[i].Name}");
                 }
             }
-            return function;
+            return _func;
         }
     }
 }
