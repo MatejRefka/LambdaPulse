@@ -1,4 +1,6 @@
-﻿namespace LambdaPulse
+﻿using LambdaPulse.Middleware;
+
+namespace LambdaPulse
 {
     public class Pipeline
     {

@@ -1,4 +1,4 @@
-﻿namespace LambdaPulse
+﻿namespace LambdaPulse.Middleware
 {
     public abstract class MiddlewareBase
     {
