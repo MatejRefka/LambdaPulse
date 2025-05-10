@@ -1,4 +1,4 @@
-﻿namespace LambdaPulse.Middleware
+﻿namespace LambdaPulse.Middleware.Implementations
 {
     public class Authentication : MiddlewareBase
     {
