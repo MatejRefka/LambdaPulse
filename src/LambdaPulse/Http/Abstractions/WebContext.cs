@@ -2,9 +2,8 @@
 {
     public class WebContext
     {
-        public WebRequest WebRequest { get; set; } = new WebRequest();
+        public required WebRequest WebRequest { get; init; }
 
-        public WebResponse WebResponse { get; set; } = new WebResponse();
-
+        public required WebResponse WebResponse { get; init; }
     }
 }
