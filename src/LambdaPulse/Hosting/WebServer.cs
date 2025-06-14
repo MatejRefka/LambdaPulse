@@ -6,53 +6,89 @@ namespace LambdaPulse
 {
     public class WebServer
     {
+        private readonly IPAddress _address;
         private readonly int _port;
+        private readonly int _backlog;
 
-        public WebServer(int port)
+
+        public WebServer(IPAddress address, int port, int backlog)
         {
+            _address = address;
             _port = port;
+            _backlog = backlog;
         }
 
-        public void StartServer()
+        public async Task StartServer()
         {
-            var server = new TcpListener(IPAddress.Any, _port);
+            //application-level setup
+            var server = new TcpListener(_address, _port);
 
-            //start listening on port
-            server.Start();
+            //OS creates a socket in LISTEN state
+            server.Start(_backlog);
 
-            //buffer for reading data
-            Byte[] buffer = new Byte[256];
-            String data = string.Empty;
-
-            //listening loop
+            //listen forever, continuously accepting clients
             while (true)
             {
-                //blocking call accepting the request
-                using var client = server.AcceptTcpClient();
+                //wait for OS to complete TCP handshake. TcpClient holds layer 4 connection (source IP+port, dest IP+port)
+                using var tcpClient = await server.AcceptTcpClientAsync();
 
-                //request stream
-                using NetworkStream stream = client.GetStream();
-
-                int bytesReadCount;
-
-                while ((bytesReadCount = stream.Read(buffer, 0, buffer.Length)) != 0)
+                //handle each client on a background thread
+                _ = Task.Run(async () =>
                 {
-                    //append buffer bytes into result string
-                    data += Encoding.UTF8.GetString(buffer, 0, bytesReadCount);
-
-                    //detect end of HTTP request
-                    if (data.Contains("\r\n\r\n"))
+                    try
                     {
-                        break;
+                        Byte[] buffer = new Byte[1024];
+                        String requestString = string.Empty;
+
+                        //abstraction for reading and sending bytes over the TCP connection
+                        using NetworkStream stream = tcpClient.GetStream();
+
+                        int bytesReadCount;
+                        //read request stream bytes into buffer
+                        while ((bytesReadCount = await stream.ReadAsync(buffer)) != 0)
+                        {
+                            //append buffer bytes into result string
+                            requestString += Encoding.UTF8.GetString(buffer, 0, bytesReadCount);
+
+                            //detect end of HTTP request
+                            if (requestString.Contains("\r\n\r\n"))
+                            {
+                                break;
+                            }
+                        }
+
+                        Console.WriteLine($"Request: {requestString}");
+
+
+                        //---> PARSE THE REQUEST INTO WEBCONTEXT WRAPPER <---
+
+
+                        //---> PIPE IT THROUGH MIDDLEWARE <---
+
+
+                        //---> SEND BACK A RESPONSE <---
+                        var responseOK = "HTTP/1.1 200 OK\r\n" +
+                                       "Content-Type: text/plain\r\n" +
+                                       "Content-Length: 2\r\n" +
+                                       "\r\n" +
+                                       "OK";
+                        var responseBytes = Encoding.UTF8.GetBytes(responseOK);
+                        await stream.WriteAsync(responseBytes);
+
                     }
-                }
-
-                Console.WriteLine($"Request: {data}");
-
-                //parse the request into WebContext
-                //pipe it through middleware
-                //send back a response
+                    catch (Exception ex)
+                    {
+                        Console.WriteLine(ex.ToString());
+                    }
+                });
             }
+        }
+
+        private WebRequest ParseRequestString()
+        {
+
+
+            throw new NotImplementedException();
         }
     }
 }
