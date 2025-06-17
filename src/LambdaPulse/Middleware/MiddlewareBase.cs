@@ -1,4 +1,6 @@
-﻿namespace LambdaPulse.Middleware
+﻿using LambdaPulse.Services.Http.Models;
+
+namespace LambdaPulse.Middleware
 {
     public abstract class MiddlewareBase
     {

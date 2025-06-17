@@ -1,4 +1,7 @@
-﻿namespace LambdaPulse.Middleware.Implementations
+﻿using LambdaPulse.Middleware;
+using LambdaPulse.Services.Http.Models;
+
+namespace LambdaPulse.Middleware.Implementations
 {
     public class CORS : MiddlewareBase
     {
