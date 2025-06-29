@@ -1,4 +1,5 @@
-﻿using LambdaPulse.Services;
+﻿using LambdaPulse.Configuration;
+using LambdaPulse.Services;
 using System.Net;
 using System.Net.Sockets;
 
@@ -6,17 +7,17 @@ namespace LambdaPulse
 {
     public class WebServer
     {
-        private IClientHandler _clientHandler;
+        private readonly IClientHandler _clientHandler;
         private readonly IPAddress _address;
         private readonly int _port;
         private readonly int _backlog;
 
-        public WebServer(IClientHandler clientHandler, IPAddress address, int port, int backlog)
+        public WebServer(IClientHandler clientHandler, IConfigProvider configProvider)
         {
             _clientHandler = clientHandler;
-            _address = address;
-            _port = port;
-            _backlog = backlog;
+            _address = IPAddress.Parse(configProvider.ServerConfig.Address);
+            _port = configProvider.ServerConfig.Port;
+            _backlog = configProvider.ServerConfig.BackLog;
         }
 
         public async Task StartServer()
