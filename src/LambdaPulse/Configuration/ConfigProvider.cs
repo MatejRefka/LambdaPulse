@@ -3,6 +3,9 @@ using System.Text.Json;
 
 namespace LambdaPulse.Configuration
 {
+    /// <summary>
+    /// Parses config.json into Config data model
+    /// </summary>
     public sealed class ConfigProvider : IConfigProvider
     {
         private readonly Config _config;

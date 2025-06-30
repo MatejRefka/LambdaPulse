@@ -1,5 +1,4 @@
-﻿using LambdaPulse.Middleware;
-using LambdaPulse.Services.Http.Models;
+﻿using LambdaPulse.Services.Http.Models;
 
 namespace LambdaPulse.Middleware.Implementations
 {
