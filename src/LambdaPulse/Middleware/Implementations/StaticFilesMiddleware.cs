@@ -2,7 +2,7 @@
 
 namespace LambdaPulse.Middleware.Implementations
 {
-    public class StaticFiles : MiddlewareBase
+    public sealed class StaticFiles : MiddlewareBase
     {
         public StaticFiles(Func<WebContext, Task> nextFunction) : base(nextFunction)
         {

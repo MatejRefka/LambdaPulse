@@ -1,6 +1,6 @@
 ﻿namespace LambdaPulse.Services.Http.Models
 {
-    public class WebContext
+    public sealed class WebContext
     {
         public required WebRequest WebRequest { get; init; }
 

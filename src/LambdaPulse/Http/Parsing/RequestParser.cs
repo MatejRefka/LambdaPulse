@@ -2,7 +2,7 @@
 
 namespace LambdaPulse.Services.Http
 {
-    internal class RequestParser : IRequestParser
+    internal sealed class RequestParser : IRequestParser
     {
         public WebContext ParseHttpRequest(string httpRequest)
         {

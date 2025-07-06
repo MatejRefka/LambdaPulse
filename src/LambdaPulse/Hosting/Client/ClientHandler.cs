@@ -3,7 +3,7 @@ using System.Net.Sockets;
 
 namespace LambdaPulse.Services
 {
-    public class ClientHandler : IClientHandler
+    public sealed class ClientHandler : IClientHandler
     {
         private readonly IRequestReader _requestReader;
         private readonly IRequestParser _requestParser;
@@ -36,14 +36,6 @@ namespace LambdaPulse.Services
             {
                 Console.WriteLine(ex.ToString());
             }
-        }
-    }
-
-    public class ClientHandle : IClientHandler
-    {
-        public Task HandleClient(TcpClient tcpClient)
-        {
-            throw new NotImplementedException();
         }
     }
 }

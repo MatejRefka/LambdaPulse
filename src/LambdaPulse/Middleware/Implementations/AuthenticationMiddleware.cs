@@ -2,7 +2,7 @@
 
 namespace LambdaPulse.Middleware.Implementations
 {
-    public class Authentication : MiddlewareBase
+    public sealed class Authentication : MiddlewareBase
     {
         public Authentication(Func<WebContext, Task> nextFunction) : base(nextFunction)
         {

@@ -2,7 +2,7 @@
 
 namespace LambdaPulse.Middleware.Implementations
 {
-    public class HSTS : MiddlewareBase
+    public sealed class HSTS : MiddlewareBase
     {
         public HSTS(Func<WebContext, Task> nextFunction) : base(nextFunction)
         {

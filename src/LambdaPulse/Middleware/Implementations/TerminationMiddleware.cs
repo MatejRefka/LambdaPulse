@@ -2,7 +2,7 @@
 
 namespace LambdaPulse.Middleware.Implementations
 {
-    public class Endpoint : MiddlewareBase
+    public sealed class Endpoint : MiddlewareBase
     {
         public Endpoint(Func<WebContext, Task> nextFunction) : base(nextFunction)
         {

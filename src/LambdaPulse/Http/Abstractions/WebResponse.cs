@@ -1,6 +1,6 @@
 ﻿namespace LambdaPulse.Services.Http.Models
 {
-    public class WebResponse
+    public sealed class WebResponse
     {
         public int? StatusCode { get; set; }
         public string? ResponsePhrase { get; set; }

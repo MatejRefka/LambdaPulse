@@ -1,6 +1,6 @@
 ﻿namespace LambdaPulse.Services.Http.Models
 {
-    public class WebRequest
+    public sealed class WebRequest
     {
         public required string Method { get; set; }
         public required string Path { get; set; }

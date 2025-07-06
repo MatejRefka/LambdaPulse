@@ -2,7 +2,7 @@
 
 namespace LambdaPulse.Middleware.Implementations
 {
-    public class HttpsRedirection : MiddlewareBase
+    public sealed class HttpsRedirection : MiddlewareBase
     {
         public HttpsRedirection(Func<WebContext, Task> nextFunction) : base(nextFunction)
         {

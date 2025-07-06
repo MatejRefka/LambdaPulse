@@ -3,7 +3,7 @@ using System.Text;
 
 namespace LambdaPulse.Services.Http
 {
-    public class ResponseWriter : IResponseWriter
+    public sealed class ResponseWriter : IResponseWriter
     {
         public async Task WriteHttpResponse(NetworkStream networkStream)
         {

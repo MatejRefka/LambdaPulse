@@ -2,7 +2,7 @@
 
 namespace LambdaPulse.Middleware.Implementations
 {
-    public class ExceptionHandler : MiddlewareBase
+    public sealed class ExceptionHandler : MiddlewareBase
     {
         public ExceptionHandler(Func<WebContext, Task> nextFunction) : base(nextFunction)
         {

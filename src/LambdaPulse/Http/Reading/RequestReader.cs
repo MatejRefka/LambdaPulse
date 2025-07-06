@@ -3,7 +3,7 @@ using System.Text;
 
 namespace LambdaPulse.Services.Http
 {
-    public class RequestReader : IRequestReader
+    public sealed class RequestReader : IRequestReader
     {
         public async Task<string> ReadHttpRequest(NetworkStream networkStream)
         {
