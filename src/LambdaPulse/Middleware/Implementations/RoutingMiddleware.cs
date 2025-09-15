@@ -11,9 +11,9 @@ namespace LambdaPulse.Middleware.Implementations
 
         public override async Task Invoke(WebContext webContext)
         {
-            Console.WriteLine($"[CORS] logic performed on {webContext.WebRequest.Payload}");
+            Console.WriteLine($"[CORS] logic performed on WebRequest");
             await _nextFunction(webContext);
-            Console.WriteLine($"[CORS] logic performed on {webContext.WebResponse.Payload}");
+            Console.WriteLine($"[CORS] logic performed on WebResponse");
         }
     }
 }

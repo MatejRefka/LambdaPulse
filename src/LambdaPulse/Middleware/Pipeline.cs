@@ -15,7 +15,7 @@ namespace LambdaPulse
             //set the default delegate if no middleware is added to the pipeline
             _func = func ?? (async (webContext) =>
             {
-                Console.WriteLine($"Default Endpoint (no middleware): {webContext.WebRequest.Payload}");
+                Console.WriteLine($"Default Endpoint (no middleware)");
                 await Task.CompletedTask;
             });
         }

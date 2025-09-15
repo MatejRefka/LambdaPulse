@@ -11,7 +11,7 @@ namespace LambdaPulse.Middleware.Implementations
 
         public override async Task Invoke(WebContext webContext)
         {
-            Console.WriteLine($"[Endpoint] logic performed on {webContext.WebRequest.Payload}");
+            Console.WriteLine($"[Endpoint] logic performed on WebRequest");
             await Task.CompletedTask;
         }
     }

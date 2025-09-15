@@ -11,9 +11,9 @@ namespace LambdaPulse.Middleware.Implementations
 
         public override async Task Invoke(WebContext webContext)
         {
-            Console.WriteLine($"[HttpsRedirection] logic performed on {webContext.WebRequest.Payload}");
+            Console.WriteLine($"[HttpsRedirection] logic performed on WebRequest");
             await _nextFunction(webContext);
-            Console.WriteLine($"[HttpsRedirection] logic performed on {webContext.WebResponse.Payload}");
+            Console.WriteLine($"[HttpsRedirection] logic performed on WebResponse");
         }
     }
 }
