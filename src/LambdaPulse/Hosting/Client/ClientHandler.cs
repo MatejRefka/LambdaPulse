@@ -1,4 +1,6 @@
-﻿using LambdaPulse.Services.Http;
+﻿using LambdaPulse.Middleware;
+using LambdaPulse.Middleware.Implementations;
+using LambdaPulse.Services.Http;
 using System.Net.Sockets;
 
 namespace LambdaPulse.Services
@@ -27,9 +29,23 @@ namespace LambdaPulse.Services
 
                 var webContext = _requestParser.ParseHttpRequest(requestString);
 
-                //---> PIPE THROUGH MIDDLEWARE HERE <---
+                //construct the middleware pipeline
+                var pipeline = new Pipeline()
+                                .AddMiddleware<ExceptionHandler>()
+                                .AddMiddleware<HSTS>()
+                                .AddMiddleware<HttpsRedirection>()
+                                .AddMiddleware<StaticFiles>()
+                                .AddMiddleware<Routing>()
+                                .AddMiddleware<CORS>()
+                                .AddMiddleware<Authentication>()
+                                .AddMiddleware<Authorization>()
+                                .AddMiddleware<Endpoint>()
+                                .Build();
 
-                await _responseWriter.WriteHttpResponse(networkStream);
+                //Invoke the delegate
+                await pipeline(webContext);
+
+                await _responseWriter.WriteHttpResponse(networkStream, webContext.WebResponse);
 
             }
             catch (Exception ex)

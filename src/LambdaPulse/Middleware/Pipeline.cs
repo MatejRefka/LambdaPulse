@@ -1,7 +1,6 @@
-﻿using LambdaPulse.Middleware;
-using LambdaPulse.Services.Http.Models;
+﻿using LambdaPulse.Services.Http.Models;
 
-namespace LambdaPulse
+namespace LambdaPulse.Middleware
 {
     public class Pipeline
     {
