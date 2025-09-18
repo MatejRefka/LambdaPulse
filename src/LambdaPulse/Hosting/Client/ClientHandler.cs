@@ -32,13 +32,21 @@ namespace LambdaPulse.Services
                 //construct the middleware pipeline
                 var pipeline = new Pipeline()
                                 .AddMiddleware<ExceptionHandler>()
-                                .AddMiddleware<HSTS>()
+                                .AddMiddleware<Logging>()
+                                .AddMiddleware<RequestLimits>()
+                                .AddMiddleware<Connection>()
                                 .AddMiddleware<HttpsRedirection>()
+                                .AddMiddleware<HSTS>()
+                                .AddMiddleware<Security>()
+                                .AddMiddleware<State>()
+                                .AddMiddleware<CSRF>()
                                 .AddMiddleware<StaticFiles>()
+                                .AddMiddleware<ResponseCompression>()
                                 .AddMiddleware<Routing>()
                                 .AddMiddleware<CORS>()
                                 .AddMiddleware<Authentication>()
                                 .AddMiddleware<Authorization>()
+                                .AddMiddleware<ContentNegotiation>()
                                 .AddMiddleware<Endpoint>()
                                 .Build();
 
