@@ -2,6 +2,11 @@
 
 namespace LambdaPulse.Middleware.Implementations
 {
+    /// <summary>
+    /// Wraps the pipeline in a try/catch, ensuring the whole server doesn't crash.
+    /// Exception is logged, generating 500 response.
+    /// Any unexpected exception type implementing Exception responds with 500.
+    /// </summary>
     public sealed class ExceptionHandler : MiddlewareBase
     {
         public ExceptionHandler(Func<WebContext, Task> nextFunction) : base(nextFunction)
@@ -11,9 +16,24 @@ namespace LambdaPulse.Middleware.Implementations
 
         public override async Task Invoke(WebContext webContext)
         {
-            Console.WriteLine($"[ExceptionHandler] logic performed on WebRequest");
-            await _nextFunction(webContext);
-            Console.WriteLine($"[ExceptionHandler] logic performed on WebResponse");
+            try
+            {
+                await _nextFunction(webContext);
+            }
+            catch (SystemException ex)
+            {
+                Console.WriteLine($"Unhandled exception thrown within the pipeline: {ex}");
+
+                webContext.WebResponse.StatusCode = 500;
+                webContext.WebResponse.ResponsePhrase = "Internal Server Error";
+                webContext.WebResponse.Body = "The server encountered an unexpected condition that prevented it from fulfilling the request.";
+
+                //clear response headers
+                webContext.WebResponse.Headers = new Dictionary<string, string>()
+                {
+                    ["Content-Type"] = "text/plain"
+                };
+            }
         }
     }
 }
