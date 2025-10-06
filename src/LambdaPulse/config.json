@@ -2,6 +2,13 @@
   "ServerConfig": {
     "Address": "127.0.0.1",
     "Port": 8080,
-    "BackLog": 100
+    "BackLog": 100,
+    "MiddlewareConfig": {
+      "MaxControlDataSizeBytes": 20,
+      "MaxHeaderCount": null,
+      "MaxHeaderSizeBytes": 10,
+      "MaxBodySizeBytes": 10,
+      "RequestReadTimeoutLimitMS": 1000
+    }
   }
 }
