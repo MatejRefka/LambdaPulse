@@ -1,39 +1,38 @@
 ﻿using LambdaPulse.Services.Http.Models;
 
-namespace LambdaPulse.Middleware.Implementations
+namespace LambdaPulse.Middleware.Implementations;
+
+/// <summary>
+/// Wraps the pipeline in a try/catch, ensuring the whole server doesn't crash.
+/// Exception is logged, generating 500 response.
+/// Any unhandled exception type implementing Exception responds with 500.
+/// </summary>
+public sealed class ExceptionHandler : MiddlewareBase
 {
-    /// <summary>
-    /// Wraps the pipeline in a try/catch, ensuring the whole server doesn't crash.
-    /// Exception is logged, generating 500 response.
-    /// Any unexpected exception type implementing Exception responds with 500.
-    /// </summary>
-    public sealed class ExceptionHandler : MiddlewareBase
+    public ExceptionHandler(Func<WebContext, Task> nextFunction) : base(nextFunction)
     {
-        public ExceptionHandler(Func<WebContext, Task> nextFunction) : base(nextFunction)
+        _nextFunction = nextFunction;
+    }
+
+    public override async Task Invoke(WebContext webContext)
+    {
+        try
         {
-            _nextFunction = nextFunction;
+            await _nextFunction(webContext);
         }
-
-        public override async Task Invoke(WebContext webContext)
+        catch (SystemException ex)
         {
-            try
-            {
-                await _nextFunction(webContext);
-            }
-            catch (SystemException ex)
-            {
-                Console.WriteLine($"Unhandled exception thrown within the pipeline: {ex}");
+            Console.WriteLine($"Unhandled exception thrown within the pipeline: {ex}");
 
-                webContext.WebResponse.StatusCode = 500;
-                webContext.WebResponse.ResponsePhrase = "Internal Server Error";
-                webContext.WebResponse.Body = "The server encountered an unexpected condition that prevented it from fulfilling the request.";
+            webContext.WebResponse.StatusCode = 500;
+            webContext.WebResponse.ResponsePhrase = "Internal Server Error";
+            webContext.WebResponse.Body = "The server encountered an unexpected condition that prevented it from fulfilling the request.";
 
-                //clear response headers
-                webContext.WebResponse.Headers = new Dictionary<string, string>()
-                {
-                    ["Content-Type"] = "text/plain"
-                };
-            }
+            //clear response headers
+            webContext.WebResponse.Headers = new Dictionary<string, string>()
+            {
+                ["Content-Type"] = "text/plain"
+            };
         }
     }
 }

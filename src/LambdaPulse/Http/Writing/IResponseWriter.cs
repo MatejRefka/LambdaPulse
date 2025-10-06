@@ -1,10 +1,9 @@
 ﻿using LambdaPulse.Services.Http.Models;
 using System.Net.Sockets;
 
-namespace LambdaPulse.Services.Http
+namespace LambdaPulse.Services.Http;
+
+public interface IResponseWriter
 {
-    public interface IResponseWriter
-    {
-        public Task WriteHttpResponse(NetworkStream networkStream, WebResponse response);
-    }
+    public Task WriteHttpResponse(NetworkStream networkStream, WebResponse response);
 }

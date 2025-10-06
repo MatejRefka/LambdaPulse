@@ -1,19 +1,18 @@
 ﻿using LambdaPulse.Services.Http.Models;
 
-namespace LambdaPulse.Middleware.Implementations
-{
-    public sealed class Authentication : MiddlewareBase
-    {
-        public Authentication(Func<WebContext, Task> nextFunction) : base(nextFunction)
-        {
-            _nextFunction = nextFunction;
-        }
+namespace LambdaPulse.Middleware.Implementations;
 
-        public override async Task Invoke(WebContext webContext)
-        {
-            Console.WriteLine($"[Authentication] logic performed on WebRequest");
-            await _nextFunction(webContext);
-            Console.WriteLine($"[Authentication] logic performed on WebResponse");
-        }
+public sealed class Authentication : MiddlewareBase
+{
+    public Authentication(Func<WebContext, Task> nextFunction) : base(nextFunction)
+    {
+        _nextFunction = nextFunction;
+    }
+
+    public override async Task Invoke(WebContext webContext)
+    {
+        Console.WriteLine($"[Authentication] logic performed on WebRequest");
+        await _nextFunction(webContext);
+        Console.WriteLine($"[Authentication] logic performed on WebResponse");
     }
 }

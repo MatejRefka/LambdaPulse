@@ -1,9 +1,8 @@
 ﻿using System.Net.Sockets;
 
-namespace LambdaPulse.Services.Http
+namespace LambdaPulse.Services.Http;
+
+public interface IRequestReader
 {
-    public interface IRequestReader
-    {
-        public Task<string> ReadHttpRequest(NetworkStream networkStream);
-    }
+    public Task<string> ReadHttpRequest(NetworkStream networkStream);
 }
