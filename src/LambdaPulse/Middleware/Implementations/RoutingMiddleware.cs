@@ -4,15 +4,15 @@ namespace LambdaPulse.Middleware.Implementations;
 
 public sealed class CORS : MiddlewareBase
 {
-    public CORS(Func<WebContext, Task> nextFunction) : base(nextFunction)
+    public CORS(Func<WebContext, CancellationToken, Task> nextFunction) : base(nextFunction)
     {
         _nextFunction = nextFunction;
     }
 
-    public override async Task Invoke(WebContext webContext)
+    public override async Task Invoke(WebContext webContext, CancellationToken cancellationToken = default)
     {
         Console.WriteLine($"[CORS] logic performed on WebRequest");
-        await _nextFunction(webContext);
+        await _nextFunction(webContext, cancellationToken);
         Console.WriteLine($"[CORS] logic performed on WebResponse");
     }
 }

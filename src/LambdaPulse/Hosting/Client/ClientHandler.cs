@@ -20,6 +20,9 @@ public sealed class ClientHandler : IClientHandler
 
     public async Task HandleClient(TcpClient tcpClient)
     {
+        //cancel on client disconnect or trigger by RequestLimits middleware
+        using var cancellationTokenSource = new CancellationTokenSource();
+
         try
         {
             //abstraction for reading and sending bytes over the TCP connection
@@ -51,8 +54,9 @@ public sealed class ClientHandler : IClientHandler
                             .Build();
 
             //Invoke the delegate
-            await pipeline(webContext);
+            await pipeline(webContext, cancellationTokenSource.Token);
 
+            webContext.WebResponse.HasStarted = true;
             await _responseWriter.WriteHttpResponse(networkStream, webContext.WebResponse);
 
         }

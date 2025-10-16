@@ -4,15 +4,15 @@ namespace LambdaPulse.Middleware;
 
 public class Pipeline
 {
-    private Func<WebContext, Task> _func;
+    private Func<WebContext, CancellationToken, Task> _func;
     private readonly List<Type> _middlewareTypes;
 
-    public Pipeline(Func<WebContext, Task>? func = null)
+    public Pipeline(Func<WebContext, CancellationToken, Task>? func = null)
     {
         _middlewareTypes = [];
 
         //set the default delegate if no middleware is added to the pipeline
-        _func = func ?? (async (webContext) =>
+        _func = func ?? (async (webContext, cancellationToken) =>
         {
             Console.WriteLine($"Default Endpoint (no middleware)");
             await Task.CompletedTask;
@@ -26,7 +26,7 @@ public class Pipeline
         return this; //allows method chaining
     }
 
-    public Func<WebContext, Task> Build()
+    public Func<WebContext, CancellationToken, Task> Build()
     {
         //loop through the middleware in reverse order
         for (int i = _middlewareTypes.Count - 1; i >= 0; i--)

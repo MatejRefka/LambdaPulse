@@ -4,11 +4,10 @@
     "Port": 8080,
     "BackLog": 100,
     "MiddlewareConfig": {
-      "MaxControlDataSizeBytes": 20,
-      "MaxHeaderCount": null,
-      "MaxHeaderSizeBytes": 10,
-      "MaxBodySizeBytes": 10,
-      "RequestReadTimeoutLimitMS": 1000
+      "MaxControlDataSizeBytes": 3000000,
+      "MaxHeaderSizeBytes": 15000,
+      "MaxBodySizeBytes": 1000,
+      "RequestReadTimeoutLimitMS": 5000
     }
   }
 }

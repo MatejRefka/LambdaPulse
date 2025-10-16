@@ -15,9 +15,8 @@ public sealed class ServerConfig
 
 public sealed class MiddlewareConfig
 {
-    public required string MaxControlDataSizeBytes { get; init; }
-    public required string MaxHeaderCount { get; init; }
-    public required string MaxHeaderSizeBytes { get; init; }
-    public required string MaxBodySizeBytes { get; init; }
-    public required string RequestReadTimeoutLimit { get; init; }
+    public required int MaxControlDataSizeBytes { get; init; }
+    public required int MaxHeaderSizeBytes { get; init; }
+    public required int MaxBodySizeBytes { get; init; }
+    public required int RequestReadTimeoutLimitMS { get; init; }
 }

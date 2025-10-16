@@ -5,13 +5,13 @@ namespace LambdaPulse.Middleware;
 public abstract class MiddlewareBase
 {
     //delegate pointing to the next function in the pipeline chain
-    protected Func<WebContext, Task> _nextFunction;
+    protected Func<WebContext, CancellationToken, Task> _nextFunction;
 
-    public MiddlewareBase(Func<WebContext, Task> nextFunction)
+    public MiddlewareBase(Func<WebContext, CancellationToken, Task> nextFunction)
     {
         _nextFunction = nextFunction;
     }
 
     //custom logic of the implementing middleware
-    public abstract Task Invoke(WebContext webContext);
+    public abstract Task Invoke(WebContext webContext, CancellationToken cancellationToken = default);
 }

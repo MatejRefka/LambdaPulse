@@ -9,16 +9,16 @@ namespace LambdaPulse.Middleware.Implementations;
 /// </summary>
 public sealed class ExceptionHandler : MiddlewareBase
 {
-    public ExceptionHandler(Func<WebContext, Task> nextFunction) : base(nextFunction)
+    public ExceptionHandler(Func<WebContext, CancellationToken, Task> nextFunction) : base(nextFunction)
     {
         _nextFunction = nextFunction;
     }
 
-    public override async Task Invoke(WebContext webContext)
+    public override async Task Invoke(WebContext webContext, CancellationToken cancellationToken = default)
     {
         try
         {
-            await _nextFunction(webContext);
+            await _nextFunction(webContext, cancellationToken);
         }
         catch (SystemException ex)
         {

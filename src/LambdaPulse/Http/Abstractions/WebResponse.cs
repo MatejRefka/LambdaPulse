@@ -6,4 +6,5 @@ public sealed class WebResponse
     public string? ResponsePhrase { get; set; }
     public Dictionary<string, string> Headers { get; set; } = new();
     public string? Body { get; set; }
+    public bool HasStarted { get; set; }
 }
