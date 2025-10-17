@@ -1,5 +1,6 @@
 ﻿using LambdaPulse.Configuration;
 using LambdaPulse.Services;
+using System.Collections.Concurrent;
 using System.Net;
 using System.Net.Sockets;
 
@@ -11,6 +12,8 @@ public class WebServer
     private readonly IPAddress _address;
     private readonly int _port;
     private readonly int _backlog;
+    private readonly ConcurrentBag<Task> _activeConnections = new();
+    private readonly CancellationTokenSource _serverCancellationSource = new();
 
     public WebServer(IClientHandler clientHandler, IConfigProvider configProvider)
     {
@@ -28,16 +31,23 @@ public class WebServer
         //OS creates a socket in LISTEN state
         server.Start(_backlog);
 
-        //listen forever, continuously accepting clients
-        while (true)
+        //listen until server-level cancellation is requested, continuously accepting clients
+        while (!_serverCancellationSource.IsCancellationRequested)
         {
-            //wait for OS to complete TCP handshake. TcpClient holds layer 4 connection (source IP+port, dest IP+port)
-            using var tcpClient = await server.AcceptTcpClientAsync();
-
-            //handle each client on a background thread
             try
             {
-                _ = _clientHandler.HandleClient(tcpClient);
+                //wait for OS to complete TCP handshake. TcpClient holds layer 4 connection (source IP+port, dest IP+port)
+                using var tcpClient = await server.AcceptTcpClientAsync();
+
+                //handle each client on a background thread
+                var clientTask = _clientHandler.HandleClient(tcpClient);
+
+                _activeConnections.Add(clientTask);
+            }
+            catch (OperationCanceledException)
+            {
+                //stop the server from accepting new connections
+                break;
             }
             catch (Exception ex)
             {
@@ -45,5 +55,10 @@ public class WebServer
                 Console.WriteLine(ex.ToString());
             }
         }
+
+        //wait for all active connections to complete before shutting down the server
+        await Task.WhenAll(_activeConnections.ToArray());
+        server.Stop();
+        _serverCancellationSource.Dispose();
     }
 }
