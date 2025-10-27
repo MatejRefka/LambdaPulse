@@ -6,13 +6,14 @@ using System.Net.Sockets;
 
 namespace LambdaPulse;
 
-public class WebServer
+public class WebServer : IDisposable
 {
     private readonly IClientHandler _clientHandler;
     private readonly TcpListener _listener;
     private readonly int _backlog;
     private readonly ConcurrentBag<Task> _activeConnections = new();
     private readonly CancellationTokenSource _serverCancellationSource = new();
+    private bool _disposed;
 
     public WebServer(IClientHandler clientHandler, IConfigProvider configProvider)
     {
@@ -57,7 +58,32 @@ public class WebServer
 
         //wait for all active connections to complete before shutting down the server
         await Task.WhenAll(_activeConnections.ToArray());
-        _listener.Stop();
-        _serverCancellationSource.Dispose();
+    }
+
+    public async Task StopServer()
+    {
+        if (!_disposed)
+        {
+            _listener.Stop();
+            _serverCancellationSource.Dispose();
+
+            //wait for all active connections to complete before shutting down the server
+            await Task.WhenAll(_activeConnections.ToArray());
+
+            _disposed = true;
+        }
+    }
+
+    public void Dispose()
+    {
+        if (!_disposed)
+        {
+            _listener.Stop();
+            _serverCancellationSource.Dispose();
+
+            _disposed = true;
+        }
+        //prevents GC from calling Object.Finalize (redundant) when a destructor is declared
+        GC.SuppressFinalize(this);
     }
 }
