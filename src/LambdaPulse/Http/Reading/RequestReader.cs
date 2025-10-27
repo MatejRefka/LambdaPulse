@@ -5,7 +5,7 @@ namespace LambdaPulse.Services.Http;
 
 public sealed class RequestReader : IRequestReader
 {
-    public async Task<string> ReadHttpRequest(NetworkStream networkStream)
+    public async Task<string> ReadHttpRequest(NetworkStream networkStream, CancellationToken cancellationToken)
     {
         byte[] buffer = new byte[1024];
         string requestString = string.Empty;
@@ -13,7 +13,7 @@ public sealed class RequestReader : IRequestReader
         int bytesReadCount;
 
         //read request stream bytes into buffer
-        while ((bytesReadCount = await networkStream.ReadAsync(buffer)) != 0)
+        while ((bytesReadCount = await networkStream.ReadAsync(buffer, cancellationToken)) != 0)
         {
             //append buffer bytes into result string
             requestString += Encoding.UTF8.GetString(buffer, 0, bytesReadCount);

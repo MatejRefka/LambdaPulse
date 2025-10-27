@@ -4,6 +4,6 @@ namespace LambdaPulse.Services;
 
 public interface IClientHandler
 {
-    public Task HandleClient(TcpClient tcpClient);
+    public Task HandleClient(TcpClient tcpClient, CancellationToken serverCancellationToken);
 
 }

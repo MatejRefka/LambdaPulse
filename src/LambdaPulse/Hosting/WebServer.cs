@@ -9,8 +9,7 @@ namespace LambdaPulse;
 public class WebServer
 {
     private readonly IClientHandler _clientHandler;
-    private readonly IPAddress _address;
-    private readonly int _port;
+    private readonly TcpListener _listener;
     private readonly int _backlog;
     private readonly ConcurrentBag<Task> _activeConnections = new();
     private readonly CancellationTokenSource _serverCancellationSource = new();
@@ -18,18 +17,18 @@ public class WebServer
     public WebServer(IClientHandler clientHandler, IConfigProvider configProvider)
     {
         _clientHandler = clientHandler;
-        _address = IPAddress.Parse(configProvider.ServerConfig.Address);
-        _port = configProvider.ServerConfig.Port;
+        var address = IPAddress.Parse(configProvider.ServerConfig.Address);
+        var port = configProvider.ServerConfig.Port;
         _backlog = configProvider.ServerConfig.BackLog;
+
+        //application-level setup
+        _listener = new TcpListener(address, port);
     }
 
     public async Task StartServer()
     {
-        //application-level setup
-        var server = new TcpListener(_address, _port);
-
         //OS creates a socket in LISTEN state
-        server.Start(_backlog);
+        _listener.Start(_backlog);
 
         //listen until server-level cancellation is requested, continuously accepting clients
         while (!_serverCancellationSource.IsCancellationRequested)
@@ -37,10 +36,10 @@ public class WebServer
             try
             {
                 //wait for OS to complete TCP handshake. TcpClient holds layer 4 connection (source IP+port, dest IP+port)
-                using var tcpClient = await server.AcceptTcpClientAsync();
+                using var tcpClient = await _listener.AcceptTcpClientAsync(_serverCancellationSource.Token);
 
                 //handle each client on a background thread
-                var clientTask = _clientHandler.HandleClient(tcpClient);
+                var clientTask = _clientHandler.HandleClient(tcpClient, _serverCancellationSource.Token);
 
                 _activeConnections.Add(clientTask);
             }
@@ -58,7 +57,7 @@ public class WebServer
 
         //wait for all active connections to complete before shutting down the server
         await Task.WhenAll(_activeConnections.ToArray());
-        server.Stop();
+        _listener.Stop();
         _serverCancellationSource.Dispose();
     }
 }
