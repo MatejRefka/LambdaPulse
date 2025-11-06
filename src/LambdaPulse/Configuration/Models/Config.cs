@@ -19,4 +19,5 @@ public sealed class MiddlewareConfig
     public required int MaxHeaderSizeBytes { get; init; }
     public required int MaxBodySizeBytes { get; init; }
     public required int RequestReadTimeoutLimitMS { get; init; }
+    public required int ConnectionIdleTimeoutMS { get; init; }
 }

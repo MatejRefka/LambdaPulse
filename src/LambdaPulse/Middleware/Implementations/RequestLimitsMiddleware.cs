@@ -50,8 +50,8 @@ public sealed class RequestLimits : MiddlewareBase
         }
 
         //CancellationToken
-        using var cancellationTokenSource = CancellationTokenSource.CreateLinkedTokenSource(cancellationToken);
-        cancellationTokenSource.CancelAfter(_config.ServerConfig.MiddlewareConfig.RequestReadTimeoutLimitMS);
+        using var requestLimitsCTS = CancellationTokenSource.CreateLinkedTokenSource(cancellationToken);
+        requestLimitsCTS.CancelAfter(_config.ServerConfig.MiddlewareConfig.RequestReadTimeoutLimitMS);
 
         try
         {

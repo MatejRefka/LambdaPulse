@@ -21,8 +21,8 @@ public sealed class ClientHandler : IClientHandler
     public async Task HandleClient(TcpClient tcpClient, CancellationToken serverCancellationToken)
     {
         //cancel on client disconnect or trigger by RequestLimits middleware
-        using var linkedCancellationSource = CancellationTokenSource.CreateLinkedTokenSource(serverCancellationToken);
-        var clientCancellationToken = linkedCancellationSource.Token;
+        using var clientCTS = CancellationTokenSource.CreateLinkedTokenSource(serverCancellationToken);
+        var clientCancellationToken = clientCTS.Token;
 
         try
         {
