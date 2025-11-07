@@ -7,8 +7,9 @@
       "MaxControlDataSizeBytes": 3000000,
       "MaxHeaderSizeBytes": 15000,
       "MaxBodySizeBytes": 1000,
-      "RequestReadTimeoutLimitMS": 5000,
-      "ConnectionIdleTimoutMS": 30000
+      "RequestReadTimeoutMS": 10000,
+      "RequestExecutionTimeoutMS": 30000,
+      "ConnectionIdleTimeoutMS": 120000
     }
   }
 }

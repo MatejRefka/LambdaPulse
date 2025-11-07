@@ -49,9 +49,9 @@ public sealed class RequestLimits : MiddlewareBase
             }
         }
 
-        //CancellationToken
+        //sets timeout for long reads (client never finishes sending the request)
         using var requestLimitsCTS = CancellationTokenSource.CreateLinkedTokenSource(cancellationToken);
-        requestLimitsCTS.CancelAfter(_config.ServerConfig.MiddlewareConfig.RequestReadTimeoutLimitMS);
+        requestLimitsCTS.CancelAfter(_config.ServerConfig.MiddlewareConfig.RequestReadTimeoutMS);
 
         try
         {

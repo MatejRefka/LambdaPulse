@@ -3,6 +3,6 @@
 public sealed class WebContext
 {
     public required WebRequest WebRequest { get; init; }
-
     public required WebResponse WebResponse { get; init; }
+    public bool ConnectionCloseRequested { get; set; }
 }
