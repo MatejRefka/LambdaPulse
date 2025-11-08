@@ -1,4 +1,4 @@
-﻿using LambdaPulse.Configuration.Models;
+﻿using LambdaPulse.Configuration;
 using LambdaPulse.Services.Http.Models;
 using System.Text;
 
@@ -10,18 +10,25 @@ namespace LambdaPulse.Middleware.Implementations;
 /// </summary>
 public sealed class RequestLimits : MiddlewareBase
 {
-    private readonly Config _config;
-    public RequestLimits(Func<WebContext, CancellationToken, Task> nextFunction, Config config) : base(nextFunction)
+    private readonly int _maxControlDataSizeBytes;
+    private readonly int _maxHeaderSizeBytes;
+    private readonly int _maxBodySizeBytes;
+    private readonly int _requestReadTimeoutMS;
+
+    public RequestLimits(Func<WebContext, CancellationToken, Task> nextFunction, IConfigProvider configProvider) : base(nextFunction)
     {
         _nextFunction = nextFunction;
-        _config = config;
+        _maxControlDataSizeBytes = configProvider.ServerConfig.MiddlewareConfig.MaxControlDataSizeBytes;
+        _maxHeaderSizeBytes = configProvider.ServerConfig.MiddlewareConfig.MaxHeaderSizeBytes;
+        _maxBodySizeBytes = configProvider.ServerConfig.MiddlewareConfig.MaxBodySizeBytes;
+        _requestReadTimeoutMS = configProvider.ServerConfig.MiddlewareConfig.RequestReadTimeoutMS;
     }
 
     public override async Task Invoke(WebContext webContext, CancellationToken cancellationToken)
     {
         //control data size limit
         var controlDataSize = Encoding.UTF8.GetByteCount(webContext.WebRequest.Protocol) + Encoding.UTF8.GetByteCount(webContext.WebRequest.Method) + Encoding.UTF8.GetByteCount(webContext.WebRequest.Path);
-        if (controlDataSize > _config.ServerConfig.MiddlewareConfig.MaxControlDataSizeBytes)
+        if (controlDataSize > _maxControlDataSizeBytes)
         {
             webContext.WebResponse.StatusCode = 414;
             webContext.WebResponse.ResponsePhrase = "Request control data is too large.";
@@ -30,7 +37,7 @@ public sealed class RequestLimits : MiddlewareBase
 
         //header size limit
         var headerBytes = webContext.WebRequest.Headers.Sum(header => Encoding.UTF8.GetByteCount(header.Key) + Encoding.UTF8.GetByteCount(header.Value));
-        if (headerBytes > _config.ServerConfig.MiddlewareConfig.MaxHeaderSizeBytes)
+        if (headerBytes > _maxHeaderSizeBytes)
         {
             webContext.WebResponse.StatusCode = 431;
             webContext.WebResponse.ResponsePhrase = "Request header fields are too large.";
@@ -41,7 +48,7 @@ public sealed class RequestLimits : MiddlewareBase
         if (webContext.WebRequest.Body?.Length > 0)
         {
             var bodyBytes = Encoding.UTF8.GetByteCount(webContext.WebRequest.Body);
-            if (bodyBytes > _config.ServerConfig.MiddlewareConfig.MaxBodySizeBytes)
+            if (bodyBytes > _maxBodySizeBytes)
             {
                 webContext.WebResponse.StatusCode = 413;
                 webContext.WebResponse.ResponsePhrase = "Request body is too large.";
@@ -51,7 +58,7 @@ public sealed class RequestLimits : MiddlewareBase
 
         //sets timeout for long reads (client never finishes sending the request)
         using var requestLimitsCTS = CancellationTokenSource.CreateLinkedTokenSource(cancellationToken);
-        requestLimitsCTS.CancelAfter(_config.ServerConfig.MiddlewareConfig.RequestReadTimeoutMS);
+        requestLimitsCTS.CancelAfter(_requestReadTimeoutMS);
 
         try
         {

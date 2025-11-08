@@ -1,4 +1,4 @@
-﻿using LambdaPulse.Configuration.Models;
+﻿using LambdaPulse.Configuration;
 using LambdaPulse.Services.Http.Models;
 
 namespace LambdaPulse.Middleware.Implementations;
@@ -9,18 +9,18 @@ namespace LambdaPulse.Middleware.Implementations;
 /// </summary>
 public sealed class Connection : MiddlewareBase
 {
-    private readonly Config _config;
-    public Connection(Func<WebContext, CancellationToken, Task> nextFunction, Config config) : base(nextFunction)
+    private readonly int _requestExecutionTimeoutMS;
+    public Connection(Func<WebContext, CancellationToken, Task> nextFunction, IConfigProvider configProvider) : base(nextFunction)
     {
         _nextFunction = nextFunction;
-        _config = config;
+        _requestExecutionTimeoutMS = configProvider.ServerConfig.MiddlewareConfig.RequestExecutionTimeoutMS;
     }
 
     public override async Task Invoke(WebContext webContext, CancellationToken cancellationToken = default)
     {
         //request-level token. sets timeout for long mw execution + response write
         using var requestTimeoutCTS = CancellationTokenSource.CreateLinkedTokenSource(cancellationToken);
-        requestTimeoutCTS.CancelAfter(_config.ServerConfig.MiddlewareConfig.RequestExecutionTimeoutMS);
+        requestTimeoutCTS.CancelAfter(_requestExecutionTimeoutMS);
 
         try
         {

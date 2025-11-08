@@ -1,4 +1,4 @@
-﻿using LambdaPulse.Configuration.Models;
+﻿using LambdaPulse.Configuration;
 using LambdaPulse.Middleware;
 using LambdaPulse.Middleware.Implementations;
 using LambdaPulse.Services.Http;
@@ -11,14 +11,14 @@ public sealed class ClientHandler : IClientHandler
     private readonly IRequestReader _requestReader;
     private readonly IRequestParser _requestParser;
     private readonly IResponseWriter _responseWriter;
-    private readonly Config _config;
+    private readonly int _connectionIdleTimeoutMS;
 
-    public ClientHandler(IRequestReader requestReader, IRequestParser requestParser, IResponseWriter responseWriter, Config config)
+    public ClientHandler(IRequestReader requestReader, IRequestParser requestParser, IResponseWriter responseWriter, IConfigProvider configProvider)
     {
         _requestReader = requestReader;
         _requestParser = requestParser;
         _responseWriter = responseWriter;
-        _config = config;
+        _connectionIdleTimeoutMS = configProvider.ServerConfig.MiddlewareConfig.ConnectionIdleTimeoutMS;
     }
 
     public async Task HandleClient(TcpClient tcpClient, CancellationToken serverCancellationToken)
@@ -58,7 +58,7 @@ public sealed class ClientHandler : IClientHandler
             {
                 //request-level token. sets idle timeout between requests
                 using var connectionIdleCTS = CancellationTokenSource.CreateLinkedTokenSource(clientCancellationToken);
-                connectionIdleCTS.CancelAfter(_config.ServerConfig.MiddlewareConfig.ConnectionIdleTimeoutMS);
+                connectionIdleCTS.CancelAfter(_connectionIdleTimeoutMS);
                 var timeoutToken = connectionIdleCTS.Token;
 
                 string? requestString = null;
@@ -109,9 +109,10 @@ public sealed class ClientHandler : IClientHandler
             }
             //Connection is closed here
         }
-        catch (Exception)
+        catch (Exception e)
         {
             //Unexpected fatal connection error
+            Console.WriteLine(e.InnerException);
         }
     }
 }
