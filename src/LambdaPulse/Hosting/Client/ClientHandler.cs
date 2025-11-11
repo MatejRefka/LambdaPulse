@@ -1,4 +1,5 @@
 ﻿using LambdaPulse.Configuration;
+using LambdaPulse.DI;
 using LambdaPulse.Middleware;
 using LambdaPulse.Middleware.Implementations;
 using LambdaPulse.Services.Http;
@@ -8,13 +9,15 @@ namespace LambdaPulse.Services;
 
 public sealed class ClientHandler : IClientHandler
 {
+    private readonly DependencyResolver _dependencyResolver;
     private readonly IRequestReader _requestReader;
     private readonly IRequestParser _requestParser;
     private readonly IResponseWriter _responseWriter;
     private readonly int _connectionIdleTimeoutMS;
 
-    public ClientHandler(IRequestReader requestReader, IRequestParser requestParser, IResponseWriter responseWriter, IConfigProvider configProvider)
+    public ClientHandler(DependencyResolver dependencyResolver, IRequestReader requestReader, IRequestParser requestParser, IResponseWriter responseWriter, IConfigProvider configProvider)
     {
+        _dependencyResolver = dependencyResolver;
         _requestReader = requestReader;
         _requestParser = requestParser;
         _responseWriter = responseWriter;
@@ -33,7 +36,7 @@ public sealed class ClientHandler : IClientHandler
             await using var networkStream = tcpClient.GetStream();
 
             //construct the middleware pipeline, once per connection
-            var pipeline = new Pipeline()
+            var pipeline = new Pipeline(_dependencyResolver)
                             .AddMiddleware<ExceptionHandler>()
                             .AddMiddleware<Logging>()
                             .AddMiddleware<RequestLimits>()
