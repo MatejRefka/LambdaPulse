@@ -57,7 +57,7 @@ public class Pipeline
                     paramInstances[j] = instance ?? throw new InvalidOperationException($"Unable to resolve dependency: {paramType.Name}");
                 }
             }
-            
+
             //create the middleware instance, passing in the previously built delegate
             if (Activator.CreateInstance(middlewareType, paramInstances) is MiddlewareBase middlewareInstance)
             {
