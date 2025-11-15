@@ -5,5 +5,5 @@ namespace LambdaPulse.Services.Http;
 
 public interface IResponseWriter
 {
-    public Task WriteHttpResponse(NetworkStream networkStream, WebResponse response);
+    public Task WriteHttpResponse(NetworkStream networkStream, WebResponse webResponse);
 }
