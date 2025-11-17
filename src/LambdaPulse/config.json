@@ -9,7 +9,8 @@
       "MaxBodySizeBytes": 1000,
       "RequestReadTimeoutMS": 10000,
       "RequestExecutionTimeoutMS": 30000,
-      "ConnectionIdleTimeoutMS": 120000
+      "ConnectionIdleTimeoutMS": 120000,
+      "HttpsRedirectionEnabled": true
     }
   }
 }

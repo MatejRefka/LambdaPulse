@@ -21,4 +21,5 @@ public sealed class MiddlewareConfig
     public required int RequestReadTimeoutMS { get; init; }
     public required int RequestExecutionTimeoutMS { get; init; }
     public required int ConnectionIdleTimeoutMS { get; init; }
+    public required bool HttpsRedirectionEnabled { get; init; }
 }
