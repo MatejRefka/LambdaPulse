@@ -7,29 +7,29 @@ namespace LambdaPulse.Services.Http;
 
 public sealed class ResponseWriter : IResponseWriter
 {
-    public async Task WriteHttpResponse(NetworkStream networkStream, WebResponse webResponse)
+    public async Task WriteHttpResponse(NetworkStream networkStream, WebContext webContext)
     {
-        var responseStatusLine = $"HTTP/1.1 {webResponse.StatusCode} {webResponse.ResponsePhrase}\r\n";
+        var responseStatusLine = $"HTTP/1.1 {webContext.WebResponse.StatusCode} {webContext.WebResponse.ResponsePhrase}\r\n";
 
-        var bodyBytes = webResponse.Body == null ? Array.Empty<byte>() : Encoding.UTF8.GetBytes(webResponse.Body);
+        var bodyBytes = webContext.WebResponse.Body == null ? Array.Empty<byte>() : Encoding.UTF8.GetBytes(webContext.WebResponse.Body);
 
         //recommended response headers for http/1.1
-        if (!webResponse.Headers.ContainsKey("Content-Length"))
+        if (!webContext.WebResponse.Headers.ContainsKey("Content-Length"))
         {
-            webResponse.Headers["Content-Length"] = bodyBytes.Length > 0 ? bodyBytes.Length.ToString(CultureInfo.InvariantCulture) : "0";
+            webContext.WebResponse.Headers["Content-Length"] = bodyBytes.Length > 0 ? bodyBytes.Length.ToString(CultureInfo.InvariantCulture) : "0";
         }
-        if (!webResponse.Headers.ContainsKey("Content-Type"))
+        if (!webContext.WebResponse.Headers.ContainsKey("Content-Type"))
         {
-            webResponse.Headers["Content-Type"] = "text/plain; charset=utf-8";
+            webContext.WebResponse.Headers["Content-Type"] = "text/plain; charset=utf-8";
         }
-        if (!webResponse.Headers.ContainsKey("Connection"))
+        if (!webContext.WebResponse.Headers.ContainsKey("Connection") && !webContext.WebRequest.Headers.ContainsKey("X-Forwarded-For"))
         {
-            webResponse.Headers["Connection"] = webResponse.Headers["Connection"] = "close";
+            webContext.WebResponse.Headers["Connection"] = webContext.WebResponse.Headers["Connection"] = "close";
         }
 
         //parse WebResponse headers into string
         string headersBlock = responseStatusLine;
-        foreach (var header in webResponse.Headers)
+        foreach (var header in webContext.WebResponse.Headers)
         {
             headersBlock += $"{header.Key}: {header.Value}\r\n";
         }

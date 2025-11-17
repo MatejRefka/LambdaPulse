@@ -81,7 +81,7 @@ public sealed class ClientHandler : IClientHandler
                     await pipeline(webContext, timeoutToken);
 
                     webContext.WebResponse.HasStarted = true;
-                    await _responseWriter.WriteHttpResponse(networkStream, webContext.WebResponse);
+                    await _responseWriter.WriteHttpResponse(networkStream, webContext);
 
                     //connection middleware flags connection close
                     if (webContext.ConnectionCloseRequested)

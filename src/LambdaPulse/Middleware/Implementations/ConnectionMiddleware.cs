@@ -26,6 +26,18 @@ public sealed class Connection : MiddlewareBase
         {
             await _nextFunction(webContext, requestTimeoutCTS.Token);
 
+            //web server behind reverse proxy -do not interfere
+            if (webContext.WebRequest.Headers.ContainsKey("X-Forwarded-For"))
+            {
+                return;
+            }
+
+            //downstream middleware already set the connection header
+            if (webContext.WebResponse.Headers.ContainsKey("Connection"))
+            {
+                return;
+            }
+
             //client requests connection close
             if (webContext.WebRequest.Headers.TryGetValue("Connection", out var connectionHeaderValue))
             {
