@@ -11,6 +11,8 @@ public sealed class Endpoint : MiddlewareBase
 
     public override async Task Invoke(WebContext webContext, CancellationToken cancellationToken = default)
     {
+        webContext.WebResponse.StatusCode = 200;
+        webContext.WebResponse.ResponsePhrase = "OK";
         Console.WriteLine($"[Endpoint] logic performed on WebRequest");
         await Task.CompletedTask;
     }
