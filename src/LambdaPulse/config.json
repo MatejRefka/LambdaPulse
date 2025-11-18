@@ -10,7 +10,10 @@
       "RequestReadTimeoutMS": 10000,
       "RequestExecutionTimeoutMS": 30000,
       "ConnectionIdleTimeoutMS": 120000,
-      "HttpsRedirectionEnabled": true
+      "HttpsRedirectionEnabled": true,
+      "HstsMaxAge": 63072000,
+      "HstsIncludeSubDomains": true,
+      "HstsPreload" : false
     }
   }
 }

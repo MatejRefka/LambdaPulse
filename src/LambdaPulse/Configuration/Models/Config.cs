@@ -22,4 +22,7 @@ public sealed class MiddlewareConfig
     public required int RequestExecutionTimeoutMS { get; init; }
     public required int ConnectionIdleTimeoutMS { get; init; }
     public required bool HttpsRedirectionEnabled { get; init; }
+    public required int HstsMaxAge { get; init; }
+    public required bool HstsIncludeSubDomains { get; init; }
+    public required bool HstsPreload { get; init; }
 }
