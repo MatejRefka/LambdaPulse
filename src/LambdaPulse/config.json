@@ -13,7 +13,16 @@
       "HttpsRedirectionEnabled": true,
       "HstsMaxAge": 63072000,
       "HstsIncludeSubDomains": true,
-      "HstsPreload" : false
+      "HstsPreload": false,
+      "SecurityMiddleware": {
+        "XContentTypeOptions": true,
+        "ReferrerPolicy": "strict-origin-when-cross-origin",
+        "PermissionsPolicy": "camera=(), microphone=(), geolocation=()",
+        "CrossOriginOpenerPolicy": "same-origin",
+        "CrossOriginResourcePolicy": "same-origin",
+        "CrossOriginEmbedderPolicy": "require-corp",
+        "RemoveServerHeader": true
+      }
     }
   }
 }

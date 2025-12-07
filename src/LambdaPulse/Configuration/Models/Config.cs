@@ -25,4 +25,16 @@ public sealed class MiddlewareConfig
     public required int HstsMaxAge { get; init; }
     public required bool HstsIncludeSubDomains { get; init; }
     public required bool HstsPreload { get; init; }
+    public required SecurityMiddleware SecurityMiddleware { get; init; }
+}
+
+public sealed class SecurityMiddleware
+{
+    public required bool XContentTypeOptions { get; init; }
+    public required string? ReferrerPolicy { get; init; }
+    public required string? PermissionsPolicy { get; init; }
+    public required string? CrossOriginOpenerPolicy { get; init; }
+    public required string? CrossOriginResourcePolicy { get; init; }
+    public required string? CrossOriginEmbedderPolicy { get; init; }
+    public required bool RemoveServerHeader { get; init; }
 }
