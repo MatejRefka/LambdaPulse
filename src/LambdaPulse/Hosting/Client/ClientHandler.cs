@@ -44,7 +44,7 @@ public sealed class ClientHandler : IClientHandler
                             .AddMiddleware<HttpsRedirection>()
                             .AddMiddleware<HSTS>()
                             .AddMiddleware<Security>()
-                            .AddMiddleware<State>()
+                            .AddMiddleware<Cookies>()
                             .AddMiddleware<CSRF>()
                             .AddMiddleware<StaticFiles>()
                             .AddMiddleware<ResponseCompression>()
