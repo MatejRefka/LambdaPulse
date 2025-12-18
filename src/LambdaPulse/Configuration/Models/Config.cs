@@ -26,6 +26,7 @@ public sealed class MiddlewareConfig
     public required bool HstsIncludeSubDomains { get; init; }
     public required bool HstsPreload { get; init; }
     public required SecurityMiddleware SecurityMiddleware { get; init; }
+    public required SessionMiddleware SessionMiddleware { get; init; }
 }
 
 public sealed class SecurityMiddleware
@@ -37,4 +38,10 @@ public sealed class SecurityMiddleware
     public required string? CrossOriginResourcePolicy { get; init; }
     public required string? CrossOriginEmbedderPolicy { get; init; }
     public required bool RemoveServerHeader { get; init; }
+}
+
+public sealed class SessionMiddleware
+{
+    public required int IdleTimeoutMinutes { get; init; }
+    public required int AbsoluteTimeoutMinutes { get; init; }
 }

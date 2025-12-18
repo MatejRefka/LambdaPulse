@@ -22,6 +22,10 @@
         "CrossOriginResourcePolicy": "same-origin",
         "CrossOriginEmbedderPolicy": "require-corp",
         "RemoveServerHeader": true
+      },
+      "SessionMiddleware": {
+        "IdleTimeoutMinutes": 20,
+        "AbsoluteTimeoutMinutes": 720
       }
     }
   }
