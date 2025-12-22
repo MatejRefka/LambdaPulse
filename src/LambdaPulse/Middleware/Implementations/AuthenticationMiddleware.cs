@@ -1,9 +1,12 @@
-﻿using LambdaPulse.Services.Http.Models;
+﻿using LambdaPulse.Services.Http.Authentication;
+using LambdaPulse.Services.Http.Models;
 
 namespace LambdaPulse.Middleware.Implementations;
 
 public sealed class Authentication : MiddlewareBase
 {
+    private const string UserIdSessionKey = "auth.user_id";
+
     public Authentication(Func<WebContext, CancellationToken, Task> nextFunction) : base(nextFunction)
     {
         _nextFunction = nextFunction;
@@ -11,8 +14,28 @@ public sealed class Authentication : MiddlewareBase
 
     public override async Task Invoke(WebContext webContext, CancellationToken cancellationToken = default)
     {
-        Console.WriteLine($"[Authentication] logic performed on WebRequest");
+        var session = webContext.Session;
+
+        //No session so assign a guest user and continue to downstream middleware
+        if (session == null)
+        {
+            webContext.User = GuestUser.Instance;
+            await _nextFunction(webContext, cancellationToken);
+            return;
+        }
+
+        var userId = await session.GetValue<string>(UserIdSessionKey);
+
+        //No userId in session so assign a guest user and continue to downstream middleware
+        if (userId == null)
+        {
+            webContext.User = GuestUser.Instance;
+            await _nextFunction(webContext, cancellationToken);
+            return;
+        }
+
+        webContext.User = new AuthenticatedUser(userId);
+
         await _nextFunction(webContext, cancellationToken);
-        Console.WriteLine($"[Authentication] logic performed on WebResponse");
     }
 }
