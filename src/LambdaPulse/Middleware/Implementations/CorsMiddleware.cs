@@ -11,8 +11,6 @@ public sealed class Authorization : MiddlewareBase
 
     public override async Task Invoke(WebContext webContext, CancellationToken cancellationToken = default)
     {
-        Console.WriteLine($"[Authorization] logic performed on WebRequest");
         await _nextFunction(webContext, cancellationToken);
-        Console.WriteLine($"[Authorization] logic performed on WebResponse");
     }
 }

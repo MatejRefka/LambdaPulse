@@ -11,8 +11,6 @@ public sealed class ContentNegotiation : MiddlewareBase
 
     public override async Task Invoke(WebContext webContext, CancellationToken cancellationToken = default)
     {
-        Console.WriteLine($"[ContentNegotiation] logic performed on WebRequest");
         await _nextFunction(webContext, cancellationToken);
-        Console.WriteLine($"[ContentNegotiation] logic performed on WebResponse");
     }
 }

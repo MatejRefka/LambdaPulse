@@ -11,8 +11,6 @@ public sealed class CORS : MiddlewareBase
 
     public override async Task Invoke(WebContext webContext, CancellationToken cancellationToken = default)
     {
-        Console.WriteLine($"[CORS] logic performed on WebRequest");
         await _nextFunction(webContext, cancellationToken);
-        Console.WriteLine($"[CORS] logic performed on WebResponse");
     }
 }

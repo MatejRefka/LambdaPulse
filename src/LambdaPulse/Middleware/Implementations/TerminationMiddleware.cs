@@ -13,7 +13,6 @@ public sealed class Endpoint : MiddlewareBase
     {
         webContext.WebResponse.StatusCode = 200;
         webContext.WebResponse.ResponsePhrase = "OK";
-        Console.WriteLine($"[Endpoint] logic performed on WebRequest");
         await Task.CompletedTask;
     }
 }

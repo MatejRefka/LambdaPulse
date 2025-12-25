@@ -62,9 +62,7 @@ public sealed class RequestLimits : MiddlewareBase
 
         try
         {
-            Console.WriteLine($"[RequestLimits] logic performed on WebRequest");
             await _nextFunction(webContext, cancellationToken);
-            Console.WriteLine($"[RequestLimits] logic performed on WebResponse");
         }
         catch (OperationCanceledException)
         {
