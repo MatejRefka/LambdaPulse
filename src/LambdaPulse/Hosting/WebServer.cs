@@ -11,7 +11,8 @@ public class WebServer : IDisposable
     private readonly IClientHandler _clientHandler;
     private readonly TcpListener _listener;
     private readonly int _backlog;
-    private readonly ConcurrentBag<Task> _activeConnections = new();
+    //multiple threads can be adding/removing tasks concurrently. Byte is a dummy value
+    private readonly ConcurrentDictionary<Task, byte> _activeConnections = new();
     private readonly CancellationTokenSource _serverCancellationSource = new();
     private bool _disposed;
 
@@ -31,18 +32,24 @@ public class WebServer : IDisposable
         //OS creates a socket in LISTEN state
         _listener.Start(_backlog);
 
-        //listen until server-level cancellation is requested, continuously accepting clients
-        while (!_serverCancellationSource.IsCancellationRequested)
+        //listen forever, continuously accepting clients
+        while (true)
         {
             try
             {
                 //wait for OS to complete TCP handshake. TcpClient holds layer 4 connection (source IP+port, dest IP+port)
-                using var tcpClient = await _listener.AcceptTcpClientAsync(_serverCancellationSource.Token);
+                var tcpClient = await _listener.AcceptTcpClientAsync(_serverCancellationSource.Token);
 
                 //handle each client on a background thread
                 var clientTask = _clientHandler.HandleClient(tcpClient, _serverCancellationSource.Token);
 
-                _activeConnections.Add(clientTask);
+                _activeConnections.TryAdd(clientTask, 0);
+
+                //remove completed task from active connections. Do not await here to avoid blocking
+                clientTask.ContinueWith(task =>
+                {
+                    _activeConnections.TryRemove(task, out _);
+                });
             }
             catch (OperationCanceledException)
             {
@@ -57,19 +64,20 @@ public class WebServer : IDisposable
         }
 
         //wait for all active connections to complete before shutting down the server
-        await Task.WhenAll(_activeConnections.ToArray());
+        await Task.WhenAll(_activeConnections.Keys);
     }
 
     public async Task StopServer()
     {
         if (!_disposed)
         {
+            _serverCancellationSource.Cancel();
             _listener.Stop();
-            _serverCancellationSource.Dispose();
 
             //wait for all active connections to complete before shutting down the server
-            await Task.WhenAll(_activeConnections.ToArray());
+            await Task.WhenAll(_activeConnections.Keys);
 
+            _serverCancellationSource.Dispose();
             _disposed = true;
         }
     }
@@ -78,6 +86,7 @@ public class WebServer : IDisposable
     {
         if (!_disposed)
         {
+            _serverCancellationSource.Cancel();
             _listener.Stop();
             _serverCancellationSource.Dispose();
 
