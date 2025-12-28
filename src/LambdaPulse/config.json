@@ -26,6 +26,9 @@
       "SessionMiddleware": {
         "IdleTimeoutMinutes": 20,
         "AbsoluteTimeoutMinutes": 720
+      },
+      "StaticFilesMiddleware": {
+        "FileRootPath": "C:\\Users\\matej\\Documents\\_me\\projects\\LambdaPulse\\StaticFiles"
       }
     }
   }

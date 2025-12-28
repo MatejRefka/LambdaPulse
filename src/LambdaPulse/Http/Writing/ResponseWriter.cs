@@ -11,7 +11,8 @@ public sealed class ResponseWriter : IResponseWriter
     {
         var responseStatusLine = $"HTTP/1.1 {webContext.WebResponse.StatusCode} {webContext.WebResponse.ResponsePhrase}\r\n";
 
-        var bodyBytes = webContext.WebResponse.Body == null ? Array.Empty<byte>() : Encoding.UTF8.GetBytes(webContext.WebResponse.Body);
+        webContext.WebResponse.Body.Position = 0;
+        var bodyBytes = webContext.WebResponse.Body.ToArray();
 
         //recommended response headers for http/1.1
         if (!webContext.WebResponse.Headers.ContainsKey("Content-Length"))

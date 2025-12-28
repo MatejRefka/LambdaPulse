@@ -6,6 +6,6 @@ public sealed class WebResponse
     public string? ResponsePhrase { get; set; }
     public Dictionary<string, string> Headers { get; set; } = new();
     public List<string> Cookies { get; } = new();
-    public string? Body { get; set; }
+    public MemoryStream Body { get; } = new MemoryStream();
     public bool HasStarted { get; set; }
 }

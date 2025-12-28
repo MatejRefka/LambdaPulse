@@ -1,5 +1,6 @@
 ﻿using LambdaPulse.Configuration;
 using LambdaPulse.Services.Http.Models;
+using LambdaPulse.Utility.Extensions;
 
 namespace LambdaPulse.Middleware.Implementations;
 
@@ -29,7 +30,8 @@ public sealed class HttpsRedirection : MiddlewareBase
         {
             webContext.WebResponse.StatusCode = 400;
             webContext.WebResponse.ResponsePhrase = "Bad Request";
-            webContext.WebResponse.Body = "Missing Host Header";
+            await webContext.WebResponse.WriteToBody("Missing Host Header");
+
             webContext.WebResponse.HasStarted = true;
             return;
         }

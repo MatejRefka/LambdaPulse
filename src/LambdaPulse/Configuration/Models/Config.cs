@@ -27,6 +27,7 @@ public sealed class MiddlewareConfig
     public required bool HstsPreload { get; init; }
     public required SecurityMiddleware SecurityMiddleware { get; init; }
     public required SessionMiddleware SessionMiddleware { get; init; }
+    public required StaticFilesMiddleware StaticFilesMiddleware { get; init; }
 }
 
 public sealed class SecurityMiddleware
@@ -44,4 +45,9 @@ public sealed class SessionMiddleware
 {
     public required int IdleTimeoutMinutes { get; init; }
     public required int AbsoluteTimeoutMinutes { get; init; }
+}
+
+public sealed class StaticFilesMiddleware
+{
+    public required string FileRootPath { get; init; }
 }
