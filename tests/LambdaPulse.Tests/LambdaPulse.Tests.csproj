@@ -33,4 +33,10 @@
     <Folder Include="Core\Middleware\" />
   </ItemGroup>
 
+  <ItemGroup>
+    <None Update="mockConfig.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+  </ItemGroup>
+
 </Project>

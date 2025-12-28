@@ -1,30 +1,26 @@
 ﻿using LambdaPulse.Configuration;
 using LambdaPulse.Services;
 using System.Collections.Concurrent;
-using System.Net;
-using System.Net.Sockets;
 
 namespace LambdaPulse;
 
 public class WebServer : IDisposable
 {
+    private readonly IListener _listener;
     private readonly IClientHandler _clientHandler;
-    private readonly TcpListener _listener;
     private readonly int _backlog;
     //multiple threads can be adding/removing tasks concurrently. Byte is a dummy value
     private readonly ConcurrentDictionary<Task, byte> _activeConnections = new();
     private readonly CancellationTokenSource _serverCancellationSource = new();
     private bool _disposed;
 
-    public WebServer(IClientHandler clientHandler, IConfigProvider configProvider)
+    public WebServer(IListener listener, IClientHandler clientHandler, IConfigProvider configProvider)
     {
-        _clientHandler = clientHandler;
-        var address = IPAddress.Parse(configProvider.ServerConfig.Address);
-        var port = configProvider.ServerConfig.Port;
-        _backlog = configProvider.ServerConfig.BackLog;
+        //the contained TcpLister is application-level listener
+        _listener = listener;
 
-        //application-level setup
-        _listener = new TcpListener(address, port);
+        _clientHandler = clientHandler;
+        _backlog = configProvider.ServerConfig.BackLog;
     }
 
     public async Task StartServer()
@@ -48,17 +44,22 @@ public class WebServer : IDisposable
                 //remove completed task from active connections. Do not await here to avoid blocking
                 clientTask.ContinueWith(task =>
                 {
+                    if (task.Exception != null)
+                    {
+                        //log
+                    }
                     _activeConnections.TryRemove(task, out _);
                 });
             }
             catch (OperationCanceledException)
             {
-                //stop the server from accepting new connections
+                //AcceptTcpClientAsync throws when cancellation is requested, i.e. StopServer() is called
+                //break the loop to stop the server from accepting new connections
                 break;
             }
             catch (Exception ex)
             {
-                //single client exception should not take out the whole server
+                //Listener/socket/OS error. Single connection failure should not take out the whole server
                 Console.WriteLine(ex.ToString());
             }
         }

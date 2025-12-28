@@ -1,0 +1,35 @@
+{
+  "ServerConfig": {
+    "Address": "127.0.0.1",
+    "Port": 8080,
+    "BackLog": 100,
+    "MiddlewareConfig": {
+      "MaxControlDataSizeBytes": 3000000,
+      "MaxHeaderSizeBytes": 15000,
+      "MaxBodySizeBytes": 1000,
+      "RequestReadTimeoutMS": 10000000,
+      "RequestExecutionTimeoutMS": 3000000,
+      "ConnectionIdleTimeoutMS": 12000000,
+      "HttpsRedirectionEnabled": false,
+      "HstsMaxAge": 63072000,
+      "HstsIncludeSubDomains": true,
+      "HstsPreload": false,
+      "SecurityMiddleware": {
+        "XContentTypeOptions": true,
+        "ReferrerPolicy": "strict-origin-when-cross-origin",
+        "PermissionsPolicy": "camera=(), microphone=(), geolocation=()",
+        "CrossOriginOpenerPolicy": "same-origin",
+        "CrossOriginResourcePolicy": "same-origin",
+        "CrossOriginEmbedderPolicy": "require-corp",
+        "RemoveServerHeader": true
+      },
+      "SessionMiddleware": {
+        "IdleTimeoutMinutes": 20,
+        "AbsoluteTimeoutMinutes": 720
+      },
+      "StaticFilesMiddleware": {
+        "FileRootPath": "C:\\Users\\matej\\Documents\\_me\\projects\\LambdaPulse\\StaticFiles"
+      }
+    }
+  }
+}
