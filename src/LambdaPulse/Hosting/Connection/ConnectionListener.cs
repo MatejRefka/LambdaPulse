@@ -4,11 +4,11 @@ using System.Net.Sockets;
 
 namespace LambdaPulse.Services;
 
-public class TcpListener : IListener
+public class ConnectionListener : IConnectionListener
 {
     private readonly System.Net.Sockets.TcpListener _listener;
 
-    public TcpListener(IConfigProvider configProvider)
+    public ConnectionListener(IConfigProvider configProvider)
     {
         var address = IPAddress.Parse(configProvider.ServerConfig.Address);
         var port = configProvider.ServerConfig.Port;

@@ -2,7 +2,7 @@
 
 namespace LambdaPulse.Services;
 
-public interface IListener
+public interface IConnectionListener
 {
     void Start(int backlog);
     void Stop();

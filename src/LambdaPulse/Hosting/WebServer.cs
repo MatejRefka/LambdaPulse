@@ -6,7 +6,7 @@ namespace LambdaPulse;
 
 public class WebServer : IDisposable
 {
-    private readonly IListener _listener;
+    private readonly IConnectionListener _listener;
     private readonly IClientHandler _clientHandler;
     private readonly int _backlog;
     //multiple threads can be adding/removing tasks concurrently. Byte is a dummy value
@@ -14,7 +14,7 @@ public class WebServer : IDisposable
     private readonly CancellationTokenSource _serverCancellationSource = new();
     private bool _disposed;
 
-    public WebServer(IListener listener, IClientHandler clientHandler, IConfigProvider configProvider)
+    public WebServer(IConnectionListener listener, IClientHandler clientHandler, IConfigProvider configProvider)
     {
         //the contained TcpLister is application-level listener
         _listener = listener;

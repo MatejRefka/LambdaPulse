@@ -4,7 +4,7 @@ using System.Threading.Channels;
 
 namespace LambdaPulse.Tests.Core;
 
-public class MockTcpListener : IListener
+public class MockTcpListener : IConnectionListener
 {
     private readonly Channel<TcpClient> _connections = Channel.CreateUnbounded<TcpClient>();
 
