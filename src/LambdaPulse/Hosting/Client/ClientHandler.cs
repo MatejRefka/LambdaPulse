@@ -106,8 +106,8 @@ public sealed class ClientHandler : IClientHandler
                 }
                 catch (Exception)
                 {
-                    //Unexpected error within the request
-                    //Continue serving other requests, do not break the connection
+                    //Unexpected error within the request. Terminate the connection for safety.
+                    break;
                 }
             }
             //Connection is closed here
@@ -115,7 +115,7 @@ public sealed class ClientHandler : IClientHandler
         catch (Exception e)
         {
             //Unexpected fatal connection error
-            Console.WriteLine(e.InnerException);
+            Console.WriteLine(e);
         }
     }
 }
