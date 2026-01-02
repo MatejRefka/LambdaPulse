@@ -53,6 +53,7 @@ public sealed class ClientHandler : IClientHandler
                             .AddMiddleware<AuthenticationMiddleware>()
                             .AddMiddleware<AuthorizationMiddleware>()
                             .AddMiddleware<ContentNegotiationMiddleware>()
+                            .AddMiddleware<InvokeMiddleware>()
                             .AddMiddleware<EndpointMiddleware>()
                             .Build();
 
