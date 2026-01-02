@@ -15,7 +15,7 @@ public sealed class RoutingMiddleware : MiddlewareBase
 
     public override async Task Invoke(WebContext webContext, CancellationToken cancellationToken = default)
     {
-        var endpoint = _endpointRegistry.GetEndpoint(webContext.WebRequest.Path, webContext.WebRequest.Method);
+        var endpoint = _endpointRegistry.GetEndpoint(webContext.WebRequest.Method, webContext.WebRequest.Path);
 
         webContext.Endpoint = endpoint;
 
