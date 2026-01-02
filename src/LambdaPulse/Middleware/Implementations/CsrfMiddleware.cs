@@ -3,11 +3,11 @@ using System.Security.Cryptography;
 
 namespace LambdaPulse.Middleware.Implementations;
 
-public sealed class CSRF : MiddlewareBase
+public sealed class CsrfMiddleware : MiddlewareBase
 {
     private const string CsrfTokenSessionKey = "csrf.token";
 
-    public CSRF(Func<WebContext, CancellationToken, Task> nextFunction) : base(nextFunction)
+    public CsrfMiddleware(Func<WebContext, CancellationToken, Task> nextFunction) : base(nextFunction)
     {
         _nextFunction = nextFunction;
     }

@@ -8,14 +8,14 @@ namespace LambdaPulse.Middleware.Implementations;
 /// Enforces request limits, protecting the server from requests that are too large or too slow.
 /// Constructs a cancelation source, passing a cancelation token to downstream middleware.
 /// </summary>
-public sealed class RequestLimits : MiddlewareBase
+public sealed class RequestLimitsMiddleware : MiddlewareBase
 {
     private readonly int _maxControlDataSizeBytes;
     private readonly int _maxHeaderSizeBytes;
     private readonly int _maxBodySizeBytes;
     private readonly int _requestReadTimeoutMS;
 
-    public RequestLimits(Func<WebContext, CancellationToken, Task> nextFunction, IConfigProvider configProvider) : base(nextFunction)
+    public RequestLimitsMiddleware(Func<WebContext, CancellationToken, Task> nextFunction, IConfigProvider configProvider) : base(nextFunction)
     {
         _nextFunction = nextFunction;
         _maxControlDataSizeBytes = configProvider.ServerConfig.MiddlewareConfig.MaxControlDataSizeBytes;

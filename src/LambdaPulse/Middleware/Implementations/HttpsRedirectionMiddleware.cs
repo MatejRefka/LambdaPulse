@@ -7,10 +7,10 @@ namespace LambdaPulse.Middleware.Implementations;
 /// <summary>
 /// Constructs a redirect response for http requests 
 /// </summary>
-public sealed class HttpsRedirection : MiddlewareBase
+public sealed class HttpsRedirectionMiddleware : MiddlewareBase
 {
     private readonly bool _httpsRedirectionEnabled;
-    public HttpsRedirection(Func<WebContext, CancellationToken, Task> nextFunction, IConfigProvider configProvider) : base(nextFunction)
+    public HttpsRedirectionMiddleware(Func<WebContext, CancellationToken, Task> nextFunction, IConfigProvider configProvider) : base(nextFunction)
     {
         _nextFunction = nextFunction;
         _httpsRedirectionEnabled = configProvider.ServerConfig.MiddlewareConfig.HttpsRedirectionEnabled;

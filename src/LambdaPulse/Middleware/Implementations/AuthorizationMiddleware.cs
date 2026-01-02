@@ -2,9 +2,9 @@
 
 namespace LambdaPulse.Middleware.Implementations;
 
-public sealed class ContentNegotiation : MiddlewareBase
+public sealed class AuthorizationMiddleware : MiddlewareBase
 {
-    public ContentNegotiation(Func<WebContext, CancellationToken, Task> nextFunction) : base(nextFunction)
+    public AuthorizationMiddleware(Func<WebContext, CancellationToken, Task> nextFunction) : base(nextFunction)
     {
         _nextFunction = nextFunction;
     }

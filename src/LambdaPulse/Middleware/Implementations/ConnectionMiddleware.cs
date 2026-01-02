@@ -7,10 +7,10 @@ namespace LambdaPulse.Middleware.Implementations;
 /// Handles connection-level control headers of WebRequest and WebResponse.
 /// Enforces request execution timeout set by the server's configuration via a request-level CTS which is passed to downstream middleware.
 /// </summary>
-public sealed class Connection : MiddlewareBase
+public sealed class ConnectionMiddleware : MiddlewareBase
 {
     private readonly int _requestExecutionTimeoutMS;
-    public Connection(Func<WebContext, CancellationToken, Task> nextFunction, IConfigProvider configProvider) : base(nextFunction)
+    public ConnectionMiddleware(Func<WebContext, CancellationToken, Task> nextFunction, IConfigProvider configProvider) : base(nextFunction)
     {
         _nextFunction = nextFunction;
         _requestExecutionTimeoutMS = configProvider.ServerConfig.MiddlewareConfig.RequestExecutionTimeoutMS;

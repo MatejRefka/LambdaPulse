@@ -8,9 +8,9 @@ namespace LambdaPulse.Middleware.Implementations;
 /// Exception is logged, generating 500 response.
 /// Any unhandled exception type implementing Exception responds with 500.
 /// </summary>
-public sealed class ExceptionHandler : MiddlewareBase
+public sealed class ExceptionMiddleware : MiddlewareBase
 {
-    public ExceptionHandler(Func<WebContext, CancellationToken, Task> nextFunction) : base(nextFunction)
+    public ExceptionMiddleware(Func<WebContext, CancellationToken, Task> nextFunction) : base(nextFunction)
     {
         _nextFunction = nextFunction;
     }

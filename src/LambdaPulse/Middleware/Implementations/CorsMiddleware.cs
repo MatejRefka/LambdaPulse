@@ -2,9 +2,9 @@
 
 namespace LambdaPulse.Middleware.Implementations;
 
-public sealed class Authorization : MiddlewareBase
+public sealed class CorsMiddleware : MiddlewareBase
 {
-    public Authorization(Func<WebContext, CancellationToken, Task> nextFunction) : base(nextFunction)
+    public CorsMiddleware(Func<WebContext, CancellationToken, Task> nextFunction) : base(nextFunction)
     {
         _nextFunction = nextFunction;
     }

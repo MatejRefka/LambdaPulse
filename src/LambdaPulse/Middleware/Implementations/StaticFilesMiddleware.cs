@@ -4,12 +4,12 @@ using LambdaPulse.Utility.Extensions;
 
 namespace LambdaPulse.Middleware.Implementations;
 
-public sealed class StaticFiles : MiddlewareBase
+public sealed class StaticFilesMiddleware : MiddlewareBase
 {
     private readonly string _fileRootPath;
     private readonly Dictionary<string, string> _mimeTypes;
 
-    public StaticFiles(Func<WebContext, CancellationToken, Task> nextFunction, IConfigProvider configProvider) : base(nextFunction)
+    public StaticFilesMiddleware(Func<WebContext, CancellationToken, Task> nextFunction, IConfigProvider configProvider) : base(nextFunction)
     {
         _nextFunction = nextFunction;
         _fileRootPath = configProvider.ServerConfig.MiddlewareConfig.StaticFilesMiddleware.FileRootPath;

@@ -3,7 +3,7 @@ using LambdaPulse.Services.Http.Models;
 
 namespace LambdaPulse.Middleware.Implementations;
 
-public sealed class Security : MiddlewareBase
+public sealed class SecurityMiddleware : MiddlewareBase
 {
     private readonly bool _xContentTypeOptions;
     private readonly string? _referrerPolicy;
@@ -13,7 +13,7 @@ public sealed class Security : MiddlewareBase
     private readonly string? _crossOriginEmbedderPolicy;
     private readonly bool _removeServerHeader;
 
-    public Security(Func<WebContext, CancellationToken, Task> nextFunction, IConfigProvider configProvider) : base(nextFunction)
+    public SecurityMiddleware(Func<WebContext, CancellationToken, Task> nextFunction, IConfigProvider configProvider) : base(nextFunction)
     {
         _nextFunction = nextFunction;
         _xContentTypeOptions = configProvider.ServerConfig.MiddlewareConfig.SecurityMiddleware.XContentTypeOptions;

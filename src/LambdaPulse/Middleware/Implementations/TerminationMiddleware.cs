@@ -3,9 +3,9 @@ using LambdaPulse.Utility.Extensions;
 
 namespace LambdaPulse.Middleware.Implementations;
 
-public sealed class Endpoint : MiddlewareBase
+public sealed class EndpointMiddleware : MiddlewareBase
 {
-    public Endpoint(Func<WebContext, CancellationToken, Task> nextFunction) : base(nextFunction)
+    public EndpointMiddleware(Func<WebContext, CancellationToken, Task> nextFunction) : base(nextFunction)
     {
         _nextFunction = nextFunction;
     }

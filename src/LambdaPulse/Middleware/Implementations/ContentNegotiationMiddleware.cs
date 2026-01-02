@@ -2,9 +2,9 @@
 
 namespace LambdaPulse.Middleware.Implementations;
 
-public sealed class ResponseCompression : MiddlewareBase
+public sealed class ContentNegotiationMiddleware : MiddlewareBase
 {
-    public ResponseCompression(Func<WebContext, CancellationToken, Task> nextFunction) : base(nextFunction)
+    public ContentNegotiationMiddleware(Func<WebContext, CancellationToken, Task> nextFunction) : base(nextFunction)
     {
         _nextFunction = nextFunction;
     }

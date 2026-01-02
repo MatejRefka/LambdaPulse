@@ -3,12 +3,12 @@ using LambdaPulse.Services.Http.Models;
 
 namespace LambdaPulse.Middleware.Implementations;
 
-public sealed class HSTS : MiddlewareBase
+public sealed class HstsMiddleware : MiddlewareBase
 {
     private readonly int _maxAge;
     private readonly bool _includeSubDomains;
     private readonly bool _preload;
-    public HSTS(Func<WebContext, CancellationToken, Task> nextFunction, IConfigProvider configProvider) : base(nextFunction)
+    public HstsMiddleware(Func<WebContext, CancellationToken, Task> nextFunction, IConfigProvider configProvider) : base(nextFunction)
     {
         _nextFunction = nextFunction;
         _maxAge = configProvider.ServerConfig.MiddlewareConfig.HstsMaxAge;

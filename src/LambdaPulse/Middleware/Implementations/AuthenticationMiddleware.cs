@@ -3,11 +3,11 @@ using LambdaPulse.Services.Http.Models;
 
 namespace LambdaPulse.Middleware.Implementations;
 
-public sealed class Authentication : MiddlewareBase
+public sealed class AuthenticationMiddleware : MiddlewareBase
 {
     private const string UserIdSessionKey = "auth.user_id";
 
-    public Authentication(Func<WebContext, CancellationToken, Task> nextFunction) : base(nextFunction)
+    public AuthenticationMiddleware(Func<WebContext, CancellationToken, Task> nextFunction) : base(nextFunction)
     {
         _nextFunction = nextFunction;
     }

@@ -4,12 +4,12 @@ using LambdaPulse.Services.Http.State;
 
 namespace LambdaPulse.Middleware.Implementations;
 
-public sealed class SessionMW : MiddlewareBase
+public sealed class SessionMiddleware : MiddlewareBase
 {
     private const string SessionCookieName = "LambdaPulse.Session";
     private readonly ISessionStore _sessionStore;
 
-    public SessionMW(Func<WebContext, CancellationToken, Task> nextFunction, IConfigProvider configProvider, ISessionStore sessionStore) : base(nextFunction)
+    public SessionMiddleware(Func<WebContext, CancellationToken, Task> nextFunction, IConfigProvider configProvider, ISessionStore sessionStore) : base(nextFunction)
     {
         _nextFunction = nextFunction;
         _sessionStore = sessionStore;
