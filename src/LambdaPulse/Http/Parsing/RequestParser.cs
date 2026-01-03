@@ -1,6 +1,6 @@
-﻿using LambdaPulse.Services.Http.Models;
+﻿using LambdaPulse.Server.Services.Http.Models;
 
-namespace LambdaPulse.Services.Http;
+namespace LambdaPulse.Server.Services.Http;
 
 public sealed class RequestParser : IRequestParser
 {

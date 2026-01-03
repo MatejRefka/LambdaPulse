@@ -1,18 +1,18 @@
-﻿using LambdaPulse.Configuration;
+﻿using LambdaPulse.Server.Configuration;
 using System.Net;
 using System.Net.Sockets;
 
-namespace LambdaPulse.Services;
+namespace LambdaPulse.Server.Services;
 
-public class ConnectionListener : IConnectionListener
+public class ConnectionListener : IConnectionListener, IDisposable
 {
-    private readonly System.Net.Sockets.TcpListener _listener;
+    private readonly TcpListener _listener;
 
     public ConnectionListener(IConfigProvider configProvider)
     {
         var address = IPAddress.Parse(configProvider.ServerConfig.Address);
         var port = configProvider.ServerConfig.Port;
-        _listener = new System.Net.Sockets.TcpListener(address, port);
+        _listener = new TcpListener(address, port);
     }
 
     public void Start(int backlog)
@@ -28,5 +28,11 @@ public class ConnectionListener : IConnectionListener
     public async Task<TcpClient> AcceptTcpClientAsync(CancellationToken cancellationToken)
     {
         return await _listener.AcceptTcpClientAsync(cancellationToken);
+    }
+
+    public void Dispose()
+    {
+        _listener.Dispose();
+        GC.SuppressFinalize(this);
     }
 }

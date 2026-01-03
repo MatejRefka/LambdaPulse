@@ -1,7 +1,7 @@
-﻿using LambdaPulse.Configuration;
-using LambdaPulse.Services.Http.Models;
+﻿using LambdaPulse.Server.Configuration;
+using LambdaPulse.Server.Services.Http.Models;
 
-namespace LambdaPulse.Middleware.Implementations;
+namespace LambdaPulse.Server.Middleware.Implementations;
 
 public sealed class SecurityMiddleware : MiddlewareBase
 {

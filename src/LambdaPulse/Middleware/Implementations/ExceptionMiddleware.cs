@@ -1,7 +1,7 @@
-﻿using LambdaPulse.Services.Http.Models;
-using LambdaPulse.Utility.Extensions;
+﻿using LambdaPulse.Server.Services.Http.Models;
+using LambdaPulse.Server.Utility.Extensions;
 
-namespace LambdaPulse.Middleware.Implementations;
+namespace LambdaPulse.Server.Middleware.Implementations;
 
 /// <summary>
 /// Wraps the pipeline in a try/catch, ensuring the whole server doesn't crash.

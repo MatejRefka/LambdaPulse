@@ -1,8 +1,8 @@
-﻿using LambdaPulse.Configuration;
-using LambdaPulse.Services;
+﻿using LambdaPulse.Server.Configuration;
+using LambdaPulse.Server.Services;
 using System.Collections.Concurrent;
 
-namespace LambdaPulse;
+namespace LambdaPulse.Server;
 
 public class WebServer : IDisposable
 {

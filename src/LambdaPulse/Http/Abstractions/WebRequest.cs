@@ -1,4 +1,4 @@
-﻿namespace LambdaPulse.Services.Http.Models;
+﻿namespace LambdaPulse.Server.Services.Http.Models;
 
 public sealed class WebRequest
 {

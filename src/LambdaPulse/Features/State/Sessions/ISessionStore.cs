@@ -1,4 +1,4 @@
-﻿namespace LambdaPulse.Services.Http.State;
+﻿namespace LambdaPulse.Server.Services.Http.State;
 
 public interface ISessionStore
 {

@@ -1,5 +1,5 @@
-﻿using LambdaPulse.Configuration;
-using LambdaPulse.Configuration.Models;
+﻿using LambdaPulse.Server.Configuration;
+using LambdaPulse.Server.Configuration.Models;
 using System.Text.Json;
 
 namespace LambdaPulse.Tests.Core;

@@ -1,4 +1,4 @@
-﻿namespace LambdaPulse.Configuration.Models;
+﻿namespace LambdaPulse.Server.Configuration.Models;
 
 public sealed class Config
 {

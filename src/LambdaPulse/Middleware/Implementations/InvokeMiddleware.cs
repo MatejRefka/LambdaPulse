@@ -1,6 +1,6 @@
-﻿using LambdaPulse.Services.Http.Models;
+﻿using LambdaPulse.Server.Services.Http.Models;
 
-namespace LambdaPulse.Middleware.Implementations;
+namespace LambdaPulse.Server.Middleware.Implementations;
 /// <summary>
 /// Executes user code that's mapped to the requested endpoint.
 /// </summary>

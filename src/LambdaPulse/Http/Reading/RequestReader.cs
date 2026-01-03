@@ -1,7 +1,7 @@
 ﻿using System.Net.Sockets;
 using System.Text;
 
-namespace LambdaPulse.Services.Http;
+namespace LambdaPulse.Server.Services.Http;
 
 public sealed class RequestReader : IRequestReader
 {

@@ -1,7 +1,7 @@
-﻿using LambdaPulse.Services.Http.Models;
-using LambdaPulse.Services.Http.Routing;
+﻿using LambdaPulse.Server.Services.Http.Models;
+using LambdaPulse.Server.Services.Http.Routing;
 
-namespace LambdaPulse.Middleware.Implementations;
+namespace LambdaPulse.Server.Middleware.Implementations;
 
 public sealed class RoutingMiddleware : MiddlewareBase
 {

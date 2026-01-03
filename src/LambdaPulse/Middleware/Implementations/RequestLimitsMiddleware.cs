@@ -1,8 +1,8 @@
-﻿using LambdaPulse.Configuration;
-using LambdaPulse.Services.Http.Models;
+﻿using LambdaPulse.Server.Configuration;
+using LambdaPulse.Server.Services.Http.Models;
 using System.Text;
 
-namespace LambdaPulse.Middleware.Implementations;
+namespace LambdaPulse.Server.Middleware.Implementations;
 
 /// <summary>
 /// Enforces request limits, protecting the server from requests that are too large or too slow.

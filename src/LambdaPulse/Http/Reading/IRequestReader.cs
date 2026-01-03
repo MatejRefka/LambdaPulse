@@ -1,6 +1,6 @@
 ﻿using System.Net.Sockets;
 
-namespace LambdaPulse.Services.Http;
+namespace LambdaPulse.Server.Services.Http;
 
 public interface IRequestReader
 {

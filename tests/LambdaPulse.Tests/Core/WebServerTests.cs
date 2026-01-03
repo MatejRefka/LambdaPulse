@@ -1,4 +1,5 @@
-﻿using System.Net.Sockets;
+﻿using LambdaPulse.Server;
+using System.Net.Sockets;
 
 namespace LambdaPulse.Tests.Core;
 

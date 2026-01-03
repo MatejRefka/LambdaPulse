@@ -1,6 +1,6 @@
-﻿using LambdaPulse.Services.Http.Models;
+﻿using LambdaPulse.Server.Services.Http.Models;
 
-namespace LambdaPulse.Services.Http.Routing;
+namespace LambdaPulse.Server.Services.Http.Routing;
 
 public class Endpoint
 {

@@ -1,7 +1,7 @@
-﻿using LambdaPulse.Services.Http.Authentication;
-using LambdaPulse.Services.Http.Models;
+﻿using LambdaPulse.Server.Services.Http.Authentication;
+using LambdaPulse.Server.Services.Http.Models;
 
-namespace LambdaPulse.Middleware.Implementations;
+namespace LambdaPulse.Server.Middleware.Implementations;
 
 public sealed class AuthenticationMiddleware : MiddlewareBase
 {

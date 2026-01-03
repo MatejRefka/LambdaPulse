@@ -1,8 +1,8 @@
-﻿using LambdaPulse.Configuration;
-using LambdaPulse.Services.Http.Models;
-using LambdaPulse.Utility.Extensions;
+﻿using LambdaPulse.Server.Configuration;
+using LambdaPulse.Server.Services.Http.Models;
+using LambdaPulse.Server.Utility.Extensions;
 
-namespace LambdaPulse.Middleware.Implementations;
+namespace LambdaPulse.Server.Middleware.Implementations;
 
 public sealed class StaticFilesMiddleware : MiddlewareBase
 {

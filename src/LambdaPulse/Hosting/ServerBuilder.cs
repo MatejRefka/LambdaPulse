@@ -1,11 +1,11 @@
-﻿using LambdaPulse.Configuration;
-using LambdaPulse.DI;
-using LambdaPulse.Services;
-using LambdaPulse.Services.Http;
-using LambdaPulse.Services.Http.Routing;
-using LambdaPulse.Services.Http.State;
+﻿using LambdaPulse.Server.Configuration;
+using LambdaPulse.Server.DI;
+using LambdaPulse.Server.Services;
+using LambdaPulse.Server.Services.Http;
+using LambdaPulse.Server.Services.Http.Routing;
+using LambdaPulse.Server.Services.Http.State;
 
-namespace LambdaPulse;
+namespace LambdaPulse.Server;
 
 public static class ServerBuilder
 {

@@ -1,7 +1,8 @@
-﻿using LambdaPulse.Services.Http.Authentication;
-using LambdaPulse.Services.Http.Routing;
-using LambdaPulse.Services.Http.State;
-namespace LambdaPulse.Services.Http.Models;
+﻿using LambdaPulse.Server.Services.Http.Authentication;
+using LambdaPulse.Server.Services.Http.Routing;
+using LambdaPulse.Server.Services.Http.State;
+
+namespace LambdaPulse.Server.Services.Http.Models;
 
 public sealed class WebContext
 {
