@@ -9,7 +9,7 @@ namespace LambdaPulse;
 
 public static class ServerBuilder
 {
-    public static WebServer Build(EndpointRegistry endpointRegistry)
+    public static WebServer Build(EndpointRegistry? endpointRegistry = null)
     {
         //register services
         var container = new DependencyContainer();
@@ -25,7 +25,7 @@ public static class ServerBuilder
 
         container.AddSingleton<ISessionStore, InMemorySessionStore>();
 
-        container.AddSingleton(endpointRegistry);
+        container.AddSingleton(endpointRegistry ?? new EndpointRegistry());
 
         container.AddSingleton<WebServer>();
 
