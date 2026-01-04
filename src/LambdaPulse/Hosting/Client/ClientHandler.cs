@@ -54,7 +54,6 @@ public sealed class ClientHandler : IClientHandler
                             .AddMiddleware<AuthorizationMiddleware>()
                             .AddMiddleware<ContentNegotiationMiddleware>()
                             .AddMiddleware<InvokeMiddleware>()
-                            .AddMiddleware<SpaFallbackMiddleware>()
                             .AddMiddleware<EndpointMiddleware>()
                             .Build();
 
