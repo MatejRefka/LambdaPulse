@@ -11,5 +11,6 @@ public sealed class WebContext
     public Session? Session { get; set; }
     public IUser User { get; set; } = GuestUser.Instance;
     public Endpoint? Endpoint { get; set; }
+    public string? StaticFileRelativePath { get; set; }
     public bool ConnectionCloseRequested { get; set; }
 }

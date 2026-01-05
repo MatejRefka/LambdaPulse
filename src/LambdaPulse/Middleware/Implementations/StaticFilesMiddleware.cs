@@ -33,7 +33,7 @@ public sealed class StaticFilesMiddleware : MiddlewareBase
     public override async Task Invoke(WebContext webContext, CancellationToken cancellationToken = default)
     {
         //non-GET requests continue to downstream middleware
-        if (!string.Equals(webContext.WebRequest.Method, "GET", StringComparison.OrdinalIgnoreCase))
+        if (webContext.WebRequest.Method != "GET")
         {
             await _nextFunction(webContext, cancellationToken);
             return;
@@ -41,35 +41,52 @@ public sealed class StaticFilesMiddleware : MiddlewareBase
 
         var requestPath = webContext.WebRequest.Path;
 
-        //only handle explicit file requests
-        if (string.IsNullOrEmpty(requestPath) || !Path.HasExtension(requestPath))
+        //explicit file request
+        if (Path.HasExtension(requestPath))
         {
-            await _nextFunction(webContext, cancellationToken);
+            var relativePathExplicit = requestPath.TrimStart('/').Replace('/', Path.DirectorySeparatorChar);
+            var filePathExplicit = Path.Combine(_fileRootPath, relativePathExplicit);
+
+            await ServeStaticFile(filePathExplicit, webContext, cancellationToken);
             return;
         }
 
-        var relativePath = requestPath.TrimStart('/').Replace('/', Path.DirectorySeparatorChar);
+        //implicit file request. routing middleware will map to a static file
+        await _nextFunction(webContext, cancellationToken);
 
-        var fullFilePath = Path.Combine(_fileRootPath, relativePath);
+        if (string.IsNullOrEmpty(webContext.StaticFileRelativePath))
+        {
+            return;
+        }
+
+        var relativePathImplicit = webContext.StaticFileRelativePath.TrimStart('/').Replace('/', Path.DirectorySeparatorChar);
+        var filePathImplicit = Path.Combine(_fileRootPath, relativePathImplicit);
+        await ServeStaticFile(filePathImplicit, webContext, cancellationToken);
+    }
+
+    private async Task ServeStaticFile(string filePath, WebContext webContext, CancellationToken cancellationToken)
+    {
+        //normalize path
+        filePath = Path.GetFullPath(filePath);
 
         //protect against directory traversal
-        if (!fullFilePath.StartsWith(_fileRootPath, StringComparison.OrdinalIgnoreCase))
+        if (!filePath.StartsWith(_fileRootPath, StringComparison.OrdinalIgnoreCase))
         {
-            await _nextFunction(webContext, cancellationToken);
+            webContext.WebResponse.StatusCode = 400;
+            webContext.WebResponse.ResponsePhrase = "Bad Request";
+            await webContext.WebResponse.WriteToBody("Bad Request", cancellationToken);
             return;
         }
 
-        //ensure file exists
-        if (!File.Exists(fullFilePath))
+        if (!File.Exists(filePath))
         {
-            await _nextFunction(webContext, cancellationToken);
             webContext.WebResponse.StatusCode = 404;
             webContext.WebResponse.ResponsePhrase = "Not Found";
             await webContext.WebResponse.WriteToBody("Not Found", cancellationToken);
             return;
         }
 
-        var extension = Path.GetExtension(fullFilePath);
+        var extension = Path.GetExtension(filePath);
 
         //default to application/octet-stream if mime type not found
         if (!_mimeTypes.TryGetValue(extension, out var contentType))
@@ -77,12 +94,12 @@ public sealed class StaticFilesMiddleware : MiddlewareBase
             contentType = "application/octet-stream";
         }
 
-        var fileBytes = await File.ReadAllBytesAsync(fullFilePath, cancellationToken);
+        var fileBytes = await File.ReadAllBytesAsync(filePath, cancellationToken);
 
         webContext.WebResponse.StatusCode = 200;
+        webContext.WebResponse.ResponsePhrase = "OK";
         webContext.WebResponse.Headers["Content-Type"] = contentType;
 
         await webContext.WebResponse.Body.WriteAsync(fileBytes, cancellationToken);
-        return;
     }
 }

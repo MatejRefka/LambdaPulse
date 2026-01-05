@@ -28,7 +28,7 @@
         "AbsoluteTimeoutMinutes": 720
       },
       "StaticFilesMiddleware": {
-        "FileRootPath": "C:\\Users\\matej\\Documents\\_me\\projects\\LambdaPulse\\StaticFiles"
+        "FileRootPath": "C:\\Users\\matej\\Documents\\vscode\\LambdaPulse\\LambdaPulse.UI\\wwwroot"
       }
     }
   }
