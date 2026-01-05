@@ -65,7 +65,7 @@ public sealed class StaticFilesMiddleware : MiddlewareBase
             await _nextFunction(webContext, cancellationToken);
             webContext.WebResponse.StatusCode = 404;
             webContext.WebResponse.ResponsePhrase = "Not Found";
-            await webContext.WebResponse.WriteToBody("Not Found");
+            await webContext.WebResponse.WriteToBody("Not Found", cancellationToken);
             return;
         }
 

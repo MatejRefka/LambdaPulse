@@ -16,7 +16,7 @@ public sealed class EndpointMiddleware : MiddlewareBase
         {
             webContext.WebResponse.StatusCode = 404;
             webContext.WebResponse.ResponsePhrase = "Not Found";
-            await webContext.WebResponse.WriteToBody("Not Found");
+            await webContext.WebResponse.WriteToBody("Not Found", cancellationToken);
         }
         else
         {
