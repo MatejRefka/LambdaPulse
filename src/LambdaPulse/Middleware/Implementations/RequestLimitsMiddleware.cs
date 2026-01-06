@@ -79,8 +79,6 @@ public sealed class RequestLimitsMiddleware : MiddlewareBase
                 webContext.WebResponse.ResponsePhrase = "Request timed out.";
                 await webContext.WebResponse.WriteStringToBody("The server did not receive a complete request in time.", cancellationToken);
             }
-
-            return;
         }
     }
 }
