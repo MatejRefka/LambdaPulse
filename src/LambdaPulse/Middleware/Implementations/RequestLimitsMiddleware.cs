@@ -1,5 +1,6 @@
 ﻿using LambdaPulse.Server.Configuration;
 using LambdaPulse.Server.Services.Http.Models;
+using LambdaPulse.Server.Utility.Extensions;
 using System.Text;
 
 namespace LambdaPulse.Server.Middleware.Implementations;
@@ -31,7 +32,8 @@ public sealed class RequestLimitsMiddleware : MiddlewareBase
         if (controlDataSize > _maxControlDataSizeBytes)
         {
             webContext.WebResponse.StatusCode = 414;
-            webContext.WebResponse.ResponsePhrase = "Request control data is too large.";
+            webContext.WebResponse.ResponsePhrase = "Request URI too long.";
+            await webContext.WebResponse.WriteStringToBody("Request control data is too large.", cancellationToken);
             return;
         }
 
@@ -41,6 +43,7 @@ public sealed class RequestLimitsMiddleware : MiddlewareBase
         {
             webContext.WebResponse.StatusCode = 431;
             webContext.WebResponse.ResponsePhrase = "Request header fields are too large.";
+            await webContext.WebResponse.WriteStringToBody("Request header fields are too large.", cancellationToken);
             return;
         }
 
@@ -52,6 +55,7 @@ public sealed class RequestLimitsMiddleware : MiddlewareBase
             {
                 webContext.WebResponse.StatusCode = 413;
                 webContext.WebResponse.ResponsePhrase = "Request body is too large.";
+                await webContext.WebResponse.WriteStringToBody("Request body is too large.", cancellationToken);
                 return;
             }
         }
@@ -73,6 +77,7 @@ public sealed class RequestLimitsMiddleware : MiddlewareBase
             {
                 webContext.WebResponse.StatusCode = 408;
                 webContext.WebResponse.ResponsePhrase = "Request timed out.";
+                await webContext.WebResponse.WriteStringToBody("The server did not receive a complete request in time.", cancellationToken);
             }
 
             return;

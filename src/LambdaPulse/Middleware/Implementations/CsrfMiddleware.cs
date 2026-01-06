@@ -1,4 +1,5 @@
 ﻿using LambdaPulse.Server.Services.Http.Models;
+using LambdaPulse.Server.Utility.Extensions;
 using System.Security.Cryptography;
 
 namespace LambdaPulse.Server.Middleware.Implementations;
@@ -44,7 +45,8 @@ public sealed class CsrfMiddleware : MiddlewareBase
             if (string.IsNullOrEmpty(requestCsrfToken) || !CryptographicOperations.FixedTimeEquals(Convert.FromBase64String(csrfToken), Convert.FromBase64String(requestCsrfToken)))
             {
                 webContext.WebResponse.StatusCode = 403;
-                webContext.WebResponse.ResponsePhrase = "CSRF token missing or invalid.";
+                webContext.WebResponse.ResponsePhrase = "Forbidden.";
+                await webContext.WebResponse.WriteStringToBody("CSRF token missing or invalid.", cancellationToken);
                 return;
             }
         }

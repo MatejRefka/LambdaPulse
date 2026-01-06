@@ -30,9 +30,8 @@ public sealed class HttpsRedirectionMiddleware : MiddlewareBase
         {
             webContext.WebResponse.StatusCode = 400;
             webContext.WebResponse.ResponsePhrase = "Bad Request";
-            await webContext.WebResponse.WriteToBody("Missing Host Header", cancellationToken);
+            await webContext.WebResponse.WriteStringToBody("Missing Host Header", cancellationToken);
 
-            webContext.WebResponse.HasStarted = true;
             return;
         }
         else
@@ -51,8 +50,6 @@ public sealed class HttpsRedirectionMiddleware : MiddlewareBase
             {
                 webContext.WebResponse.Headers["Connection"] = "close";
             }
-
-            webContext.WebResponse.HasStarted = true;
         }
     }
 }

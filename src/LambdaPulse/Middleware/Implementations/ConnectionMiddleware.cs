@@ -1,5 +1,6 @@
 ﻿using LambdaPulse.Server.Configuration;
 using LambdaPulse.Server.Services.Http.Models;
+using LambdaPulse.Server.Utility.Extensions;
 
 namespace LambdaPulse.Server.Middleware.Implementations;
 
@@ -63,6 +64,7 @@ public sealed class ConnectionMiddleware : MiddlewareBase
             {
                 webContext.WebResponse.StatusCode = 408;
                 webContext.WebResponse.ResponsePhrase = "Connection timed out.";
+                await webContext.WebResponse.WriteStringToBody("Connection timed out.", cancellationToken);
             }
         }
     }

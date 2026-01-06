@@ -54,14 +54,19 @@ public sealed class StaticFilesMiddleware : MiddlewareBase
         //implicit file request. routing middleware will map to a static file
         await _nextFunction(webContext, cancellationToken);
 
-        if (string.IsNullOrEmpty(webContext.StaticFileRelativePath))
+        //user has written a response or no static file mapped
+        if (webContext.WebResponse.HasStarted || string.IsNullOrEmpty(webContext.StaticFileRelativePath))
         {
+            webContext.StaticFileRelativePath = null;
             return;
         }
 
         var relativePathImplicit = webContext.StaticFileRelativePath.TrimStart('/').Replace('/', Path.DirectorySeparatorChar);
         var filePathImplicit = Path.Combine(_fileRootPath, relativePathImplicit);
         await ServeStaticFile(filePathImplicit, webContext, cancellationToken);
+
+        //cleanup
+        webContext.StaticFileRelativePath = null;
     }
 
     private async Task ServeStaticFile(string filePath, WebContext webContext, CancellationToken cancellationToken)
@@ -74,7 +79,7 @@ public sealed class StaticFilesMiddleware : MiddlewareBase
         {
             webContext.WebResponse.StatusCode = 400;
             webContext.WebResponse.ResponsePhrase = "Bad Request";
-            await webContext.WebResponse.WriteToBody("Bad Request", cancellationToken);
+            await webContext.WebResponse.WriteStringToBody("Bad Request", cancellationToken);
             return;
         }
 
@@ -82,7 +87,7 @@ public sealed class StaticFilesMiddleware : MiddlewareBase
         {
             webContext.WebResponse.StatusCode = 404;
             webContext.WebResponse.ResponsePhrase = "Not Found";
-            await webContext.WebResponse.WriteToBody("Not Found", cancellationToken);
+            await webContext.WebResponse.WriteStringToBody("Not Found", cancellationToken);
             return;
         }
 
@@ -100,6 +105,6 @@ public sealed class StaticFilesMiddleware : MiddlewareBase
         webContext.WebResponse.ResponsePhrase = "OK";
         webContext.WebResponse.Headers["Content-Type"] = contentType;
 
-        await webContext.WebResponse.Body.WriteAsync(fileBytes, cancellationToken);
+        await webContext.WebResponse.WriteBytesToBody(fileBytes, cancellationToken);
     }
 }

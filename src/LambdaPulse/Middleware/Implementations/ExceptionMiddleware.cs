@@ -25,15 +25,19 @@ public sealed class ExceptionMiddleware : MiddlewareBase
         {
             Console.WriteLine($"Unhandled exception thrown within the pipeline: {ex}");
 
-            webContext.WebResponse.StatusCode = 500;
-            webContext.WebResponse.ResponsePhrase = "Internal Server Error";
-            await webContext.WebResponse.WriteToBody("The server encountered an unexpected condition that prevented it from fulfilling the request.", cancellationToken);
-
-            //clear response headers
-            webContext.WebResponse.Headers = new Dictionary<string, string>()
+            //do not overwrite the response as it could be being written to
+            if (!webContext.WebResponse.HasStarted)
             {
-                ["Content-Type"] = "text/plain"
-            };
+                webContext.WebResponse.StatusCode = 500;
+                webContext.WebResponse.ResponsePhrase = "Internal Server Error";
+                await webContext.WebResponse.WriteStringToBody("The server encountered an unexpected condition that prevented it from fulfilling the request.", cancellationToken);
+
+                //clear response headers
+                webContext.WebResponse.Headers = new Dictionary<string, string>()
+                {
+                    ["Content-Type"] = "text/plain"
+                };
+            }
         }
     }
 }
