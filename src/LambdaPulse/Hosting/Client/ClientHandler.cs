@@ -54,7 +54,7 @@ public sealed class ClientHandler : IClientHandler
                             .AddMiddleware<AuthorizationMiddleware>()
                             .AddMiddleware<ContentNegotiationMiddleware>()
                             .AddMiddleware<InvokeMiddleware>()
-                            .AddMiddleware<EndpointMiddleware>()
+                            .AddMiddleware<TerminationMiddleware>()
                             .Build();
 
             //keep accepting requests over the same connection
@@ -81,7 +81,6 @@ public sealed class ClientHandler : IClientHandler
                     //Invoke the delegate
                     await pipeline(webContext, timeoutToken);
 
-                    webContext.WebResponse.HasStarted = true;
                     await _responseWriter.WriteHttpResponse(networkStream, webContext);
 
                     //connection middleware flags connection close

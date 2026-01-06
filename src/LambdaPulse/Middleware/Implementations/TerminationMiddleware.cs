@@ -3,9 +3,9 @@ using LambdaPulse.Server.Utility.Extensions;
 
 namespace LambdaPulse.Server.Middleware.Implementations;
 
-public sealed class EndpointMiddleware : MiddlewareBase
+public sealed class TerminationMiddleware : MiddlewareBase
 {
-    public EndpointMiddleware(Func<WebContext, CancellationToken, Task> nextFunction) : base(nextFunction)
+    public TerminationMiddleware(Func<WebContext, CancellationToken, Task> nextFunction) : base(nextFunction)
     {
         _nextFunction = nextFunction;
     }
@@ -16,13 +16,7 @@ public sealed class EndpointMiddleware : MiddlewareBase
         {
             webContext.WebResponse.StatusCode = 404;
             webContext.WebResponse.ResponsePhrase = "Not Found";
-            await webContext.WebResponse.WriteToBody("Not Found", cancellationToken);
-        }
-        else
-        {
-            webContext.WebResponse.StatusCode = 200;
-            webContext.WebResponse.ResponsePhrase = "OK";
-            await Task.CompletedTask;
+            await webContext.WebResponse.WriteStringToBody("Not Found", cancellationToken);
         }
     }
 }
