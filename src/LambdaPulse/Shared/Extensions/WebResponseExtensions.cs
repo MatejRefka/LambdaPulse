@@ -1,5 +1,6 @@
 ﻿using LambdaPulse.Server.Services.Http.Models;
 using System.Text;
+using System.Text.Json;
 
 namespace LambdaPulse.Server.Utility.Extensions;
 
@@ -15,7 +16,22 @@ public static class WebResponseExtensions
     {
         var bytes = Encoding.UTF8.GetBytes(text);
 
-        webResponse.Headers["Content-Type"] = "text/plain; charset=utf-8";
+        if (!webResponse.Headers.ContainsKey("Content-Type"))
+        {
+            webResponse.Headers["Content-Type"] = "text/plain; charset=utf-8";
+        }
+
+        webResponse.HasStarted = true;
+        await webResponse.Body.WriteAsync(bytes, cancellationToken);
+    }
+
+    public static async Task WriteJsonToBody<T>(this WebResponse webResponse, T anonymousObject, CancellationToken cancellationToken)
+    {
+        var json = JsonSerializer.Serialize(anonymousObject);
+        var bytes = Encoding.UTF8.GetBytes(json);
+
+        webResponse.Headers["Content-Type"] = "application/json";
+
         webResponse.HasStarted = true;
         await webResponse.Body.WriteAsync(bytes, cancellationToken);
     }
