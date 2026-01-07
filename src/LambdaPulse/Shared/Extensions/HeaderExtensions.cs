@@ -6,6 +6,7 @@ public static class HeaderExtensions
 {
     /// <summary>
     /// Parses Cookie header from HTTP request. Returns a dictionary of cookie names and values.
+    /// E.g. Cookie: sessionId=12345;
     /// </summary>
     public static Dictionary<string, string> ParseCookies(this IDictionary<string, string> headers)
     {
