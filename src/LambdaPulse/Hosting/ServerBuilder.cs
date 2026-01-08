@@ -4,6 +4,7 @@ using LambdaPulse.Server.Services;
 using LambdaPulse.Server.Services.Http;
 using LambdaPulse.Server.Services.Http.Routing;
 using LambdaPulse.Server.Services.Http.State;
+using LambdaPulse.Server.Utility;
 
 namespace LambdaPulse.Server;
 
@@ -26,6 +27,8 @@ public static class ServerBuilder
         container.AddSingleton<ISessionStore, InMemorySessionStore>();
 
         container.AddSingleton(endpointRegistry ?? new EndpointRegistry());
+
+        container.AddSingleton<ICompressor, GZipCompressor>();
 
         container.AddSingleton<WebServer>();
 
