@@ -1,8 +1,11 @@
-﻿namespace LambdaPulse.Server.Services.Http.Routing;
+﻿using LambdaPulse.Server.Utility;
+
+namespace LambdaPulse.Server.Services.Http.Routing;
 
 public class EndpointRegistry
 {
     private readonly List<Endpoint> _endpoints = new();
+    private readonly EndpointComparer _comparer = new();
 
     public Endpoint? GetEndpoint(string method, string path)
     {
@@ -30,6 +33,9 @@ public class EndpointRegistry
     public void AddEndpoint(Endpoint endpoint)
     {
         _endpoints.Add(endpoint);
+
+        //sort to prioritize static paths over parameterized paths
+        _endpoints.Sort(_comparer);
     }
 
     private static bool GetPathParameters(string registeredPath, string requestedPath, out Dictionary<string, string> pathParameters)
