@@ -32,6 +32,13 @@ public class EndpointRegistry
 
     public void AddEndpoint(Endpoint endpoint)
     {
+        //do not register duplicate endpoints
+        var endpointExists = _endpoints.Any(e => string.Equals(e.Method, endpoint.Method, StringComparison.OrdinalIgnoreCase) && string.Equals(e.Path, endpoint.Path, StringComparison.OrdinalIgnoreCase));
+        if (endpointExists)
+        {
+            return;
+        }
+
         _endpoints.Add(endpoint);
 
         //sort to prioritize static paths over parameterized paths
