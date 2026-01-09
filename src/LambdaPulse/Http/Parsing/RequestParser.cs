@@ -22,8 +22,13 @@ public sealed class RequestParser : IRequestParser
         }
 
         var method = controlDataItems[0];
-        var path = controlDataItems[1];
+        var rawUrl = controlDataItems[1];
         var protocol = controlDataItems[2];
+
+        //seperate path and query parameters from raw URL
+        var urlSegments = rawUrl.Split('?', 2);
+        var path = urlSegments[0];
+        var queryParameters = urlSegments.Length > 1 ? ParseQueryParameters(urlSegments[1]) : new Dictionary<string, string>();
 
         var headers = new Dictionary<string, string>();
         string? header;
@@ -49,6 +54,7 @@ public sealed class RequestParser : IRequestParser
         {
             Method = method,
             Path = path,
+            QueryParameters = queryParameters,
             Protocol = protocol,
             Headers = headers,
             Body = body
@@ -63,5 +69,29 @@ public sealed class RequestParser : IRequestParser
         };
 
         return webContext;
+    }
+
+    private static Dictionary<string, string> ParseQueryParameters(string queryParams)
+    {
+        var queryParamsDict = new Dictionary<string, string>();
+
+        if (string.IsNullOrEmpty(queryParams))
+        {
+            return new Dictionary<string, string>();
+        }
+
+        //E.g. "id=5&active=true&page=2"
+        var queryParamsArr = queryParams.Split('&');
+
+        foreach (var queryParam in queryParamsArr)
+        {
+            var keyValue = queryParam.Split("=", 2);
+            var key = keyValue[0];
+            var value = keyValue.Length > 1 ? keyValue[1] : string.Empty;
+
+            queryParamsDict[key] = value;
+        }
+
+        return queryParamsDict;
     }
 }
