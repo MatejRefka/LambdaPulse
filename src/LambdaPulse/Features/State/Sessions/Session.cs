@@ -1,6 +1,6 @@
 ﻿namespace LambdaPulse.Server.Features.State;
 
-public class Session : IDisposable
+public sealed class Session : IDisposable
 {
     private readonly Dictionary<string, object> _data = new();
 
