@@ -3,7 +3,7 @@ using LambdaPulse.Server.Http.Abstractions;
 
 namespace LambdaPulse.Server.Middleware.Implementations;
 
-public sealed class AuthenticationMiddleware : MiddlewareBase
+internal sealed class AuthenticationMiddleware : MiddlewareBase
 {
     private const string UserIdSessionKey = "auth.user_id";
 

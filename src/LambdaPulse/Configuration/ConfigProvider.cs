@@ -6,7 +6,7 @@ namespace LambdaPulse.Server.Configuration;
 /// <summary>
 /// Parses config.json into Config data model
 /// </summary>
-public sealed class ConfigProvider : IConfigProvider
+internal sealed class ConfigProvider : IConfigProvider
 {
     private readonly Config _config;
     public ServerConfig ServerConfig => _config.ServerConfig;

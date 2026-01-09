@@ -4,7 +4,7 @@ using LambdaPulse.Server.Http.Abstractions;
 
 namespace LambdaPulse.Server.Middleware.Implementations;
 
-public sealed class SessionMiddleware : MiddlewareBase
+internal sealed class SessionMiddleware : MiddlewareBase
 {
     private const string SessionCookieName = "LambdaPulse.Session";
     private readonly ISessionStore _sessionStore;

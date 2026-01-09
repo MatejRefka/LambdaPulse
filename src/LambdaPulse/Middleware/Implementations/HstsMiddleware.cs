@@ -6,7 +6,7 @@ namespace LambdaPulse.Server.Middleware.Implementations;
 /// Adds Strict-Transport-Security header on server responses. This instructs the browser never use HTTP for the set domain.
 /// Any HTTP requests to the server are upgraded to HTTPS by the browser before sending. Server must be configured for HTTPS.
 /// </summary>
-public sealed class HstsMiddleware : MiddlewareBase
+internal sealed class HstsMiddleware : MiddlewareBase
 {
     private readonly int _maxAge;
     private readonly bool _includeSubDomains;

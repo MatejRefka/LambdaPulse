@@ -4,7 +4,7 @@
 /// Provides a comparer for two Endpoints. Prioritizes static path segments over parameterized segments.
 /// E.g. "/api/users/me" is prioritized over "/api/users/{userId}"
 /// </summary>
-public sealed class EndpointComparer : IEndpointComparer
+internal sealed class EndpointComparer : IEndpointComparer
 {
     public int Compare(Endpoint? x, Endpoint? y)
     {

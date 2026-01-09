@@ -8,7 +8,7 @@ namespace LambdaPulse.Server.Middleware.Implementations;
 /// Middleware negotiates the best mime type to respond with, based on its supported mime types and the Accept header.
 /// The negotiated MIME type is stored. User can access it to determine how to format the response body.
 /// </summary>
-public sealed class ContentNegotiationMiddleware : MiddlewareBase
+internal sealed class ContentNegotiationMiddleware : MiddlewareBase
 {
     private readonly List<string> _supportedMimeTypes;
 

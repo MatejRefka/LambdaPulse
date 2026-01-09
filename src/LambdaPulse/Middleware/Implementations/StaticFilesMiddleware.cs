@@ -4,7 +4,7 @@ using LambdaPulse.Server.Shared.Extensions;
 
 namespace LambdaPulse.Server.Middleware.Implementations;
 
-public sealed class StaticFilesMiddleware : MiddlewareBase
+internal sealed class StaticFilesMiddleware : MiddlewareBase
 {
     private readonly string _fileRootPath;
     private readonly Dictionary<string, string> _mimeTypes;

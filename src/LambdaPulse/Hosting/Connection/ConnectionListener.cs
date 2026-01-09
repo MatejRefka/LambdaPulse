@@ -4,7 +4,7 @@ using System.Net.Sockets;
 
 namespace LambdaPulse.Server.Hosting.Connection;
 
-public sealed class ConnectionListener : IConnectionListener, IDisposable
+internal sealed class ConnectionListener : IConnectionListener, IDisposable
 {
     private readonly TcpListener _listener;
 

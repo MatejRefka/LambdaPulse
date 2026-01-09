@@ -3,7 +3,7 @@ using LambdaPulse.Server.Shared.Extensions;
 
 namespace LambdaPulse.Server.Middleware.Implementations;
 
-public sealed class TerminationMiddleware : MiddlewareBase
+internal sealed class TerminationMiddleware : MiddlewareBase
 {
     public TerminationMiddleware(Func<WebContext, CancellationToken, Task> nextFunction) : base(nextFunction)
     {

@@ -3,7 +3,7 @@ using LambdaPulse.Server.Http.Abstractions;
 
 namespace LambdaPulse.Server.Middleware.Implementations;
 
-public sealed class RoutingMiddleware : MiddlewareBase
+internal sealed class RoutingMiddleware : MiddlewareBase
 {
     private readonly EndpointRegistry _endpointRegistry;
 

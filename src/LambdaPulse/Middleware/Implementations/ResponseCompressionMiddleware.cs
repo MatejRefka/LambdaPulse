@@ -8,7 +8,7 @@ namespace LambdaPulse.Server.Middleware.Implementations;
 /// Compresses Body payload of the response. Based on client-supported encodings, payload size, and MIME type.
 /// Adds Content-Encoding header and Vary header for caching.
 /// </summary>
-public sealed class ResponseCompressionMiddleware : MiddlewareBase
+internal sealed class ResponseCompressionMiddleware : MiddlewareBase
 {
     private readonly ICompressor _compressor;
     private readonly List<string> _supportedMimeTypes;

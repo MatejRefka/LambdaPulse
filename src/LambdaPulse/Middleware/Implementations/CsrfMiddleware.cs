@@ -4,7 +4,7 @@ using System.Security.Cryptography;
 
 namespace LambdaPulse.Server.Middleware.Implementations;
 
-public sealed class CsrfMiddleware : MiddlewareBase
+internal sealed class CsrfMiddleware : MiddlewareBase
 {
     private const string CsrfTokenSessionKey = "csrf.token";
 

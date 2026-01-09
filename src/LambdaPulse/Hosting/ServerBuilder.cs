@@ -13,7 +13,7 @@ namespace LambdaPulse.Server.Hosting;
 
 public static class ServerBuilder
 {
-    public static WebServer Build(Action<IEndpointRegistry>? configureEndpoints = null, Action<DependencyContainer>? configureServices = null)
+    public static IWebServer Build(Action<IEndpointRegistry>? configureEndpoints = null, Action<DependencyContainer>? configureServices = null)
     {
         //register services
         var container = new DependencyContainer();

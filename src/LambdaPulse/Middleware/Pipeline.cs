@@ -3,7 +3,7 @@ using LambdaPulse.Server.Http.Abstractions;
 
 namespace LambdaPulse.Server.Middleware;
 
-public sealed class Pipeline
+internal sealed class Pipeline
 {
     private readonly DependencyResolver _dependencyResolver;
     private Func<WebContext, CancellationToken, Task> _func;

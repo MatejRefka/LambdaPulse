@@ -9,7 +9,7 @@ using System.Net.Sockets;
 
 namespace LambdaPulse.Server.Hosting.Client;
 
-public sealed class ClientHandler : IClientHandler
+internal sealed class ClientHandler : IClientHandler
 {
     private readonly DependencyResolver _dependencyResolver;
     private readonly IRequestReader _requestReader;

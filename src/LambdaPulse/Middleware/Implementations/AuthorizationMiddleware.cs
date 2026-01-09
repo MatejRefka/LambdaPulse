@@ -2,7 +2,7 @@
 
 namespace LambdaPulse.Server.Middleware.Implementations;
 
-public sealed class AuthorizationMiddleware : MiddlewareBase
+internal sealed class AuthorizationMiddleware : MiddlewareBase
 {
     public AuthorizationMiddleware(Func<WebContext, CancellationToken, Task> nextFunction) : base(nextFunction)
     {

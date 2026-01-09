@@ -1,6 +1,6 @@
 ﻿namespace LambdaPulse.Server.Features.Routing;
 
-public sealed class EndpointRegistry : IEndpointRegistry
+internal sealed class EndpointRegistry : IEndpointRegistry
 {
     private readonly List<Endpoint> _endpoints = new();
     private readonly IEndpointComparer _comparer;

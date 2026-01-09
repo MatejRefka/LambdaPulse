@@ -6,7 +6,7 @@ namespace LambdaPulse.Server.Middleware.Implementations;
 /// <summary>
 /// Adds standard security headers to every HTTP response sent back to the browser.
 /// </summary>
-public sealed class SecurityMiddleware : MiddlewareBase
+internal sealed class SecurityMiddleware : MiddlewareBase
 {
     private readonly bool _xContentTypeOptions;
     private readonly string? _referrerPolicy;

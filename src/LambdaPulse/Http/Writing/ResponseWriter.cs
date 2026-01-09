@@ -5,7 +5,7 @@ using System.Text;
 
 namespace LambdaPulse.Server.Http.Writing;
 
-public sealed class ResponseWriter : IResponseWriter
+internal sealed class ResponseWriter : IResponseWriter
 {
     public async Task WriteHttpResponse(NetworkStream networkStream, WebContext webContext)
     {

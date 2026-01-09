@@ -2,7 +2,7 @@
 
 namespace LambdaPulse.Server.Middleware.Implementations;
 
-public sealed class CorsMiddleware : MiddlewareBase
+internal sealed class CorsMiddleware : MiddlewareBase
 {
     public CorsMiddleware(Func<WebContext, CancellationToken, Task> nextFunction) : base(nextFunction)
     {
