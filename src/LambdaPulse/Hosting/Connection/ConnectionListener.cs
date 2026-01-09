@@ -2,7 +2,7 @@
 using System.Net;
 using System.Net.Sockets;
 
-namespace LambdaPulse.Server.Hosting.Connections;
+namespace LambdaPulse.Server.Hosting.Connection;
 
 public class ConnectionListener : IConnectionListener, IDisposable
 {

@@ -1,6 +1,6 @@
 ﻿using System.Net.Sockets;
 
-namespace LambdaPulse.Server.Hosting.Clients;
+namespace LambdaPulse.Server.Hosting.Client;
 
 public interface IClientHandler
 {

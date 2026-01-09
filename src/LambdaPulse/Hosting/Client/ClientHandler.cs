@@ -7,7 +7,7 @@ using LambdaPulse.Server.Middleware;
 using LambdaPulse.Server.Middleware.Implementations;
 using System.Net.Sockets;
 
-namespace LambdaPulse.Server.Hosting.Clients;
+namespace LambdaPulse.Server.Hosting.Client;
 
 public sealed class ClientHandler : IClientHandler
 {

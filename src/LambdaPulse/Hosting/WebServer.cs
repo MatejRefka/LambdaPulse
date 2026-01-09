@@ -1,6 +1,6 @@
 ﻿using LambdaPulse.Server.Configuration;
-using LambdaPulse.Server.Hosting.Clients;
-using LambdaPulse.Server.Hosting.Connections;
+using LambdaPulse.Server.Hosting.Client;
+using LambdaPulse.Server.Hosting.Connection;
 using System.Collections.Concurrent;
 
 namespace LambdaPulse.Server.Hosting;
