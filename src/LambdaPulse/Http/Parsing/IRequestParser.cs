@@ -1,6 +1,6 @@
-﻿using LambdaPulse.Server.Services.Http.Models;
+﻿using LambdaPulse.Server.Http.Abstractions;
 
-namespace LambdaPulse.Server.Services.Http;
+namespace LambdaPulse.Server.Http.Parsing;
 
 public interface IRequestParser
 {

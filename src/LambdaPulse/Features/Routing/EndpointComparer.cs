@@ -1,6 +1,4 @@
-﻿using LambdaPulse.Server.Services.Http.Routing;
-
-namespace LambdaPulse.Server.Utility;
+﻿namespace LambdaPulse.Server.Features.Routing;
 
 /// <summary>
 /// Provides a comparer for two Endpoints. Prioritizes static path segments over parameterized segments.

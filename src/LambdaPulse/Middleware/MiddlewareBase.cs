@@ -1,4 +1,4 @@
-﻿using LambdaPulse.Server.Services.Http.Models;
+﻿using LambdaPulse.Server.Http.Abstractions;
 
 namespace LambdaPulse.Server.Middleware;
 

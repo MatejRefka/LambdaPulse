@@ -1,9 +1,9 @@
-﻿using LambdaPulse.Server.Services.Http.Models;
+﻿using LambdaPulse.Server.Http.Abstractions;
 using System.Globalization;
 using System.Net.Sockets;
 using System.Text;
 
-namespace LambdaPulse.Server.Services.Http;
+namespace LambdaPulse.Server.Http.Writing;
 
 public sealed class ResponseWriter : IResponseWriter
 {

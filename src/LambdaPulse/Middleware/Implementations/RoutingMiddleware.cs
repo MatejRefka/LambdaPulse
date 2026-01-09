@@ -1,5 +1,5 @@
-﻿using LambdaPulse.Server.Services.Http.Models;
-using LambdaPulse.Server.Services.Http.Routing;
+﻿using LambdaPulse.Server.Features.Routing;
+using LambdaPulse.Server.Http.Abstractions;
 
 namespace LambdaPulse.Server.Middleware.Implementations;
 

@@ -1,11 +1,13 @@
 ﻿using LambdaPulse.Server.Configuration;
 using LambdaPulse.Server.DI;
+using LambdaPulse.Server.Http.Parsing;
+using LambdaPulse.Server.Http.Reading;
+using LambdaPulse.Server.Http.Writing;
 using LambdaPulse.Server.Middleware;
 using LambdaPulse.Server.Middleware.Implementations;
-using LambdaPulse.Server.Services.Http;
 using System.Net.Sockets;
 
-namespace LambdaPulse.Server.Services;
+namespace LambdaPulse.Server.Hosting.Clients;
 
 public sealed class ClientHandler : IClientHandler
 {

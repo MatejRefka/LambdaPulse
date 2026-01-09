@@ -1,7 +1,7 @@
 ﻿using LambdaPulse.Server.Configuration;
 using System.Collections.Concurrent;
 
-namespace LambdaPulse.Server.Services.Http.State;
+namespace LambdaPulse.Server.Features.State;
 
 public class InMemorySessionStore : ISessionStore
 {

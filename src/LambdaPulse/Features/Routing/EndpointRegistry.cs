@@ -1,6 +1,4 @@
-﻿using LambdaPulse.Server.Utility;
-
-namespace LambdaPulse.Server.Services.Http.Routing;
+﻿namespace LambdaPulse.Server.Features.Routing;
 
 public class EndpointRegistry
 {

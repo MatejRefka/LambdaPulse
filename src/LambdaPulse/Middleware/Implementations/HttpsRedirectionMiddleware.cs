@@ -1,6 +1,6 @@
 ﻿using LambdaPulse.Server.Configuration;
-using LambdaPulse.Server.Services.Http.Models;
-using LambdaPulse.Server.Utility.Extensions;
+using LambdaPulse.Server.Http.Abstractions;
+using LambdaPulse.Server.Shared.Extensions;
 
 namespace LambdaPulse.Server.Middleware.Implementations;
 

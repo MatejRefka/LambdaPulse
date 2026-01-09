@@ -1,4 +1,4 @@
-﻿namespace LambdaPulse.Server.Services.Http.State;
+﻿namespace LambdaPulse.Server.Features.State;
 
 public class Session : IDisposable
 {

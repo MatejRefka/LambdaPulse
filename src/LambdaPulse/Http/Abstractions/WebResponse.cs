@@ -1,4 +1,4 @@
-﻿namespace LambdaPulse.Server.Services.Http.Models;
+﻿namespace LambdaPulse.Server.Http.Abstractions;
 
 public sealed class WebResponse
 {

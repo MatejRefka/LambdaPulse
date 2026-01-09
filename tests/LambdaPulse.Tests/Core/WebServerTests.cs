@@ -1,4 +1,4 @@
-﻿using LambdaPulse.Server;
+﻿using LambdaPulse.Server.Hosting;
 using System.Net.Sockets;
 
 namespace LambdaPulse.Tests.Core;
