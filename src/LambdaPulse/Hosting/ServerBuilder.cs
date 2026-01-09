@@ -13,10 +13,36 @@ namespace LambdaPulse.Server.Hosting;
 
 public static class ServerBuilder
 {
-    public static WebServer Build(EndpointRegistry? endpointRegistry = null)
+    public static WebServer Build(Action<IEndpointRegistry>? configureEndpoints = null, Action<DependencyContainer>? configureServices = null)
     {
         //register services
         var container = new DependencyContainer();
+
+        //register default implementation
+        RegisterDefaultServices(container);
+
+        //allow users to override default implementations
+        configureServices?.Invoke(container);
+
+        //need the resolver itself to resolve MW dependencies
+        var resolver = new DependencyResolver(container);
+        container.AddSingleton(resolver);
+
+        //allow users to add endpoints to the resolved endpoint registry
+        if (configureEndpoints != null)
+        {
+            var endpointRegistry = resolver.GetService<IEndpointRegistry>() ?? throw new InvalidOperationException("Cannot resolve IEndpointRegistry");
+
+            configureEndpoints(endpointRegistry);
+        }
+
+        var webServer = resolver.GetService<WebServer>();
+
+        return webServer ?? throw new InvalidOperationException("Cannot construct WebServer");
+    }
+
+    private static void RegisterDefaultServices(DependencyContainer container)
+    {
         container.AddSingleton<IConfigProvider, ConfigProvider>();
 
         container.AddSingleton<IConnectionListener, ConnectionListener>();
@@ -29,18 +55,11 @@ public static class ServerBuilder
 
         container.AddSingleton<ISessionStore, InMemorySessionStore>();
 
-        container.AddSingleton(endpointRegistry ?? new EndpointRegistry());
+        container.AddSingleton<IEndpointRegistry, EndpointRegistry>();
+        container.AddSingleton<IEndpointComparer, EndpointComparer>();
 
         container.AddSingleton<ICompressor, GZipCompressor>();
 
         container.AddSingleton<WebServer>();
-
-        //need the resolver itself to resolve MW dependencies
-        var resolver = new DependencyResolver(container);
-        container.AddSingleton(resolver);
-
-        var webServer = resolver.GetService<WebServer>();
-
-        return webServer ?? throw new InvalidOperationException("Cannot construct WebServer");
     }
 }

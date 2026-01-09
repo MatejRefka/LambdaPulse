@@ -2,7 +2,7 @@
 
 namespace LambdaPulse.Server.Features.Routing;
 
-public class Endpoint
+public sealed class Endpoint
 {
     public required string Method { get; init; }
     public required string Path { get; init; }

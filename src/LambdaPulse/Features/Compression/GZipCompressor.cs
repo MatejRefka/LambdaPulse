@@ -2,7 +2,7 @@
 
 namespace LambdaPulse.Server.Features.Compression;
 
-public class GZipCompressor : ICompressor
+public sealed class GZipCompressor : ICompressor
 {
     public string Encoding => "gzip";
 

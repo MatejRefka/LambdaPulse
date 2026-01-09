@@ -3,7 +3,7 @@ using System.Collections.Concurrent;
 
 namespace LambdaPulse.Server.Features.State;
 
-public class InMemorySessionStore : ISessionStore
+public sealed class InMemorySessionStore : ISessionStore
 {
     //thread-safe against multiple concurrent requests
     private readonly ConcurrentDictionary<string, Session> _sessions = new();

@@ -1,9 +1,14 @@
 ﻿namespace LambdaPulse.Server.Features.Routing;
 
-public class EndpointRegistry
+public class EndpointRegistry : IEndpointRegistry
 {
     private readonly List<Endpoint> _endpoints = new();
-    private readonly EndpointComparer _comparer = new();
+    private readonly IEndpointComparer _comparer;
+
+    public EndpointRegistry(IEndpointComparer comparer)
+    {
+        _comparer = comparer;
+    }
 
     public Endpoint? GetEndpoint(string method, string path)
     {

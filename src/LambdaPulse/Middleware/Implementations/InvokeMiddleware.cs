@@ -4,7 +4,7 @@ namespace LambdaPulse.Server.Middleware.Implementations;
 /// <summary>
 /// Executes user code that's mapped to the requested endpoint.
 /// </summary>
-public class InvokeMiddleware : MiddlewareBase
+public sealed class InvokeMiddleware : MiddlewareBase
 {
     public InvokeMiddleware(Func<WebContext, CancellationToken, Task> nextFunction) : base(nextFunction)
     {

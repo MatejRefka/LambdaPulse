@@ -5,7 +5,7 @@ using System.Collections.Concurrent;
 
 namespace LambdaPulse.Server.Hosting;
 
-public class WebServer : IDisposable
+public sealed class WebServer : IDisposable
 {
     private readonly IConnectionListener _listener;
     private readonly IClientHandler _clientHandler;
