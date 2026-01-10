@@ -2,6 +2,6 @@
 
 public interface IWebServer : IDisposable
 {
-    public Task StartServer();
-    public Task StopServer();
+    Task StartServer();
+    Task StopServer();
 }

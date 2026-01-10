@@ -2,5 +2,5 @@
 
 public interface IEndpointComparer : IComparer<Endpoint>
 {
-    public new int Compare(Endpoint x, Endpoint y);
+    new int Compare(Endpoint x, Endpoint y);
 }

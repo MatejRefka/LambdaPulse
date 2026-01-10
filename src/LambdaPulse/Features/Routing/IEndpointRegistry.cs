@@ -2,6 +2,6 @@
 
 public interface IEndpointRegistry
 {
-    public Endpoint? GetEndpoint(string method, string path);
-    public void AddEndpoint(Endpoint endpoint);
+    Endpoint? GetEndpoint(string method, string path);
+    void AddEndpoint(Endpoint endpoint);
 }

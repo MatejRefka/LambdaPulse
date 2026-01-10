@@ -4,5 +4,5 @@ namespace LambdaPulse.Server.Http.Parsing;
 
 public interface IRequestParser
 {
-    public WebContext ParseHttpRequest(string httpRequest);
+    WebContext ParseHttpRequest(string httpRequest);
 }

@@ -7,5 +7,5 @@ namespace LambdaPulse.Server.Configuration;
 /// </summary>
 public interface IConfigProvider
 {
-    public ServerConfig ServerConfig { get; }
+    ServerConfig ServerConfig { get; }
 }

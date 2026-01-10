@@ -2,7 +2,7 @@
 
 public interface ISessionStore
 {
-    public Session? GetSession(string sessionId);
+    Session? GetSession(string sessionId);
 
-    public void SaveSession(Session session);
+    void SaveSession(Session session);
 }
