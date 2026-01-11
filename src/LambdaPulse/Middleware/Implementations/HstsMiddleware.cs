@@ -24,7 +24,7 @@ internal sealed class HstsMiddleware : MiddlewareBase
         await _nextFunction(webContext, cancellationToken);
 
         //HSTS only applies to HTTPS
-        if (!(webContext.WebRequest.Headers.TryGetValue("X-Forwarded-Proto", out var fwProtocol) && fwProtocol == "https"))
+        if (!(webContext.WebRequest.Headers.TryGetValue("X-Forwarded-Proto", out var fwProtocol) && string.Equals(fwProtocol, "https", StringComparison.OrdinalIgnoreCase)))
         {
             return;
         }

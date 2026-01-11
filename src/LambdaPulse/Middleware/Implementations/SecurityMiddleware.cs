@@ -37,27 +37,27 @@ internal sealed class SecurityMiddleware : MiddlewareBase
             webContext.WebResponse.Headers["X-Content-Type-Options"] = "nosniff";
         }
 
-        if (!string.IsNullOrEmpty(_referrerPolicy))
+        if (!string.IsNullOrWhiteSpace(_referrerPolicy))
         {
             webContext.WebResponse.Headers["Referrer-Policy"] = _referrerPolicy;
         }
 
-        if (!string.IsNullOrEmpty(_permissionsPolicy))
+        if (!string.IsNullOrWhiteSpace(_permissionsPolicy))
         {
             webContext.WebResponse.Headers["Permissions-Policy"] = _permissionsPolicy;
         }
 
-        if (!string.IsNullOrEmpty(_crossOriginOpenerPolicy))
+        if (!string.IsNullOrWhiteSpace(_crossOriginOpenerPolicy))
         {
             webContext.WebResponse.Headers["Cross-Origin-Opener-Policy"] = _crossOriginOpenerPolicy;
         }
 
-        if (!string.IsNullOrEmpty(_crossOriginResourcePolicy))
+        if (!string.IsNullOrWhiteSpace(_crossOriginResourcePolicy))
         {
             webContext.WebResponse.Headers["Cross-Origin-Resource-Policy"] = _crossOriginResourcePolicy;
         }
 
-        if (!string.IsNullOrEmpty(_crossOriginEmbedderPolicy))
+        if (!string.IsNullOrWhiteSpace(_crossOriginEmbedderPolicy))
         {
             webContext.WebResponse.Headers["Cross-Origin-Embedder-Policy"] = _crossOriginEmbedderPolicy;
         }

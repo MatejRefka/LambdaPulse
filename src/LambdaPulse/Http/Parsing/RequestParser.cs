@@ -6,7 +6,7 @@ internal sealed class RequestParser : IRequestParser
 {
     public WebContext ParseHttpRequest(string httpRequest)
     {
-        if (string.IsNullOrEmpty(httpRequest))
+        if (string.IsNullOrWhiteSpace(httpRequest))
         {
             throw new ArgumentException("HTTP Request string cannot be null or empty");
         }
@@ -32,7 +32,7 @@ internal sealed class RequestParser : IRequestParser
 
         var headers = new Dictionary<string, string>();
         string? header;
-        while (!string.IsNullOrEmpty(header = reader.ReadLine()))
+        while (!string.IsNullOrWhiteSpace(header = reader.ReadLine()))
         {
             var separatorIndex = header.IndexOf(':');
 
@@ -75,7 +75,7 @@ internal sealed class RequestParser : IRequestParser
     {
         var queryParamsDict = new Dictionary<string, string>();
 
-        if (string.IsNullOrEmpty(queryParams))
+        if (string.IsNullOrWhiteSpace(queryParams))
         {
             return new Dictionary<string, string>();
         }

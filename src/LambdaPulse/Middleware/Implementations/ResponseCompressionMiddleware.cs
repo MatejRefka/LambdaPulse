@@ -48,7 +48,7 @@ internal sealed class ResponseCompressionMiddleware : MiddlewareBase
 
         //browser did not advertise any encodings
         webContext.WebRequest.Headers.TryGetValue("Accept-Encoding", out var acceptEncodingValue);
-        if (string.IsNullOrEmpty(acceptEncodingValue))
+        if (string.IsNullOrWhiteSpace(acceptEncodingValue))
         {
             return;
         }
@@ -68,7 +68,7 @@ internal sealed class ResponseCompressionMiddleware : MiddlewareBase
         }
 
         webContext.WebResponse.Headers.TryGetValue("Content-Type", out var contentTypeValue);
-        if (string.IsNullOrEmpty(contentTypeValue))
+        if (string.IsNullOrWhiteSpace(contentTypeValue))
         {
             return;
         }
@@ -94,7 +94,7 @@ internal sealed class ResponseCompressionMiddleware : MiddlewareBase
 
         //add Accept-Encoding to Vary header for caching if not already set
         webContext.WebResponse.Headers.TryGetValue("Vary", out var varyHeaderValue);
-        if (string.IsNullOrEmpty(varyHeaderValue))
+        if (string.IsNullOrWhiteSpace(varyHeaderValue))
         {
             webContext.WebResponse.Headers["Vary"] = "Accept-Encoding";
         }
