@@ -28,6 +28,7 @@ public sealed class MiddlewareConfig
     public required SecurityMiddleware SecurityMiddleware { get; init; }
     public required SessionMiddleware SessionMiddleware { get; init; }
     public required StaticFilesMiddleware StaticFilesMiddleware { get; init; }
+    public required CorsMiddleware CorsMiddleware { get; init; }
 }
 
 public sealed class SecurityMiddleware
@@ -50,4 +51,14 @@ public sealed class SessionMiddleware
 public sealed class StaticFilesMiddleware
 {
     public required string FileRootPath { get; init; }
+}
+
+public sealed class CorsMiddleware
+{
+    public required HashSet<string> AllowedOrigins { get; init; }
+    public required bool AllowCredentials { get; init; }
+    public required HashSet<string> ExposedHeaders { get; init; }
+    public required HashSet<string> AllowedMethods { get; init; }
+    public required HashSet<string> AllowedHeaders { get; init; }
+    public required int PreflightMaxAgeSeconds { get; init; }
 }
