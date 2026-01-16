@@ -14,9 +14,9 @@ internal sealed class HstsMiddleware : MiddlewareBase
     public HstsMiddleware(Func<WebContext, CancellationToken, Task> nextFunction, IConfigProvider configProvider) : base(nextFunction)
     {
         _nextFunction = nextFunction;
-        _maxAge = configProvider.ServerConfig.MiddlewareConfig.HstsMaxAge;
-        _includeSubDomains = configProvider.ServerConfig.MiddlewareConfig.HstsIncludeSubDomains;
-        _preload = configProvider.ServerConfig.MiddlewareConfig.HstsPreload;
+        _maxAge = configProvider.ServerConfig.MiddlewareConfig.HstsMiddleware.MaxAge;
+        _includeSubDomains = configProvider.ServerConfig.MiddlewareConfig.HstsMiddleware.IncludeSubDomains;
+        _preload = configProvider.ServerConfig.MiddlewareConfig.HstsMiddleware.Preload;
     }
 
     public override async Task Invoke(WebContext webContext, CancellationToken cancellationToken = default)

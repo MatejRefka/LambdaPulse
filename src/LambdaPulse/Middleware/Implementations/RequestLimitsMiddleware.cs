@@ -19,10 +19,10 @@ internal sealed class RequestLimitsMiddleware : MiddlewareBase
     public RequestLimitsMiddleware(Func<WebContext, CancellationToken, Task> nextFunction, IConfigProvider configProvider) : base(nextFunction)
     {
         _nextFunction = nextFunction;
-        _maxControlDataSizeBytes = configProvider.ServerConfig.MiddlewareConfig.MaxControlDataSizeBytes;
-        _maxHeaderSizeBytes = configProvider.ServerConfig.MiddlewareConfig.MaxHeaderSizeBytes;
-        _maxBodySizeBytes = configProvider.ServerConfig.MiddlewareConfig.MaxBodySizeBytes;
-        _requestReadTimeoutMS = configProvider.ServerConfig.MiddlewareConfig.RequestReadTimeoutMS;
+        _maxControlDataSizeBytes = configProvider.ServerConfig.MiddlewareConfig.RequestLimitsMiddleware.MaxControlDataSizeBytes;
+        _maxHeaderSizeBytes = configProvider.ServerConfig.MiddlewareConfig.RequestLimitsMiddleware.MaxHeaderSizeBytes;
+        _maxBodySizeBytes = configProvider.ServerConfig.MiddlewareConfig.RequestLimitsMiddleware.MaxBodySizeBytes;
+        _requestReadTimeoutMS = configProvider.ServerConfig.MiddlewareConfig.RequestLimitsMiddleware.RequestReadTimeoutMS;
     }
 
     public override async Task Invoke(WebContext webContext, CancellationToken cancellationToken)

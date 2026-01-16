@@ -18,7 +18,7 @@ internal sealed class ConfigProvider : IConfigProvider
 
     private static Config LoadConfig()
     {
-        var configText = File.ReadAllText("config.json");
+        var configText = File.Exists("config.dev.json") ? File.ReadAllText("config.dev.json") : File.ReadAllText("config.json");
         var configJson = JsonSerializer.Deserialize<Config>(configText) ?? throw new ApplicationException("Unable to parse json config");
         return configJson;
     }

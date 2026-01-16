@@ -16,7 +16,7 @@ public class MockConfigProvider : IConfigProvider
 
     private static Config LoadConfig()
     {
-        var configText = File.ReadAllText("mockConfig.json");
+        var configText = File.Exists("mockConfig.dev.json") ? File.ReadAllText("mockConfig.dev.json") : File.ReadAllText("mockConfig.json");
         var configJson = JsonSerializer.Deserialize<Config>(configText) ?? throw new ApplicationException("Unable to parse json config");
         return configJson;
     }

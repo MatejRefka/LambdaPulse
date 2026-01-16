@@ -23,7 +23,7 @@ internal sealed class ClientHandler : IClientHandler
         _requestReader = requestReader;
         _requestParser = requestParser;
         _responseWriter = responseWriter;
-        _connectionIdleTimeoutMS = configProvider.ServerConfig.MiddlewareConfig.ConnectionIdleTimeoutMS;
+        _connectionIdleTimeoutMS = configProvider.ServerConfig.ConnectionIdleTimeoutMS;
     }
 
     public async Task HandleClient(TcpClient tcpClient, CancellationToken serverCancellationToken)

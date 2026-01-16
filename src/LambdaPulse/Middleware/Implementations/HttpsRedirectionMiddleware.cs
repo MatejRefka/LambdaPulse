@@ -9,17 +9,17 @@ namespace LambdaPulse.Server.Middleware.Implementations;
 /// </summary>
 internal sealed class HttpsRedirectionMiddleware : MiddlewareBase
 {
-    private readonly bool _httpsRedirectionEnabled;
+    private readonly bool _Enabled;
     public HttpsRedirectionMiddleware(Func<WebContext, CancellationToken, Task> nextFunction, IConfigProvider configProvider) : base(nextFunction)
     {
         _nextFunction = nextFunction;
-        _httpsRedirectionEnabled = configProvider.ServerConfig.MiddlewareConfig.HttpsRedirectionEnabled;
+        _Enabled = configProvider.ServerConfig.MiddlewareConfig.HttpsRedirectionMiddleware.Enabled;
     }
 
     public override async Task Invoke(WebContext webContext, CancellationToken cancellationToken = default)
     {
         //https redirect disabled by server or request is https -forwarded by reverse proxy
-        if (!_httpsRedirectionEnabled || (webContext.WebRequest.Headers.TryGetValue("X-Forwarded-Proto", out var fwProtocol) && string.Equals(fwProtocol, "https", StringComparison.OrdinalIgnoreCase)))
+        if (!_Enabled || (webContext.WebRequest.Headers.TryGetValue("X-Forwarded-Proto", out var fwProtocol) && string.Equals(fwProtocol, "https", StringComparison.OrdinalIgnoreCase)))
         {
             await _nextFunction(webContext, cancellationToken);
             return;

@@ -9,25 +9,45 @@ public sealed class ServerConfig
 {
     public required string Address { get; init; }
     public required int Port { get; init; }
-    public int BackLog { get; init; } = 100;
+    public int BackLog { get; init; }
+    public required int ConnectionIdleTimeoutMS { get; init; }
     public required MiddlewareConfig MiddlewareConfig { get; init; }
 }
 
 public sealed class MiddlewareConfig
 {
+    public required RequestLimitsMiddleware RequestLimitsMiddleware { get; init; }
+    public required ConnectionMiddleware ConnectionMiddleware { get; init; }
+    public required HttpsRedirectionMiddleware HttpsRedirectionMiddleware { get; init; }
+    public required HstsMiddleware HstsMiddleware { get; init; }
+    public required SecurityMiddleware SecurityMiddleware { get; init; }
+    public required SessionMiddleware SessionMiddleware { get; init; }
+    public required StaticFilesMiddleware StaticFilesMiddleware { get; init; }
+}
+
+public sealed class RequestLimitsMiddleware
+{
     public required int MaxControlDataSizeBytes { get; init; }
     public required int MaxHeaderSizeBytes { get; init; }
     public required int MaxBodySizeBytes { get; init; }
     public required int RequestReadTimeoutMS { get; init; }
+}
+
+public sealed class ConnectionMiddleware
+{
     public required int RequestExecutionTimeoutMS { get; init; }
-    public required int ConnectionIdleTimeoutMS { get; init; }
-    public required bool HttpsRedirectionEnabled { get; init; }
-    public required int HstsMaxAge { get; init; }
-    public required bool HstsIncludeSubDomains { get; init; }
-    public required bool HstsPreload { get; init; }
-    public required SecurityMiddleware SecurityMiddleware { get; init; }
-    public required SessionMiddleware SessionMiddleware { get; init; }
-    public required StaticFilesMiddleware StaticFilesMiddleware { get; init; }
+}
+
+public sealed class HttpsRedirectionMiddleware
+{
+    public required bool Enabled { get; init; }
+}
+
+public sealed class HstsMiddleware
+{
+    public required int MaxAge { get; init; }
+    public required bool IncludeSubDomains { get; init; }
+    public required bool Preload { get; init; }
 }
 
 public sealed class SecurityMiddleware
