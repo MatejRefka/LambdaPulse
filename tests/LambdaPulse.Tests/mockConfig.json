@@ -37,6 +37,14 @@
       },
       "StaticFilesMiddleware": {
         "FileRootPath": ""
+      },
+      "CorsMiddleware": {
+        "AllowedOrigins": [ "http://localhost:8081" ],
+        "AllowCredentials": true,
+        "ExposedHeaders": [ "X-Request-Id" ],
+        "AllowedMethods": [ "GET", "POST", "PUT", "DELETE", "OPTIONS" ],
+        "AllowedHeaders": [ "Authorization", "Content-Type" ],
+        "PreflightMaxAgeSeconds": 60
       }
     }
   }
