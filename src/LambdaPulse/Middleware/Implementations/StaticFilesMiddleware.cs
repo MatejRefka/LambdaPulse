@@ -55,7 +55,7 @@ internal sealed class StaticFilesMiddleware : MiddlewareBase
         await _nextFunction(webContext, cancellationToken);
 
         //user has written a response or no static file mapped
-        if (webContext.WebResponse.HasStarted || string.IsNullOrEmpty(webContext.StaticFileRelativePath))
+        if (webContext.WebResponse.HasStarted || string.IsNullOrWhiteSpace(webContext.StaticFileRelativePath))
         {
             webContext.StaticFileRelativePath = null;
             return;

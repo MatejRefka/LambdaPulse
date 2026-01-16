@@ -56,7 +56,7 @@ internal sealed class ContentNegotiationMiddleware : MiddlewareBase
                     break;
                 }
                 //accept any mime type
-                if (mimeType == "*/*")
+                if (string.Equals(mimeType, "*/*", StringComparison.OrdinalIgnoreCase))
                 {
                     webContext.NegotiatedMimeType = defaultMimeType;
                     break;

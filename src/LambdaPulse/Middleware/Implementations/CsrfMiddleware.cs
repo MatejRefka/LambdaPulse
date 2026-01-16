@@ -27,7 +27,7 @@ internal sealed class CsrfMiddleware : MiddlewareBase
         var csrfToken = await session.GetValue<string>(CsrfTokenSessionKey);
 
         //Generate new CSRF token if not in session
-        if (string.IsNullOrEmpty(csrfToken))
+        if (string.IsNullOrWhiteSpace(csrfToken))
         {
             //OS-generated random 32-byte token
             csrfToken = Convert.ToBase64String(RandomNumberGenerator.GetBytes(32));
@@ -36,13 +36,13 @@ internal sealed class CsrfMiddleware : MiddlewareBase
 
         var method = webContext.WebRequest.Method.ToUpperInvariant();
 
-        //Validate CSRF token for unsafe state-changing requests
-        if (method == "POST" || method == "PUT" || method == "PATCH" || method == "DELETE")
+        //Validate CSRF token for unsafe state-changing requests -POST, PUT, PATCH, DELETE
+        if (string.Equals(method, "POST", StringComparison.OrdinalIgnoreCase) || string.Equals(method, "PUT", StringComparison.OrdinalIgnoreCase) || string.Equals(method, "PATCH", StringComparison.OrdinalIgnoreCase) || string.Equals(method, "DELETE", StringComparison.OrdinalIgnoreCase))
         {
             webContext.WebRequest.Headers.TryGetValue("X-CSRF-Token", out var requestCsrfToken);
 
             //request CSRF token has not been sent or does not match session's CSRF token
-            if (string.IsNullOrEmpty(requestCsrfToken) || !CryptographicOperations.FixedTimeEquals(Convert.FromBase64String(csrfToken), Convert.FromBase64String(requestCsrfToken)))
+            if (string.IsNullOrWhiteSpace(requestCsrfToken) || !CryptographicOperations.FixedTimeEquals(Convert.FromBase64String(csrfToken), Convert.FromBase64String(requestCsrfToken)))
             {
                 webContext.WebResponse.StatusCode = 403;
                 webContext.WebResponse.ResponsePhrase = "Forbidden.";

@@ -19,7 +19,7 @@ internal sealed class SessionMiddleware : MiddlewareBase
     {
         webContext.WebRequest.Cookies.TryGetValue(SessionCookieName, out var sessionId);
 
-        var requestSession = string.IsNullOrEmpty(sessionId) ? CreateSession() : _sessionStore.GetSession(sessionId);
+        var requestSession = string.IsNullOrWhiteSpace(sessionId) ? CreateSession() : _sessionStore.GetSession(sessionId);
 
         //sessionId from client not found in store
         requestSession ??= CreateSession();

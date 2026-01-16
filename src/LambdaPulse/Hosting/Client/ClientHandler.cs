@@ -73,7 +73,7 @@ internal sealed class ClientHandler : IClientHandler
                     requestString = await _requestReader.ReadHttpRequest(networkStream, timeoutToken);
 
                     //client disconnected gracefully before sending anything
-                    if (string.IsNullOrEmpty(requestString))
+                    if (string.IsNullOrWhiteSpace(requestString))
                     {
                         break;
                     }
