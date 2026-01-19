@@ -26,7 +26,7 @@ internal sealed class EndpointRegistry : IEndpointRegistry
             if (pathsMatch)
             {
                 //needs a fresh endpoint isntance because each request will have different path parameters
-                return new Endpoint { Method = endpoint.Method, Path = endpoint.Path, ApplicationFunction = endpoint.ApplicationFunction, PathParameters = pathParameters };
+                return new Endpoint { Method = endpoint.Method, Path = endpoint.Path, ApplicationFunction = endpoint.ApplicationFunction, PathParameters = pathParameters, AllowAnonymous = endpoint.AllowAnonymous, RequiredRole = endpoint.RequiredRole };
             }
         }
 
@@ -40,6 +40,11 @@ internal sealed class EndpointRegistry : IEndpointRegistry
         if (endpointExists)
         {
             return;
+        }
+
+        if (endpoint.AllowAnonymous && !string.IsNullOrWhiteSpace(endpoint.RequiredRole))
+        {
+            throw new Exception("'AllowAnonymous = true' cannot be combined with 'RequiredRoles'");
         }
 
         _endpoints.Add(endpoint);

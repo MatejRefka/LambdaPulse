@@ -35,7 +35,7 @@ internal sealed class ExceptionMiddleware : MiddlewareBase
                 //clear response headers
                 webContext.WebResponse.Headers = new Dictionary<string, string>()
                 {
-                    ["Content-Type"] = "text/plain"
+                    ["Content-Type"] = "text/plain; charset=utf-8"
                 };
             }
         }
