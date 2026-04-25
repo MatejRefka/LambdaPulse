@@ -1,6 +1,7 @@
 ﻿using LambdaPulse.Server.Configuration;
 using LambdaPulse.Server.DI;
 using LambdaPulse.Server.Features.Compression;
+using LambdaPulse.Server.Features.Logging;
 using LambdaPulse.Server.Features.Routing;
 using LambdaPulse.Server.Features.State;
 using LambdaPulse.Server.Hosting.Client;
@@ -53,6 +54,8 @@ public static class ServerBuilder
         container.AddSingleton<IRequestParser, RequestParser>();
         container.AddSingleton<IResponseWriter, ResponseWriter>();
 
+        container.AddSingleton<IEngineLogger, ConsoleEngineLogger>();
+        container.AddSingleton<ITraceLogger, NullTraceLogger>();
         container.AddSingleton<ISessionStore, InMemorySessionStore>();
 
         container.AddSingleton<IEndpointRegistry, EndpointRegistry>();

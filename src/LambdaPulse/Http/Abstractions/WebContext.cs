@@ -1,4 +1,5 @@
 ﻿using LambdaPulse.Server.Features.Authentication;
+using LambdaPulse.Server.Features.Logging;
 using LambdaPulse.Server.Features.Routing;
 using LambdaPulse.Server.Features.State;
 
@@ -14,4 +15,5 @@ public sealed class WebContext
     public string? StaticFileRelativePath { get; set; }
     public string? NegotiatedMimeType { get; set; }
     public bool ConnectionCloseRequested { get; set; }
+    public required Trace Trace { get; set; }
 }
