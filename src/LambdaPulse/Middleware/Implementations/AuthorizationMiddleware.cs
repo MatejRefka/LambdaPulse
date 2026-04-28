@@ -47,7 +47,7 @@ internal sealed class AuthorizationMiddleware : MiddlewareBase
                 webContext.WebResponse.StatusCode = 403;
                 webContext.WebResponse.ResponsePhrase = "Forbidden";
                 webContext.WebResponse.Headers["Content-Type"] = "text/plain; charset=utf-8";
-                await webContext.WebResponse.WriteStringToBody("User is not authorized to access this resource", cancellationToken);
+                await webContext.WebResponse.WriteStringToBody("User is not authorized to access this resource.", cancellationToken);
                 return;
             }
         }

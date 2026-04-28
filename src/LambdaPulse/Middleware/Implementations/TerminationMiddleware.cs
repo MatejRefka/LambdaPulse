@@ -16,7 +16,7 @@ internal sealed class TerminationMiddleware : MiddlewareBase
         {
             webContext.WebResponse.StatusCode = 404;
             webContext.WebResponse.ResponsePhrase = "Not Found";
-            await webContext.WebResponse.WriteStringToBody("Not Found", cancellationToken);
+            await webContext.WebResponse.WriteStringToBody("Not Found.", cancellationToken);
         }
     }
 }

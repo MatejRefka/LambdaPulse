@@ -17,7 +17,7 @@ internal sealed class Pipeline
         //set the default delegate if no middleware is added to the pipeline
         _func = func ?? (async (webContext, cancellationToken) =>
         {
-            Console.WriteLine($"Default Endpoint (no middleware)");
+            Console.WriteLine($"Default Endpoint (no middleware).");
             await Task.CompletedTask;
         });
     }
@@ -36,7 +36,7 @@ internal sealed class Pipeline
         {
             //construct the middleware instance with its parameters
             var middlewareType = _middlewareTypes[i];
-            var constructor = middlewareType.GetConstructors().OrderByDescending(c => c.GetParameters().Length).First() ?? throw new InvalidOperationException($"No public constructors available for type {middlewareType.Name}");
+            var constructor = middlewareType.GetConstructors().OrderByDescending(c => c.GetParameters().Length).First() ?? throw new InvalidOperationException($"No public constructors available for type {middlewareType.Name}.");
             var parameters = constructor.GetParameters();
 
             //array holding instantiated parameters
@@ -54,7 +54,7 @@ internal sealed class Pipeline
                 else
                 {
                     var instance = _dependencyResolver.GetService(paramType);
-                    paramInstances[j] = instance ?? throw new InvalidOperationException($"Unable to resolve dependency: {paramType.Name}");
+                    paramInstances[j] = instance ?? throw new InvalidOperationException($"Unable to resolve dependency: {paramType.Name}.");
                 }
             }
 
@@ -66,7 +66,7 @@ internal sealed class Pipeline
             }
             else
             {
-                throw new InvalidOperationException($"Failed to create instance of type {_middlewareTypes[i].Name}");
+                throw new InvalidOperationException($"Failed to create instance of type {_middlewareTypes[i].Name}.");
             }
         }
         return _func;

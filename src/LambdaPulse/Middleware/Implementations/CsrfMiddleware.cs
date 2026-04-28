@@ -45,7 +45,7 @@ internal sealed class CsrfMiddleware : MiddlewareBase
             if (string.IsNullOrWhiteSpace(requestCsrfToken) || !CryptographicOperations.FixedTimeEquals(Convert.FromBase64String(csrfToken), Convert.FromBase64String(requestCsrfToken)))
             {
                 webContext.WebResponse.StatusCode = 403;
-                webContext.WebResponse.ResponsePhrase = "Forbidden.";
+                webContext.WebResponse.ResponsePhrase = "Forbidden";
                 await webContext.WebResponse.WriteStringToBody("CSRF token missing or invalid.", cancellationToken);
                 return;
             }

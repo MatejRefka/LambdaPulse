@@ -79,7 +79,7 @@ internal sealed class StaticFilesMiddleware : MiddlewareBase
         {
             webContext.WebResponse.StatusCode = 400;
             webContext.WebResponse.ResponsePhrase = "Bad Request";
-            await webContext.WebResponse.WriteStringToBody("Bad Request", cancellationToken);
+            await webContext.WebResponse.WriteStringToBody("Bad Request.", cancellationToken);
             return;
         }
 
@@ -87,7 +87,7 @@ internal sealed class StaticFilesMiddleware : MiddlewareBase
         {
             webContext.WebResponse.StatusCode = 404;
             webContext.WebResponse.ResponsePhrase = "Not Found";
-            await webContext.WebResponse.WriteStringToBody("Not Found", cancellationToken);
+            await webContext.WebResponse.WriteStringToBody("Not Found.", cancellationToken);
             return;
         }
 

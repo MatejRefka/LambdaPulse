@@ -9,17 +9,17 @@ internal sealed class RequestParser : IRequestParser
     {
         if (string.IsNullOrWhiteSpace(httpRequest))
         {
-            throw new ArgumentException("HTTP Request string cannot be null or empty");
+            throw new ArgumentException("HTTP Request string cannot be null or empty.");
         }
 
         using var reader = new StringReader(httpRequest);
 
-        var controlData = reader.ReadLine() ?? throw new InvalidOperationException("Missing HTTP control data");
+        var controlData = reader.ReadLine() ?? throw new InvalidOperationException("Missing HTTP control data.");
 
         var controlDataItems = controlData.Split(' ', 3);
         if (controlDataItems.Length != 3)
         {
-            throw new InvalidOperationException("Invalid HTTP control data");
+            throw new InvalidOperationException("Invalid HTTP control data.");
         }
 
         var method = controlDataItems[0];

@@ -32,14 +32,14 @@ public static class ServerBuilder
         //allow users to add endpoints to the resolved endpoint registry
         if (configureEndpoints != null)
         {
-            var endpointRegistry = resolver.GetService<IEndpointRegistry>() ?? throw new InvalidOperationException("Cannot resolve IEndpointRegistry");
+            var endpointRegistry = resolver.GetService<IEndpointRegistry>() ?? throw new InvalidOperationException("Cannot resolve IEndpointRegistry.");
 
             configureEndpoints(endpointRegistry);
         }
 
         var webServer = resolver.GetService<WebServer>();
 
-        return webServer ?? throw new InvalidOperationException("Cannot construct WebServer");
+        return webServer ?? throw new InvalidOperationException("Cannot construct WebServer.");
     }
 
     private static void RegisterDefaultServices(DependencyContainer container)

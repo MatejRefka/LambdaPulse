@@ -44,7 +44,7 @@ internal sealed class EndpointRegistry : IEndpointRegistry
 
         if (endpoint.AllowAnonymous && !string.IsNullOrWhiteSpace(endpoint.RequiredRole))
         {
-            throw new Exception("'AllowAnonymous = true' cannot be combined with 'RequiredRoles'");
+            throw new Exception("'AllowAnonymous = true' cannot be combined with 'RequiredRoles'.");
         }
 
         _endpoints.Add(endpoint);

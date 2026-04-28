@@ -23,7 +23,7 @@ internal sealed class ExceptionMiddleware : MiddlewareBase
         }
         catch (SystemException e)
         {
-            Console.WriteLine($"Unhandled exception thrown within the pipeline: {e}");
+            Console.WriteLine($"Unhandled exception thrown within the pipeline: {e}.");
 
             //do not overwrite the response as it could be being written to
             if (!webContext.WebResponse.HasStarted)
