@@ -12,8 +12,9 @@ public class WebServerTests
         var listener = new MockTcpListener();
         var handler = new MockClientHandler();
         var config = new MockConfigProvider();
+        var logger = new MockEngineLogger();
 
-        var webServer = new WebServer(listener, handler, config);
+        var webServer = new WebServer(listener, handler, config, logger);
 
         //act
         var serverListeningTask = webServer.StartServer();
@@ -34,8 +35,9 @@ public class WebServerTests
         var listener = new MockTcpListener();
         var handler = new MockClientHandler();
         var config = new MockConfigProvider();
+        var logger = new MockEngineLogger();
 
-        var webServer = new WebServer(listener, handler, config);
+        var webServer = new WebServer(listener, handler, config, logger);
 
         //act
         var serverListeningTask = webServer.StartServer();
@@ -58,8 +60,9 @@ public class WebServerTests
         var listener = new MockTcpListener();
         var handler = new MockClientHandler();
         var config = new MockConfigProvider();
+        var logger = new MockEngineLogger();
 
-        var webServer = new WebServer(listener, handler, config);
+        var webServer = new WebServer(listener, handler, config, logger);
 
         //act
         var serverListeningTask = webServer.StartServer();
@@ -85,8 +88,9 @@ public class WebServerTests
         var listener = new MockTcpListener();
         var handler = new MockClientHandler(throwException: true);
         var config = new MockConfigProvider();
+        var logger = new MockEngineLogger();
 
-        var webServer = new WebServer(listener, handler, config);
+        var webServer = new WebServer(listener, handler, config, logger);
 
         var serverListeningTask = webServer.StartServer();
 

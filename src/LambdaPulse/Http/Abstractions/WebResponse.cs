@@ -2,7 +2,7 @@
 
 public sealed class WebResponse
 {
-    public int StatusCode { get; set; }
+    public int? StatusCode { get; set; }
     public string? ResponsePhrase { get; set; }
     public Dictionary<string, string> Headers { get; set; } = new();
     public List<string> Cookies { get; } = new();

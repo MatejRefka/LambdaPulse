@@ -6,7 +6,7 @@
 /// </summary>
 internal sealed class ConsoleEngineLogger : IEngineLogger
 {
-    public void Log(EngineLogLevel logLevel, string message, Exception? exception = null)
+    public void Log(LogLevel logLevel, string message, Exception? exception = null)
     {
         Console.WriteLine($"[{DateTime.UtcNow:O}] [{logLevel}] {message}");
 
