@@ -9,6 +9,8 @@ using LambdaPulse.Server.Hosting.Connection;
 using LambdaPulse.Server.Http.Parsing;
 using LambdaPulse.Server.Http.Reading;
 using LambdaPulse.Server.Http.Writing;
+using LambdaPulse.Server.Middleware;
+using LambdaPulse.Server.Middleware.Implementations;
 
 namespace LambdaPulse.Server.Hosting;
 
@@ -27,7 +29,6 @@ public static class ServerBuilder
 
         //need the resolver itself to resolve MW dependencies
         var resolver = new DependencyResolver(container);
-        container.AddSingleton(resolver);
 
         //allow users to add endpoints to the resolved endpoint registry
         if (configureEndpoints != null)
@@ -36,6 +37,29 @@ public static class ServerBuilder
 
             configureEndpoints(endpointRegistry);
         }
+
+        //construct the middleware pipeline, once per server instance
+        var pipeline = new Pipeline(resolver)
+                        .AddMiddleware<ExceptionMiddleware>()
+                        .AddMiddleware<LoggingMiddleware>()
+                        .AddMiddleware<RequestLimitsMiddleware>()
+                        .AddMiddleware<ConnectionMiddleware>()
+                        .AddMiddleware<HttpsRedirectionMiddleware>()
+                        .AddMiddleware<HstsMiddleware>()
+                        .AddMiddleware<SecurityMiddleware>()
+                        .AddMiddleware<CookieMiddleware>()
+                        .AddMiddleware<CsrfMiddleware>()
+                        .AddMiddleware<ResponseCompressionMiddleware>()
+                        .AddMiddleware<StaticFilesMiddleware>()
+                        .AddMiddleware<RoutingMiddleware>()
+                        .AddMiddleware<CorsMiddleware>()
+                        .AddMiddleware<AuthenticationMiddleware>()
+                        .AddMiddleware<AuthorizationMiddleware>()
+                        .AddMiddleware<ContentNegotiationMiddleware>()
+                        .AddMiddleware<InvokeMiddleware>()
+                        .AddMiddleware<TerminationMiddleware>()
+                        .Build();
+        container.AddSingleton(pipeline);
 
         var webServer = resolver.GetService<WebServer>();
 

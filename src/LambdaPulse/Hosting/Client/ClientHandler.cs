@@ -1,19 +1,16 @@
-﻿using LambdaPulse.Server.Configuration;
-using LambdaPulse.Server.DI;
+using LambdaPulse.Server.Configuration;
 using LambdaPulse.Server.Features.Logging;
 using LambdaPulse.Server.Http.Abstractions;
 using LambdaPulse.Server.Http.Parsing;
 using LambdaPulse.Server.Http.Reading;
 using LambdaPulse.Server.Http.Writing;
-using LambdaPulse.Server.Middleware;
-using LambdaPulse.Server.Middleware.Implementations;
 using System.Net.Sockets;
 
 namespace LambdaPulse.Server.Hosting.Client;
 
 internal sealed class ClientHandler : IClientHandler
 {
-    private readonly DependencyResolver _dependencyResolver;
+    private readonly Func<WebContext, CancellationToken, Task> _pipeline;
     private readonly IRequestReader _requestReader;
     private readonly IRequestParser _requestParser;
     private readonly IResponseWriter _responseWriter;
@@ -21,9 +18,9 @@ internal sealed class ClientHandler : IClientHandler
     private readonly ITraceLogger _traceLogger;
     private readonly int _connectionIdleTimeoutMS;
 
-    public ClientHandler(DependencyResolver dependencyResolver, IRequestReader requestReader, IRequestParser requestParser, IResponseWriter responseWriter, IConfigProvider configProvider, IEngineLogger engineLogger, ITraceLogger traceLogger)
+    public ClientHandler(Func<WebContext, CancellationToken, Task> pipeline, IRequestReader requestReader, IRequestParser requestParser, IResponseWriter responseWriter, IConfigProvider configProvider, IEngineLogger engineLogger, ITraceLogger traceLogger)
     {
-        _dependencyResolver = dependencyResolver;
+        _pipeline = pipeline;
         _requestReader = requestReader;
         _requestParser = requestParser;
         _responseWriter = responseWriter;
@@ -42,28 +39,6 @@ internal sealed class ClientHandler : IClientHandler
         {
             //abstraction for reading and sending bytes over the TCP connection
             await using var networkStream = tcpClient.GetStream();
-
-            //construct the middleware pipeline, once per connection
-            var pipeline = new Pipeline(_dependencyResolver)
-                            .AddMiddleware<ExceptionMiddleware>()
-                            .AddMiddleware<LoggingMiddleware>()
-                            .AddMiddleware<RequestLimitsMiddleware>()
-                            .AddMiddleware<ConnectionMiddleware>()
-                            .AddMiddleware<HttpsRedirectionMiddleware>()
-                            .AddMiddleware<HstsMiddleware>()
-                            .AddMiddleware<SecurityMiddleware>()
-                            .AddMiddleware<CookieMiddleware>()
-                            .AddMiddleware<CsrfMiddleware>()
-                            .AddMiddleware<ResponseCompressionMiddleware>()
-                            .AddMiddleware<StaticFilesMiddleware>()
-                            .AddMiddleware<RoutingMiddleware>()
-                            .AddMiddleware<CorsMiddleware>()
-                            .AddMiddleware<AuthenticationMiddleware>()
-                            .AddMiddleware<AuthorizationMiddleware>()
-                            .AddMiddleware<ContentNegotiationMiddleware>()
-                            .AddMiddleware<InvokeMiddleware>()
-                            .AddMiddleware<TerminationMiddleware>()
-                            .Build();
 
             //keep accepting requests over the same connection
             while (!clientCancellationToken.IsCancellationRequested)
@@ -117,7 +92,7 @@ internal sealed class ClientHandler : IClientHandler
                     }
 
                     //invoke the delegate
-                    await pipeline(webContext, timeoutToken);
+                    await _pipeline(webContext, timeoutToken);
 
                     await _responseWriter.WriteHttpResponse(networkStream, webContext);
 
