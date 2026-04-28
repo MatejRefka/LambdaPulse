@@ -1,10 +1,12 @@
 ﻿using LambdaPulse.Server.Configuration;
 using LambdaPulse.Server.DI;
+using LambdaPulse.Server.Features.Logging;
 using LambdaPulse.Server.Http.Parsing;
 using LambdaPulse.Server.Http.Reading;
 using LambdaPulse.Server.Http.Writing;
 using LambdaPulse.Server.Middleware;
 using LambdaPulse.Server.Middleware.Implementations;
+using System.Diagnostics;
 using System.Net.Sockets;
 
 namespace LambdaPulse.Server.Hosting.Client;
@@ -15,14 +17,18 @@ internal sealed class ClientHandler : IClientHandler
     private readonly IRequestReader _requestReader;
     private readonly IRequestParser _requestParser;
     private readonly IResponseWriter _responseWriter;
+    private readonly IEngineLogger _engineLogger;
+    private readonly ITraceLogger _traceLogger;
     private readonly int _connectionIdleTimeoutMS;
 
-    public ClientHandler(DependencyResolver dependencyResolver, IRequestReader requestReader, IRequestParser requestParser, IResponseWriter responseWriter, IConfigProvider configProvider)
+    public ClientHandler(DependencyResolver dependencyResolver, IRequestReader requestReader, IRequestParser requestParser, IResponseWriter responseWriter, IConfigProvider configProvider, IEngineLogger engineLogger, ITraceLogger traceLogger)
     {
         _dependencyResolver = dependencyResolver;
         _requestReader = requestReader;
         _requestParser = requestParser;
         _responseWriter = responseWriter;
+        _engineLogger = engineLogger;
+        _traceLogger = traceLogger;
         _connectionIdleTimeoutMS = configProvider.ServerConfig.ConnectionIdleTimeoutMS;
     }
 
@@ -72,18 +78,28 @@ internal sealed class ClientHandler : IClientHandler
                 {
                     requestString = await _requestReader.ReadHttpRequest(networkStream, timeoutToken);
 
+                    //start timestamp of the request (Trace)
+                    var requestStartTimestamp = DateTimeOffset.UtcNow;
+                    var timer = new Stopwatch();
+                    timer.Start();
+
                     //client disconnected gracefully before sending anything
                     if (string.IsNullOrWhiteSpace(requestString))
                     {
                         break;
                     }
 
-                    var webContext = _requestParser.ParseHttpRequest(requestString);
+                    var webContext = _requestParser.ParseHttpRequest(requestString, requestStartTimestamp);
 
-                    //Invoke the delegate
+                    //invoke the delegate
                     await pipeline(webContext, timeoutToken);
 
                     await _responseWriter.WriteHttpResponse(networkStream, webContext);
+
+                    //log the request + response metadata (Trace)
+                    timer.Stop();
+                    webContext.Trace.DurationMs = timer.ElapsedMilliseconds;
+                    _traceLogger.Log(webContext.Trace);
 
                     //connection middleware flags connection close
                     if (webContext.ConnectionCloseRequested)
@@ -106,9 +122,10 @@ internal sealed class ClientHandler : IClientHandler
                     //forceful connection disconnect (network drop -> TCP/IP RST flag sent,...)
                     break;
                 }
-                catch (Exception)
+                catch (Exception e)
                 {
                     //Unexpected error within the request. Terminate the connection for safety.
+                    _engineLogger.Log(LogLevel.Error, "Unexpected error while processing request.", e);
                     break;
                 }
             }
@@ -117,7 +134,7 @@ internal sealed class ClientHandler : IClientHandler
         catch (Exception e)
         {
             //Unexpected fatal connection error
-            Console.WriteLine(e);
+            _engineLogger.Log(LogLevel.Error, "Unexpected fatal connection error.", e);
         }
     }
 }

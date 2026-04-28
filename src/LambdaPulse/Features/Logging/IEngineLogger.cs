@@ -6,7 +6,7 @@
 /// </summary>
 public interface IEngineLogger
 {
-    void Log(EngineLogLevel logLevel, string message, Exception? exception = null);
+    void Log(LogLevel logLevel, string message, Exception? exception = null);
 }
 
-public enum EngineLogLevel { Debug, Info, Warning, Error }
+public enum LogLevel { Debug, Info, Warning, Error }

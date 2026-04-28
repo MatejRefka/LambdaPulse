@@ -21,9 +21,9 @@ internal sealed class ExceptionMiddleware : MiddlewareBase
         {
             await _nextFunction(webContext, cancellationToken);
         }
-        catch (SystemException ex)
+        catch (SystemException e)
         {
-            Console.WriteLine($"Unhandled exception thrown within the pipeline: {ex}");
+            Console.WriteLine($"Unhandled exception thrown within the pipeline: {e}");
 
             //do not overwrite the response as it could be being written to
             if (!webContext.WebResponse.HasStarted)

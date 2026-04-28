@@ -1,10 +1,11 @@
-﻿using LambdaPulse.Server.Http.Abstractions;
+﻿using LambdaPulse.Server.Features.Logging;
+using LambdaPulse.Server.Http.Abstractions;
 
 namespace LambdaPulse.Server.Http.Parsing;
 
 internal sealed class RequestParser : IRequestParser
 {
-    public WebContext ParseHttpRequest(string httpRequest)
+    public WebContext ParseHttpRequest(string httpRequest, DateTimeOffset requestStartTimestamp)
     {
         if (string.IsNullOrWhiteSpace(httpRequest))
         {
@@ -61,11 +62,19 @@ internal sealed class RequestParser : IRequestParser
         };
 
         var response = new WebResponse();
+        var trace = new Trace()
+        {
+            TimestampStart = requestStartTimestamp,
+            RequestPath = path,
+            RequestProtocol = protocol,
+            RequestMethod = method,
+        };
 
         var webContext = new WebContext
         {
             WebRequest = request,
-            WebResponse = response
+            WebResponse = response,
+            Trace = trace
         };
 
         return webContext;
