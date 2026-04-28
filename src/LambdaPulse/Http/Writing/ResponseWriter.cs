@@ -46,4 +46,12 @@ internal sealed class ResponseWriter : IResponseWriter
             await networkStream.WriteAsync(bodyBytes);
         }
     }
+
+    public async Task WriterRaw400Response(NetworkStream networkStream)
+    {
+        var response = "HTTP/1.1 400 Bad Request\r\nContent-Length: 0\r\nConnection: close\r\n\r\n";
+        var bytes = Encoding.ASCII.GetBytes(response);
+
+        await networkStream.WriteAsync(bytes);
+    }
 }

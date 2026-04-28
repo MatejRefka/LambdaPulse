@@ -6,4 +6,6 @@ namespace LambdaPulse.Server.Http.Writing;
 public interface IResponseWriter
 {
     Task WriteHttpResponse(NetworkStream networkStream, WebContext webContext);
+
+    Task WriterRaw400Response(NetworkStream networkStream);
 }

@@ -1,17 +1,18 @@
 ﻿namespace LambdaPulse.Server.Features.Logging;
 
 /// <summary>
-/// Model representing a complete trace of an HTTP request and response. Used by the ITraceLogger.
+/// Model representing a complete trace of a HTTP request and response, including failed request parse. 
 /// Copy of request/response metadata is needed as the WebContext holds refereces to the TcpClient.
+/// Used by the ITraceLogger. 
 /// </summary>
 public sealed class Trace
 {
     public required DateTimeOffset TimestampStart { get; set; }
     public float DurationMs { get; set; }
 
-    public required string RequestMethod { get; set; }
-    public required string RequestPath { get; set; }
-    public required string RequestProtocol { get; set; }
+    public string? RequestMethod { get; set; }
+    public string? RequestPath { get; set; }
+    public string? RequestProtocol { get; set; }
     public Dictionary<string, string> RequestHeaders { get; set; } = new();
     public Dictionary<string, string> RequestCookies { get; set; } = new();
     public string? RequestBody { get; set; }

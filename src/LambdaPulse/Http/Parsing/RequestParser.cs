@@ -51,30 +51,25 @@ internal sealed class RequestParser : IRequestParser
             body = new string(buffer, 0, charsRead);
         }
 
-        var request = new WebRequest()
-        {
-            Method = method,
-            Path = path,
-            QueryParameters = queryParameters,
-            Protocol = protocol,
-            Headers = headers,
-            Body = body
-        };
-
-        var response = new WebResponse();
-        var trace = new Trace()
-        {
-            TimestampStart = requestStartTimestamp,
-            RequestPath = path,
-            RequestProtocol = protocol,
-            RequestMethod = method,
-        };
-
         var webContext = new WebContext
         {
-            WebRequest = request,
-            WebResponse = response,
-            Trace = trace
+            WebRequest = new WebRequest()
+            {
+                Method = method,
+                Path = path,
+                QueryParameters = queryParameters,
+                Protocol = protocol,
+                Headers = headers,
+                Body = body
+            },
+            WebResponse = new WebResponse(),
+            Trace = new Trace()
+            {
+                TimestampStart = requestStartTimestamp,
+                RequestPath = path,
+                RequestProtocol = protocol,
+                RequestMethod = method,
+            }
         };
 
         return webContext;

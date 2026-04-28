@@ -1,12 +1,12 @@
 ﻿using LambdaPulse.Server.Configuration;
 using LambdaPulse.Server.DI;
 using LambdaPulse.Server.Features.Logging;
+using LambdaPulse.Server.Http.Abstractions;
 using LambdaPulse.Server.Http.Parsing;
 using LambdaPulse.Server.Http.Reading;
 using LambdaPulse.Server.Http.Writing;
 using LambdaPulse.Server.Middleware;
 using LambdaPulse.Server.Middleware.Implementations;
-using System.Diagnostics;
 using System.Net.Sockets;
 
 namespace LambdaPulse.Server.Hosting.Client;
@@ -78,18 +78,43 @@ internal sealed class ClientHandler : IClientHandler
                 {
                     requestString = await _requestReader.ReadHttpRequest(networkStream, timeoutToken);
 
-                    //start timestamp of the request (Trace)
-                    var requestStartTimestamp = DateTimeOffset.UtcNow;
-                    var timer = new Stopwatch();
-                    timer.Start();
-
                     //client disconnected gracefully before sending anything
                     if (string.IsNullOrWhiteSpace(requestString))
                     {
                         break;
                     }
 
-                    var webContext = _requestParser.ParseHttpRequest(requestString, requestStartTimestamp);
+                    //start timestamp of the request (Trace)
+                    var requestStartTimestamp = DateTimeOffset.UtcNow;
+                    var timer = new System.Diagnostics.Stopwatch();
+                    timer.Start();
+
+                    WebContext webContext;
+
+                    try
+                    {
+                        webContext = _requestParser.ParseHttpRequest(requestString, requestStartTimestamp);
+                    }
+                    catch (Exception e)
+                    {
+                        timer.Stop();
+
+                        _engineLogger.Log(LogLevel.Warning, "Malformed HTTP request.", e);
+
+                        var trace = new Trace
+                        {
+                            TimestampStart = requestStartTimestamp,
+                            DurationMs = timer.ElapsedMilliseconds,
+                            ResponseStatusCode = 400,
+                            ResponsePhrase = "Bad request"
+                        };
+
+                        _traceLogger.Log(trace);
+
+                        await _responseWriter.WriterRaw400Response(networkStream);
+
+                        break;
+                    }
 
                     //invoke the delegate
                     await pipeline(webContext, timeoutToken);
