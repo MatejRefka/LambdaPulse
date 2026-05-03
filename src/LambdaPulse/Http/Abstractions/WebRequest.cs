@@ -7,6 +7,8 @@ public sealed class WebRequest
     public Dictionary<string, string> QueryParameters { get; set; } = new();
     public required string Protocol { get; set; }
     public Dictionary<string, string> Headers { get; set; } = new();
+
+    //Request cookie header holds key-value only, no metadata. E.g. Cookie: sessionId=123; theme=dark
     public Dictionary<string, string> Cookies { get; set; } = new();
     public string? Body { get; set; }
 }

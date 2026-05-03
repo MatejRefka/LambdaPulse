@@ -6,6 +6,8 @@ namespace LambdaPulse.Server.Middleware.Implementations;
 
 internal sealed class StaticFilesMiddleware : MiddlewareBase
 {
+    protected override string MiddlewareName => "Static Files";
+
     private readonly string _fileRootPath;
     private readonly Dictionary<string, string> _mimeTypes;
 

@@ -5,6 +5,8 @@ namespace LambdaPulse.Server.Middleware.Implementations;
 
 internal sealed class TerminationMiddleware : MiddlewareBase
 {
+    protected override string MiddlewareName => "Termination";
+
     public TerminationMiddleware(Func<WebContext, CancellationToken, Task> nextFunction) : base(nextFunction)
     {
         _nextFunction = nextFunction;

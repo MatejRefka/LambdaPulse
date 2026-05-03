@@ -9,6 +9,8 @@ namespace LambdaPulse.Server.Middleware.Implementations;
 /// </summary>
 internal sealed class HttpsRedirectionMiddleware : MiddlewareBase
 {
+    protected override string MiddlewareName => "HTTPS";
+
     private readonly bool _Enabled;
     public HttpsRedirectionMiddleware(Func<WebContext, CancellationToken, Task> nextFunction, IConfigProvider configProvider) : base(nextFunction)
     {

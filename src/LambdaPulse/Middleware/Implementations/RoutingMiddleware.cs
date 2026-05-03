@@ -5,6 +5,8 @@ namespace LambdaPulse.Server.Middleware.Implementations;
 
 internal sealed class RoutingMiddleware : MiddlewareBase
 {
+    protected override string MiddlewareName => "Routing";
+
     private readonly EndpointRegistry _endpointRegistry;
 
     public RoutingMiddleware(Func<WebContext, CancellationToken, Task> nextFunction, EndpointRegistry endpointRegistry) : base(nextFunction)

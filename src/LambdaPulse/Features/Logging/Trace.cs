@@ -14,15 +14,18 @@ public sealed class Trace
     public string? RequestPath { get; set; }
     public string? RequestProtocol { get; set; }
     public Dictionary<string, string> RequestHeaders { get; set; } = new();
+
+    //key-value pairs
     public Dictionary<string, string> RequestCookies { get; set; } = new();
     public string? RequestBody { get; set; }
 
-    public int ResponseStatusCode { get; set; }
+    public int? ResponseStatusCode { get; set; }
     public string? ResponsePhrase { get; set; }
     public Dictionary<string, string> ResponseHeaders { get; set; } = new();
-    public Dictionary<string, string> ResponseCookies { get; set; } = new();
-    public string? ResponseBody { get; set; }
 
+    //raw strings to preserve metadata flags
+    public List<string> ResponseCookies { get; set; } = new();
+    public string? ResponseBody { get; set; }
 
     public List<MiddlewareStep> Steps { get; set; } = new();
 }
@@ -33,8 +36,8 @@ public sealed class MiddlewareStep
     public FlowDirection? Direction { get; set; }
     public required ExecutionEvent Event { get; set; }
     public required DateTimeOffset TimestampStart { get; set; }
-    public int DurationMs { get; set; }
-    public List<string> Logs { get; set; } = new();
+    public long DurationMs { get; set; }
+    public List<string>? Logs { get; set; }
 }
 
 public enum FlowDirection

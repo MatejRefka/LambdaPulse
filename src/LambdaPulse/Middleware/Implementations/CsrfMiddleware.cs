@@ -6,6 +6,8 @@ namespace LambdaPulse.Server.Middleware.Implementations;
 
 internal sealed class CsrfMiddleware : MiddlewareBase
 {
+    protected override string MiddlewareName => "CSRF";
+
     private const string CsrfTokenSessionKey = "csrf.token";
 
     public CsrfMiddleware(Func<WebContext, CancellationToken, Task> nextFunction) : base(nextFunction)

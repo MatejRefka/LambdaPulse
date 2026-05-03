@@ -10,6 +10,8 @@ namespace LambdaPulse.Server.Middleware.Implementations;
 /// </summary>
 internal sealed class ConnectionMiddleware : MiddlewareBase
 {
+    protected override string MiddlewareName => "Connection";
+
     private readonly int _requestExecutionTimeoutMS;
     public ConnectionMiddleware(Func<WebContext, CancellationToken, Task> nextFunction, IConfigProvider configProvider) : base(nextFunction)
     {

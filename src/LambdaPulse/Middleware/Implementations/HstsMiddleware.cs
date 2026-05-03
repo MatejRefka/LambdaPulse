@@ -8,6 +8,8 @@ namespace LambdaPulse.Server.Middleware.Implementations;
 /// </summary>
 internal sealed class HstsMiddleware : MiddlewareBase
 {
+    protected override string MiddlewareName => "HSTS";
+
     private readonly int _maxAge;
     private readonly bool _includeSubDomains;
     private readonly bool _preload;

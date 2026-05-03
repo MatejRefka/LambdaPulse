@@ -6,6 +6,8 @@ namespace LambdaPulse.Server.Middleware.Implementations;
 
 internal sealed class CorsMiddleware : MiddlewareBase
 {
+    protected override string MiddlewareName => "CORS";
+
     private readonly HashSet<string> _allowedOrigins;
     private readonly bool _allowCredentials;
     private readonly HashSet<string> _exposedHeaders;

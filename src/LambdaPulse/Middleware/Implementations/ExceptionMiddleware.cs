@@ -1,29 +1,38 @@
-﻿using LambdaPulse.Server.Http.Abstractions;
+﻿using LambdaPulse.Server.Features.Logging;
+using LambdaPulse.Server.Http.Abstractions;
 using LambdaPulse.Server.Shared.Extensions;
 
 namespace LambdaPulse.Server.Middleware.Implementations;
 
 /// <summary>
-/// Wraps the pipeline in a try/catch, ensuring the whole server doesn't crash.
-/// Exception is logged, generating 500 response.
-/// Any unhandled exception type implementing Exception responds with 500.
+/// Wraps the pipeline in a try/catch, ensuring the whole server does not crash.
+/// Any unhandled exception type implementing Exception responds with 500 response.
 /// </summary>
 internal sealed class ExceptionMiddleware : MiddlewareBase
 {
-    public ExceptionMiddleware(Func<WebContext, CancellationToken, Task> nextFunction) : base(nextFunction)
+    protected override string MiddlewareName => "Exception";
+
+    private readonly IEngineLogger _engineLogger;
+
+    public ExceptionMiddleware(Func<WebContext, CancellationToken, Task> nextFunction, IEngineLogger engineLogger) : base(nextFunction)
     {
         _nextFunction = nextFunction;
+        _engineLogger = engineLogger;
     }
 
     public override async Task Invoke(WebContext webContext, CancellationToken cancellationToken = default)
     {
         try
         {
+            RecordTelemetry(webContext, FlowDirection.Downstream, ExecutionEvent.Success, DateTimeOffset.UtcNow);
             await _nextFunction(webContext, cancellationToken);
+            RecordTelemetry(webContext, FlowDirection.Upstream, ExecutionEvent.Success, DateTimeOffset.UtcNow);
         }
-        catch (SystemException e)
+        catch (Exception e)
         {
-            Console.WriteLine($"Unhandled exception thrown within the pipeline: {e}.");
+            var downstreamStart = DateTimeOffset.UtcNow;
+            _engineLogger.Log(LogLevel.Error, "Pipeline threw an unhandled exception.", e);
+            var telemetryLogs = new List<string>();
 
             //do not overwrite the response as it could be being written to
             if (!webContext.WebResponse.HasStarted)
@@ -37,7 +46,15 @@ internal sealed class ExceptionMiddleware : MiddlewareBase
                 {
                     ["Content-Type"] = "text/plain; charset=utf-8"
                 };
+
+                telemetryLogs.Add("500 response written. Response headers cleared.");
             }
+            else
+            {
+                telemetryLogs.Add("Exception thrown after the response has started being written.");
+            }
+
+            RecordTelemetry(webContext, FlowDirection.Upstream, ExecutionEvent.Success, downstreamStart, telemetryLogs);
         }
     }
 }

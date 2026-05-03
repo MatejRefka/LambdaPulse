@@ -11,6 +11,8 @@ namespace LambdaPulse.Server.Middleware.Implementations;
 /// </summary>
 internal sealed class RequestLimitsMiddleware : MiddlewareBase
 {
+    protected override string MiddlewareName => "Request Limits";
+
     private readonly int _maxControlDataSizeBytes;
     private readonly int _maxHeaderSizeBytes;
     private readonly int _maxBodySizeBytes;

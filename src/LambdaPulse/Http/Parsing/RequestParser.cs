@@ -66,9 +66,11 @@ internal sealed class RequestParser : IRequestParser
             Trace = new Trace()
             {
                 TimestampStart = requestStartTimestamp,
+                RequestMethod = method,
                 RequestPath = path,
                 RequestProtocol = protocol,
-                RequestMethod = method,
+                RequestHeaders = headers,
+                RequestBody = body
             }
         };
 

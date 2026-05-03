@@ -10,6 +10,8 @@ namespace LambdaPulse.Server.Middleware.Implementations;
 /// </summary>
 internal sealed class ContentNegotiationMiddleware : MiddlewareBase
 {
+    protected override string MiddlewareName => "Content Negotiation";
+
     private readonly List<string> _supportedMimeTypes;
 
     public ContentNegotiationMiddleware(Func<WebContext, CancellationToken, Task> nextFunction) : base(nextFunction)

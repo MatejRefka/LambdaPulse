@@ -6,6 +6,8 @@ namespace LambdaPulse.Server.Middleware.Implementations;
 /// </summary>
 internal sealed class InvokeMiddleware : MiddlewareBase
 {
+    protected override string MiddlewareName => "Invoke";
+
     public InvokeMiddleware(Func<WebContext, CancellationToken, Task> nextFunction) : base(nextFunction)
     {
         _nextFunction = nextFunction;

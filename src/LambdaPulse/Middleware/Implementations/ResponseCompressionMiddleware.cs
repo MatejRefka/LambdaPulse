@@ -10,6 +10,8 @@ namespace LambdaPulse.Server.Middleware.Implementations;
 /// </summary>
 internal sealed class ResponseCompressionMiddleware : MiddlewareBase
 {
+    protected override string MiddlewareName => "Response Compression";
+
     private readonly ICompressor _compressor;
     private readonly List<string> _supportedMimeTypes;
     private const int _minBodySize = 1024;

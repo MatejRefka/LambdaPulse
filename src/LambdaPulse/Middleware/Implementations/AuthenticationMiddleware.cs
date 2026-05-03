@@ -5,6 +5,8 @@ namespace LambdaPulse.Server.Middleware.Implementations;
 
 internal sealed class AuthenticationMiddleware : MiddlewareBase
 {
+    protected override string MiddlewareName => "Authentication";
+
     private const string UserIdSessionKey = "auth.user_id";
 
     public AuthenticationMiddleware(Func<WebContext, CancellationToken, Task> nextFunction) : base(nextFunction)

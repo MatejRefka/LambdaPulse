@@ -5,6 +5,7 @@ using LambdaPulse.Server.Http.Parsing;
 using LambdaPulse.Server.Http.Reading;
 using LambdaPulse.Server.Http.Writing;
 using System.Net.Sockets;
+using System.Text;
 
 namespace LambdaPulse.Server.Hosting.Client;
 
@@ -96,9 +97,15 @@ internal sealed class ClientHandler : IClientHandler
 
                     await _responseWriter.WriteHttpResponse(networkStream, webContext);
 
-                    //log the request + response metadata (Trace)
                     timer.Stop();
+                    //log the request + response metadata (Trace)
                     webContext.Trace.DurationMs = timer.ElapsedMilliseconds;
+                    webContext.Trace.ResponseStatusCode = webContext.WebResponse.StatusCode;
+                    webContext.Trace.ResponsePhrase = webContext.WebResponse.ResponsePhrase;
+                    webContext.Trace.ResponseHeaders = webContext.WebResponse.Headers;
+                    webContext.Trace.ResponseCookies = webContext.WebResponse.Cookies;
+                    webContext.Trace.ResponseBody = webContext.WebResponse.Body != null ? Encoding.UTF8.GetString(webContext.WebResponse.Body.ToArray()) : null;
+
                     _traceLogger.Log(webContext.Trace);
 
                     //connection middleware flags connection close

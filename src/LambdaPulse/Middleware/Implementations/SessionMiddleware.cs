@@ -6,6 +6,8 @@ namespace LambdaPulse.Server.Middleware.Implementations;
 
 internal sealed class SessionMiddleware : MiddlewareBase
 {
+    protected override string MiddlewareName => "Session";
+
     private const string SessionCookieName = "LambdaPulse.Session";
     private readonly ISessionStore _sessionStore;
 

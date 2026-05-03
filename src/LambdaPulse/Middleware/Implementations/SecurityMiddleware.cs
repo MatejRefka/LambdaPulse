@@ -8,6 +8,8 @@ namespace LambdaPulse.Server.Middleware.Implementations;
 /// </summary>
 internal sealed class SecurityMiddleware : MiddlewareBase
 {
+    protected override string MiddlewareName => "Security";
+
     private readonly bool _xContentTypeOptions;
     private readonly string? _referrerPolicy;
     private readonly string? _permissionsPolicy;
