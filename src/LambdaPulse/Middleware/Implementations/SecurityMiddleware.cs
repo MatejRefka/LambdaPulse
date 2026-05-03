@@ -1,7 +1,7 @@
-﻿using LambdaPulse.Server.Configuration;
-using LambdaPulse.Server.Http.Abstractions;
+﻿using LambdaPulse.Engine.Configuration;
+using LambdaPulse.Engine.Http.Abstractions;
 
-namespace LambdaPulse.Server.Middleware.Implementations;
+namespace LambdaPulse.Engine.Middleware.Implementations;
 
 /// <summary>
 /// Adds standard security headers to every HTTP response sent back to the browser.

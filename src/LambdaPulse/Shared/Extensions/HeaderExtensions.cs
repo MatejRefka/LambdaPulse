@@ -1,6 +1,6 @@
 ﻿using System.Globalization;
 
-namespace LambdaPulse.Server.Shared.Extensions;
+namespace LambdaPulse.Engine.Shared.Extensions;
 
 public static class HeaderExtensions
 {

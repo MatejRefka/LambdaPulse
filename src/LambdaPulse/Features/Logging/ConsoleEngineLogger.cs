@@ -1,4 +1,4 @@
-﻿namespace LambdaPulse.Server.Features.Logging;
+﻿namespace LambdaPulse.Engine.Features.Logging;
 
 /// <summary>
 /// Default logger when no logging service is registered.

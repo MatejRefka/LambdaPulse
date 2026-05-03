@@ -1,10 +1,10 @@
-﻿using LambdaPulse.Server.Configuration;
-using LambdaPulse.Server.Features.Logging;
-using LambdaPulse.Server.Hosting.Client;
-using LambdaPulse.Server.Hosting.Connection;
+﻿using LambdaPulse.Engine.Configuration;
+using LambdaPulse.Engine.Features.Logging;
+using LambdaPulse.Engine.Hosting.Client;
+using LambdaPulse.Engine.Hosting.Connection;
 using System.Collections.Concurrent;
 
-namespace LambdaPulse.Server.Hosting;
+namespace LambdaPulse.Engine.Hosting;
 
 internal sealed class WebServer : IWebServer
 {

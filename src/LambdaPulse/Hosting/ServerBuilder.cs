@@ -1,18 +1,18 @@
-﻿using LambdaPulse.Server.Configuration;
-using LambdaPulse.Server.DI;
-using LambdaPulse.Server.Features.Compression;
-using LambdaPulse.Server.Features.Logging;
-using LambdaPulse.Server.Features.Routing;
-using LambdaPulse.Server.Features.State;
-using LambdaPulse.Server.Hosting.Client;
-using LambdaPulse.Server.Hosting.Connection;
-using LambdaPulse.Server.Http.Parsing;
-using LambdaPulse.Server.Http.Reading;
-using LambdaPulse.Server.Http.Writing;
-using LambdaPulse.Server.Middleware;
-using LambdaPulse.Server.Middleware.Implementations;
+﻿using LambdaPulse.Engine.Configuration;
+using LambdaPulse.Engine.DI;
+using LambdaPulse.Engine.Features.Compression;
+using LambdaPulse.Engine.Features.Logging;
+using LambdaPulse.Engine.Features.Routing;
+using LambdaPulse.Engine.Features.State;
+using LambdaPulse.Engine.Hosting.Client;
+using LambdaPulse.Engine.Hosting.Connection;
+using LambdaPulse.Engine.Http.Parsing;
+using LambdaPulse.Engine.Http.Reading;
+using LambdaPulse.Engine.Http.Writing;
+using LambdaPulse.Engine.Middleware;
+using LambdaPulse.Engine.Middleware.Implementations;
 
-namespace LambdaPulse.Server.Hosting;
+namespace LambdaPulse.Engine.Hosting;
 
 public static class ServerBuilder
 {

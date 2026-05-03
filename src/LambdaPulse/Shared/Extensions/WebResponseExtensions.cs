@@ -1,8 +1,8 @@
-﻿using LambdaPulse.Server.Http.Abstractions;
+﻿using LambdaPulse.Engine.Http.Abstractions;
 using System.Text;
 using System.Text.Json;
 
-namespace LambdaPulse.Server.Shared.Extensions;
+namespace LambdaPulse.Engine.Shared.Extensions;
 
 public static class WebResponseExtensions
 {

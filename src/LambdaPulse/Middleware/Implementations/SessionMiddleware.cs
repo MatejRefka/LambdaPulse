@@ -1,8 +1,8 @@
-﻿using LambdaPulse.Server.Configuration;
-using LambdaPulse.Server.Features.State;
-using LambdaPulse.Server.Http.Abstractions;
+﻿using LambdaPulse.Engine.Configuration;
+using LambdaPulse.Engine.Features.State;
+using LambdaPulse.Engine.Http.Abstractions;
 
-namespace LambdaPulse.Server.Middleware.Implementations;
+namespace LambdaPulse.Engine.Middleware.Implementations;
 
 internal sealed class SessionMiddleware : MiddlewareBase
 {

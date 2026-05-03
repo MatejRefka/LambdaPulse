@@ -1,6 +1,6 @@
-﻿using LambdaPulse.Server.Http.Abstractions;
+﻿using LambdaPulse.Engine.Http.Abstractions;
 
-namespace LambdaPulse.Server.Features.Routing;
+namespace LambdaPulse.Engine.Features.Routing;
 
 public sealed class Endpoint
 {

@@ -1,7 +1,7 @@
-﻿using LambdaPulse.Server.Features.Logging;
-using LambdaPulse.Server.Http.Abstractions;
+﻿using LambdaPulse.Engine.Features.Logging;
+using LambdaPulse.Engine.Http.Abstractions;
 
-namespace LambdaPulse.Server.Http.Parsing;
+namespace LambdaPulse.Engine.Http.Parsing;
 
 internal sealed class RequestParser : IRequestParser
 {

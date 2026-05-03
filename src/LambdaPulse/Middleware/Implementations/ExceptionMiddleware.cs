@@ -1,8 +1,8 @@
-﻿using LambdaPulse.Server.Features.Logging;
-using LambdaPulse.Server.Http.Abstractions;
-using LambdaPulse.Server.Shared.Extensions;
+﻿using LambdaPulse.Engine.Features.Logging;
+using LambdaPulse.Engine.Http.Abstractions;
+using LambdaPulse.Engine.Shared.Extensions;
 
-namespace LambdaPulse.Server.Middleware.Implementations;
+namespace LambdaPulse.Engine.Middleware.Implementations;
 
 /// <summary>
 /// Wraps the pipeline in a try/catch, ensuring the whole server does not crash.

@@ -1,7 +1,7 @@
-﻿using LambdaPulse.Server.Http.Abstractions;
+﻿using LambdaPulse.Engine.Http.Abstractions;
 using System.Net.Sockets;
 
-namespace LambdaPulse.Server.Http.Writing;
+namespace LambdaPulse.Engine.Http.Writing;
 
 public interface IResponseWriter
 {

@@ -1,7 +1,7 @@
-﻿using LambdaPulse.Server.Http.Abstractions;
-using LambdaPulse.Server.Shared.Extensions;
+﻿using LambdaPulse.Engine.Http.Abstractions;
+using LambdaPulse.Engine.Shared.Extensions;
 
-namespace LambdaPulse.Server.Middleware.Implementations;
+namespace LambdaPulse.Engine.Middleware.Implementations;
 
 /// <summary>
 /// Browser sends an Accept header with preferred mime types. 

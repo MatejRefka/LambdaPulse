@@ -1,4 +1,4 @@
-﻿namespace LambdaPulse.Server.Features.Logging;
+﻿namespace LambdaPulse.Engine.Features.Logging;
 
 /// <summary>
 /// Lambda Pulse engine diagnostics logging. Logs the server lifecycle.

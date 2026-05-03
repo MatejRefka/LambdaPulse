@@ -22,7 +22,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\LambdaPulse.Server\LambdaPulse.Server.csproj" />
+    <ProjectReference Include="..\LambdaPulse.Engine\LambdaPulse.Engine.csproj" />
   </ItemGroup>
 
   <ItemGroup>

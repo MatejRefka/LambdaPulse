@@ -1,8 +1,8 @@
-﻿using LambdaPulse.Server.Configuration;
+﻿using LambdaPulse.Engine.Configuration;
 using System.Net;
 using System.Net.Sockets;
 
-namespace LambdaPulse.Server.Hosting.Connection;
+namespace LambdaPulse.Engine.Hosting.Connection;
 
 internal sealed class ConnectionListener : IConnectionListener, IDisposable
 {

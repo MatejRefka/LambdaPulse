@@ -1,4 +1,4 @@
-﻿using LambdaPulse.Server.Features.Logging;
+﻿using LambdaPulse.Engine.Features.Logging;
 
 namespace LambdaPulse.Tests.Core;
 

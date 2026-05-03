@@ -1,6 +1,6 @@
-﻿using LambdaPulse.Server.Configuration.Models;
+﻿using LambdaPulse.Engine.Configuration.Models;
 
-namespace LambdaPulse.Server.Configuration;
+namespace LambdaPulse.Engine.Configuration;
 
 /// <summary>
 /// Exposes config sections

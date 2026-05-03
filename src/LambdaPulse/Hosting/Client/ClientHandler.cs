@@ -1,13 +1,13 @@
-using LambdaPulse.Server.Configuration;
-using LambdaPulse.Server.Features.Logging;
-using LambdaPulse.Server.Http.Abstractions;
-using LambdaPulse.Server.Http.Parsing;
-using LambdaPulse.Server.Http.Reading;
-using LambdaPulse.Server.Http.Writing;
+using LambdaPulse.Engine.Configuration;
+using LambdaPulse.Engine.Features.Logging;
+using LambdaPulse.Engine.Http.Abstractions;
+using LambdaPulse.Engine.Http.Parsing;
+using LambdaPulse.Engine.Http.Reading;
+using LambdaPulse.Engine.Http.Writing;
 using System.Net.Sockets;
 using System.Text;
 
-namespace LambdaPulse.Server.Hosting.Client;
+namespace LambdaPulse.Engine.Hosting.Client;
 
 internal sealed class ClientHandler : IClientHandler
 {

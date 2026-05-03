@@ -1,4 +1,4 @@
-﻿namespace LambdaPulse.Server.Features.Compression;
+﻿namespace LambdaPulse.Engine.Features.Compression;
 
 public interface ICompressor
 {

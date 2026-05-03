@@ -1,8 +1,8 @@
-﻿using LambdaPulse.Server.Configuration;
-using LambdaPulse.Server.Http.Abstractions;
+﻿using LambdaPulse.Engine.Configuration;
+using LambdaPulse.Engine.Http.Abstractions;
 using System.Globalization;
 
-namespace LambdaPulse.Server.Middleware.Implementations;
+namespace LambdaPulse.Engine.Middleware.Implementations;
 
 internal sealed class CorsMiddleware : MiddlewareBase
 {

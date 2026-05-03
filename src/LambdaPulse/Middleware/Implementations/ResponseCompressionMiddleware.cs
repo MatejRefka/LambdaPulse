@@ -1,8 +1,8 @@
-﻿using LambdaPulse.Server.Features.Compression;
-using LambdaPulse.Server.Http.Abstractions;
-using LambdaPulse.Server.Shared.Extensions;
+﻿using LambdaPulse.Engine.Features.Compression;
+using LambdaPulse.Engine.Http.Abstractions;
+using LambdaPulse.Engine.Shared.Extensions;
 
-namespace LambdaPulse.Server.Middleware.Implementations;
+namespace LambdaPulse.Engine.Middleware.Implementations;
 
 /// <summary>
 /// Compresses Body payload of the response. Based on client-supported encodings, payload size, and MIME type.
