@@ -75,7 +75,7 @@ internal sealed class ClientHandler : IClientHandler
                     {
                         timer.Stop();
 
-                        _engineLogger.Log(LogLevel.Warning, "Malformed HTTP request.", e);
+                        _engineLogger.Log(LogLevel.Warning, "ClientHandler", "Malformed HTTP request.", e);
 
                         var trace = new Trace
                         {
@@ -132,7 +132,7 @@ internal sealed class ClientHandler : IClientHandler
                 catch (Exception e)
                 {
                     //Unexpected error within the request. Terminate the connection for safety.
-                    _engineLogger.Log(LogLevel.Error, "Unexpected error while processing request.", e);
+                    _engineLogger.Log(LogLevel.Error, "ClientHandler", "Unexpected error while processing request.", e);
                     break;
                 }
             }
@@ -141,7 +141,7 @@ internal sealed class ClientHandler : IClientHandler
         catch (Exception e)
         {
             //Unexpected fatal connection error
-            _engineLogger.Log(LogLevel.Error, "Unexpected fatal connection error.", e);
+            _engineLogger.Log(LogLevel.Error, "ClientHandler", "Unexpected fatal connection error.", e);
         }
     }
 }

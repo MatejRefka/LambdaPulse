@@ -31,7 +31,7 @@ internal sealed class WebServer : IWebServer
     {
         //OS creates a socket in LISTEN state
         _listener.Start(_backlog);
-        _engineLogger.Log(LogLevel.Info, "Server started. Listening for incoming connections...");
+        _engineLogger.Log(LogLevel.Info, "WebServer", "Server started. Listening for incoming connections...");
 
         //listen forever, continuously accepting clients
         while (true)
@@ -53,7 +53,7 @@ internal sealed class WebServer : IWebServer
                 {
                     if (task.Exception != null)
                     {
-                        _engineLogger.Log(LogLevel.Error, $"[{remoteEndPoint}] Connection error.", task.Exception);
+                        _engineLogger.Log(LogLevel.Error, "WebServer", $"[{remoteEndPoint}] Connection error.", task.Exception);
                     }
                     _activeConnections.TryRemove(task, out _);
                 });
@@ -62,7 +62,7 @@ internal sealed class WebServer : IWebServer
             catch (OperationCanceledException)
             {
                 //AcceptTcpClientAsync throws when cancellation is requested, i.e. StopServer() is called
-                _engineLogger.Log(LogLevel.Info, "Server is shutting down. No longer accepting new connections.");
+                _engineLogger.Log(LogLevel.Info, "WebServer", "Server is shutting down. No longer accepting new connections.");
 
                 //break the loop to stop the server from accepting new connections
                 break;
@@ -70,7 +70,7 @@ internal sealed class WebServer : IWebServer
             catch (Exception e)
             {
                 //Listener/socket/OS error. Single connection failure should not take out the whole server
-                _engineLogger.Log(LogLevel.Error, "Critical error accepting incoming connection.", e);
+                _engineLogger.Log(LogLevel.Error, "WebServer", "Critical error accepting incoming connection.", e);
             }
         }
 
@@ -91,7 +91,7 @@ internal sealed class WebServer : IWebServer
             _serverCancellationSource.Dispose();
             _disposed = true;
 
-            _engineLogger.Log(LogLevel.Info, "Server shutdown complete.");
+            _engineLogger.Log(LogLevel.Info, "WebServer", "Server shutdown complete.");
         }
     }
 

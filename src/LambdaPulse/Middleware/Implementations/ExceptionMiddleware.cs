@@ -31,7 +31,7 @@ internal sealed class ExceptionMiddleware : MiddlewareBase
         catch (Exception e)
         {
             var downstreamStart = DateTimeOffset.UtcNow;
-            _engineLogger.Log(LogLevel.Error, "Pipeline threw an unhandled exception.", e);
+            _engineLogger.Log(LogLevel.Error, "ExceptionMiddleware", "Pipeline threw an unhandled exception.", e);
             var telemetryLogs = new List<string>();
 
             //do not overwrite the response as it could be being written to
