@@ -16,14 +16,12 @@ internal sealed class RequestLimitsMiddleware : MiddlewareBase
     private readonly int _maxControlDataSizeBytes;
     private readonly int _maxHeaderSizeBytes;
     private readonly int _maxBodySizeBytes;
-    private readonly int _requestReadTimeoutMS;
 
     public RequestLimitsMiddleware(Func<WebContext, CancellationToken, Task> nextFunction, IConfigProvider configProvider) : base(nextFunction)
     {
         _maxControlDataSizeBytes = configProvider.ServerConfig.MiddlewareConfig.RequestLimitsMiddleware.MaxControlDataSizeBytes;
         _maxHeaderSizeBytes = configProvider.ServerConfig.MiddlewareConfig.RequestLimitsMiddleware.MaxHeaderSizeBytes;
         _maxBodySizeBytes = configProvider.ServerConfig.MiddlewareConfig.RequestLimitsMiddleware.MaxBodySizeBytes;
-        _requestReadTimeoutMS = configProvider.ServerConfig.MiddlewareConfig.RequestLimitsMiddleware.RequestReadTimeoutMS;
     }
 
     public override async Task Invoke(WebContext webContext, CancellationToken cancellationToken)
@@ -61,13 +59,9 @@ internal sealed class RequestLimitsMiddleware : MiddlewareBase
             }
         }
 
-        //sets timeout for long reads (client never finishes sending the request)
-        using var requestLimitsCTS = CancellationTokenSource.CreateLinkedTokenSource(cancellationToken);
-        requestLimitsCTS.CancelAfter(_requestReadTimeoutMS);
-
         try
         {
-            await _nextFunction(webContext, requestLimitsCTS.Token);
+            await _nextFunction(webContext, cancellationToken);
         }
         catch (OperationCanceledException)
         {

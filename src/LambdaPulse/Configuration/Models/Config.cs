@@ -31,7 +31,6 @@ public sealed class RequestLimitsMiddleware
     public required int MaxControlDataSizeBytes { get; init; }
     public required int MaxHeaderSizeBytes { get; init; }
     public required int MaxBodySizeBytes { get; init; }
-    public required int RequestReadTimeoutMS { get; init; }
 }
 
 public sealed class ConnectionMiddleware
