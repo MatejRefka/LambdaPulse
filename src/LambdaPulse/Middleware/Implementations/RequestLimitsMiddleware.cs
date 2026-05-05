@@ -20,7 +20,6 @@ internal sealed class RequestLimitsMiddleware : MiddlewareBase
 
     public RequestLimitsMiddleware(Func<WebContext, CancellationToken, Task> nextFunction, IConfigProvider configProvider) : base(nextFunction)
     {
-        _nextFunction = nextFunction;
         _maxControlDataSizeBytes = configProvider.ServerConfig.MiddlewareConfig.RequestLimitsMiddleware.MaxControlDataSizeBytes;
         _maxHeaderSizeBytes = configProvider.ServerConfig.MiddlewareConfig.RequestLimitsMiddleware.MaxHeaderSizeBytes;
         _maxBodySizeBytes = configProvider.ServerConfig.MiddlewareConfig.RequestLimitsMiddleware.MaxBodySizeBytes;
@@ -68,7 +67,7 @@ internal sealed class RequestLimitsMiddleware : MiddlewareBase
 
         try
         {
-            await _nextFunction(webContext, cancellationToken);
+            await _nextFunction(webContext, requestLimitsCTS.Token);
         }
         catch (OperationCanceledException)
         {

@@ -16,7 +16,6 @@ internal sealed class ExceptionMiddleware : MiddlewareBase
 
     public ExceptionMiddleware(Func<WebContext, CancellationToken, Task> nextFunction, IEngineLogger engineLogger) : base(nextFunction)
     {
-        _nextFunction = nextFunction;
         _engineLogger = engineLogger;
     }
 

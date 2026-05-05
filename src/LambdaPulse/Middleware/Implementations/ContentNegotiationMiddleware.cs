@@ -16,7 +16,6 @@ internal sealed class ContentNegotiationMiddleware : MiddlewareBase
 
     public ContentNegotiationMiddleware(Func<WebContext, CancellationToken, Task> nextFunction) : base(nextFunction)
     {
-        _nextFunction = nextFunction;
         _supportedMimeTypes = new List<string>
         {
             "application/json",
@@ -81,7 +80,7 @@ internal sealed class ContentNegotiationMiddleware : MiddlewareBase
 
         await _nextFunction(webContext, cancellationToken);
 
-        //set content-type header if not already set and body was wrtitten to
+        //set content-type header if not already set and body was written to
         if (webContext.WebResponse.HasStarted && !webContext.WebResponse.Headers.ContainsKey("Content-Type"))
         {
             var contentType = webContext.NegotiatedMimeType ?? defaultMimeType;

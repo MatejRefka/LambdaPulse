@@ -6,7 +6,7 @@ namespace LambdaPulse.Engine.Middleware;
 internal abstract class MiddlewareBase
 {
     //delegate pointing to the next function in the pipeline chain
-    protected Func<WebContext, CancellationToken, Task> _nextFunction;
+    protected readonly Func<WebContext, CancellationToken, Task> _nextFunction;
 
     //middleware name used for logging traces
     protected abstract string MiddlewareName { get; }

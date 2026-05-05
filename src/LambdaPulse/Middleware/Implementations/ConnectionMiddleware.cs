@@ -15,7 +15,6 @@ internal sealed class ConnectionMiddleware : MiddlewareBase
     private readonly int _requestExecutionTimeoutMS;
     public ConnectionMiddleware(Func<WebContext, CancellationToken, Task> nextFunction, IConfigProvider configProvider) : base(nextFunction)
     {
-        _nextFunction = nextFunction;
         _requestExecutionTimeoutMS = configProvider.ServerConfig.MiddlewareConfig.ConnectionMiddleware.RequestExecutionTimeoutMS;
     }
 

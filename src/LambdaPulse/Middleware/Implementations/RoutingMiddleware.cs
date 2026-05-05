@@ -11,7 +11,6 @@ internal sealed class RoutingMiddleware : MiddlewareBase
 
     public RoutingMiddleware(Func<WebContext, CancellationToken, Task> nextFunction, EndpointRegistry endpointRegistry) : base(nextFunction)
     {
-        _nextFunction = nextFunction;
         _endpointRegistry = endpointRegistry;
     }
 

@@ -14,7 +14,6 @@ internal sealed class HttpsRedirectionMiddleware : MiddlewareBase
     private readonly bool _Enabled;
     public HttpsRedirectionMiddleware(Func<WebContext, CancellationToken, Task> nextFunction, IConfigProvider configProvider) : base(nextFunction)
     {
-        _nextFunction = nextFunction;
         _Enabled = configProvider.ServerConfig.MiddlewareConfig.HttpsRedirectionMiddleware.Enabled;
     }
 

@@ -18,7 +18,6 @@ internal sealed class ResponseCompressionMiddleware : MiddlewareBase
 
     public ResponseCompressionMiddleware(Func<WebContext, CancellationToken, Task> nextFunction, ICompressor compressor) : base(nextFunction)
     {
-        _nextFunction = nextFunction;
         _compressor = compressor;
         _supportedMimeTypes = new List<string>
         {

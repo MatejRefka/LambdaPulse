@@ -13,7 +13,6 @@ internal sealed class SessionMiddleware : MiddlewareBase
 
     public SessionMiddleware(Func<WebContext, CancellationToken, Task> nextFunction, IConfigProvider configProvider, ISessionStore sessionStore) : base(nextFunction)
     {
-        _nextFunction = nextFunction;
         _sessionStore = sessionStore;
     }
 

@@ -15,7 +15,6 @@ internal sealed class HstsMiddleware : MiddlewareBase
     private readonly bool _preload;
     public HstsMiddleware(Func<WebContext, CancellationToken, Task> nextFunction, IConfigProvider configProvider) : base(nextFunction)
     {
-        _nextFunction = nextFunction;
         _maxAge = configProvider.ServerConfig.MiddlewareConfig.HstsMiddleware.MaxAge;
         _includeSubDomains = configProvider.ServerConfig.MiddlewareConfig.HstsMiddleware.IncludeSubDomains;
         _preload = configProvider.ServerConfig.MiddlewareConfig.HstsMiddleware.Preload;

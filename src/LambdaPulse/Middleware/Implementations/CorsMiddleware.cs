@@ -22,7 +22,6 @@ internal sealed class CorsMiddleware : MiddlewareBase
         _allowedMethods = configProvider.ServerConfig.MiddlewareConfig.CorsMiddleware.AllowedMethods;
         _allowedHeaders = configProvider.ServerConfig.MiddlewareConfig.CorsMiddleware.AllowedHeaders;
         _preflightMaxAgeSeconds = configProvider.ServerConfig.MiddlewareConfig.CorsMiddleware.PreflightMaxAgeSeconds;
-        _nextFunction = nextFunction;
     }
 
     public override async Task Invoke(WebContext webContext, CancellationToken cancellationToken = default)

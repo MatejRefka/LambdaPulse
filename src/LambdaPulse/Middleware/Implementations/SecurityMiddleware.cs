@@ -20,7 +20,6 @@ internal sealed class SecurityMiddleware : MiddlewareBase
 
     public SecurityMiddleware(Func<WebContext, CancellationToken, Task> nextFunction, IConfigProvider configProvider) : base(nextFunction)
     {
-        _nextFunction = nextFunction;
         _xContentTypeOptions = configProvider.ServerConfig.MiddlewareConfig.SecurityMiddleware.XContentTypeOptions;
         _referrerPolicy = configProvider.ServerConfig.MiddlewareConfig.SecurityMiddleware.ReferrerPolicy;
         _permissionsPolicy = configProvider.ServerConfig.MiddlewareConfig.SecurityMiddleware.PermissionsPolicy;

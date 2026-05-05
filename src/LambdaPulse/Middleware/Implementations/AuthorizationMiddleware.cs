@@ -9,7 +9,6 @@ internal sealed class AuthorizationMiddleware : MiddlewareBase
 
     public AuthorizationMiddleware(Func<WebContext, CancellationToken, Task> nextFunction) : base(nextFunction)
     {
-        _nextFunction = nextFunction;
     }
 
     public override async Task Invoke(WebContext webContext, CancellationToken cancellationToken = default)

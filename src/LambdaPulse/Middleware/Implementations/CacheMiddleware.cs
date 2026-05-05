@@ -8,7 +8,6 @@ internal sealed class CacheMiddleware : MiddlewareBase
 
     public CacheMiddleware(Func<WebContext, CancellationToken, Task> nextFunction) : base(nextFunction)
     {
-        _nextFunction = nextFunction;
     }
 
     public override async Task Invoke(WebContext webContext, CancellationToken cancellationToken = default)

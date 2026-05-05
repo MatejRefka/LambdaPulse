@@ -13,7 +13,6 @@ internal sealed class StaticFilesMiddleware : MiddlewareBase
 
     public StaticFilesMiddleware(Func<WebContext, CancellationToken, Task> nextFunction, IConfigProvider configProvider) : base(nextFunction)
     {
-        _nextFunction = nextFunction;
         _fileRootPath = configProvider.ServerConfig.MiddlewareConfig.StaticFilesMiddleware.FileRootPath;
 
         _mimeTypes = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase)
