@@ -61,7 +61,7 @@ internal sealed class ConnectionMiddleware : MiddlewareBase
         }
         catch (OperationCanceledException)
         {
-            if (!webContext.WebResponse.StatusCode.HasValue && !webContext.WebResponse.HasStarted)
+            if (!webContext.WebResponse.StatusCode.HasValue && !webContext.WebResponse.HasBody)
             {
                 webContext.WebResponse.StatusCode = 408;
                 webContext.WebResponse.ResponsePhrase = "Connection timed out";

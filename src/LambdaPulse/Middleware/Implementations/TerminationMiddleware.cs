@@ -13,7 +13,7 @@ internal sealed class TerminationMiddleware : MiddlewareBase
 
     public override async Task Invoke(WebContext webContext, CancellationToken cancellationToken = default)
     {
-        if (!webContext.WebResponse.HasStarted)
+        if (!webContext.WebResponse.HasBody)
         {
             webContext.WebResponse.StatusCode = 404;
             webContext.WebResponse.ResponsePhrase = "Not Found";

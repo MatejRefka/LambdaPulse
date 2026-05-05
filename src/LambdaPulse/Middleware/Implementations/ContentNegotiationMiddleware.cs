@@ -81,7 +81,7 @@ internal sealed class ContentNegotiationMiddleware : MiddlewareBase
         await _nextFunction(webContext, cancellationToken);
 
         //set content-type header if not already set and body was written to
-        if (webContext.WebResponse.HasStarted && !webContext.WebResponse.Headers.ContainsKey("Content-Type"))
+        if (webContext.WebResponse.HasBody && !webContext.WebResponse.Headers.ContainsKey("Content-Type"))
         {
             var contentType = webContext.NegotiatedMimeType ?? defaultMimeType;
 

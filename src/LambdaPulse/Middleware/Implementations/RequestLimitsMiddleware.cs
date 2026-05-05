@@ -68,7 +68,7 @@ internal sealed class RequestLimitsMiddleware : MiddlewareBase
             Console.WriteLine($"[RequestLimits] request timed out");
 
             //timeout occurred due to client-side or network delay
-            if (!webContext.WebResponse.StatusCode.HasValue && !webContext.WebResponse.HasStarted)
+            if (!webContext.WebResponse.StatusCode.HasValue && !webContext.WebResponse.HasBody)
             {
                 webContext.WebResponse.StatusCode = 408;
                 webContext.WebResponse.ResponsePhrase = "Request timed out";

@@ -36,7 +36,7 @@ internal sealed class ResponseCompressionMiddleware : MiddlewareBase
         await _nextFunction(webContext, cancellationToken);
 
         //body is empty so nothing to compress
-        if (!webContext.WebResponse.HasStarted)
+        if (!webContext.WebResponse.HasBody)
         {
             return;
         }

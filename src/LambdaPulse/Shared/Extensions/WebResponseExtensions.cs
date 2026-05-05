@@ -8,7 +8,7 @@ public static class WebResponseExtensions
 {
     public static async Task WriteBytesToBody(this WebResponse webResponse, byte[] bytes, CancellationToken cancellationToken)
     {
-        webResponse.HasStarted = true;
+        webResponse.HasBody = true;
         await webResponse.Body.WriteAsync(bytes, cancellationToken);
     }
 
@@ -21,7 +21,7 @@ public static class WebResponseExtensions
             webResponse.Headers["Content-Type"] = "text/plain; charset=utf-8";
         }
 
-        webResponse.HasStarted = true;
+        webResponse.HasBody = true;
         await webResponse.Body.WriteAsync(bytes, cancellationToken);
     }
 
@@ -32,7 +32,7 @@ public static class WebResponseExtensions
 
         webResponse.Headers["Content-Type"] = "application/json";
 
-        webResponse.HasStarted = true;
+        webResponse.HasBody = true;
         await webResponse.Body.WriteAsync(bytes, cancellationToken);
     }
 }

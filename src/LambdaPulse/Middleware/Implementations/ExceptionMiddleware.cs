@@ -31,29 +31,17 @@ internal sealed class ExceptionMiddleware : MiddlewareBase
         {
             var downstreamStart = DateTimeOffset.UtcNow;
             _engineLogger.Log(LogLevel.Error, "ExceptionMiddleware", "Pipeline threw an unhandled exception.", e);
-            var telemetryLogs = new List<string>();
 
-            //do not overwrite the response as it could be being written to
-            if (!webContext.WebResponse.HasStarted)
-            {
-                webContext.WebResponse.StatusCode = 500;
-                webContext.WebResponse.ResponsePhrase = "Internal Server Error";
-                await webContext.WebResponse.WriteStringToBody("The server encountered an unexpected condition that prevented it from fulfilling the request.", cancellationToken);
+            webContext.WebResponse.StatusCode = 500;
+            webContext.WebResponse.ResponsePhrase = "Internal Server Error";
+            webContext.WebResponse.Headers.Clear();
+            webContext.WebResponse.Cookies.Clear();
+            webContext.WebResponse.Body.SetLength(0);
+            webContext.WebResponse.Body.Position = 0;
 
-                //clear response headers
-                webContext.WebResponse.Headers = new Dictionary<string, string>()
-                {
-                    ["Content-Type"] = "text/plain; charset=utf-8"
-                };
+            await webContext.WebResponse.WriteStringToBody("The server encountered an unexpected condition that prevented it from fulfilling the request.", cancellationToken);
 
-                telemetryLogs.Add("500 response written. Response headers cleared.");
-            }
-            else
-            {
-                telemetryLogs.Add("Exception thrown after the response has started being written.");
-            }
-
-            RecordTelemetry(webContext, FlowDirection.Upstream, ExecutionEvent.Success, downstreamStart, telemetryLogs);
+            RecordTelemetry(webContext, FlowDirection.Upstream, ExecutionEvent.Success, downstreamStart, new List<string> { "500 response written. Response headers cleared." });
         }
     }
 }

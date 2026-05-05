@@ -9,5 +9,5 @@ public sealed class WebResponse
     //Response cookie header contains key-value pair plus metadata. E.g. Set-Cookies: sessionId=123; Path=/; SameSite=Strict
     public List<string> Cookies { get; } = new();
     internal MemoryStream Body { get; } = new();
-    public bool HasStarted { get; internal set; }
+    public bool HasBody { get; internal set; }
 }
