@@ -41,7 +41,6 @@ public static class ServerBuilder
         //construct the middleware pipeline, once per server instance
         var pipeline = new Pipeline(resolver)
                         .AddMiddleware<ExceptionMiddleware>()
-                        .AddMiddleware<LoggingMiddleware>()
                         .AddMiddleware<RequestLimitsMiddleware>()
                         .AddMiddleware<ConnectionMiddleware>()
                         .AddMiddleware<HttpsRedirectionMiddleware>()
