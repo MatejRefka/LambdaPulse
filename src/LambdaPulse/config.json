@@ -14,7 +14,7 @@
         "RequestExecutionTimeoutMS": 10000
       },
       "HttpsRedirectionMiddleware": {
-        "Enabled": false
+        "IsEnabled": false
       },
       "HstsMiddleware": {
         "MaxAge": 63072000,

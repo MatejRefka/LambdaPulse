@@ -40,7 +40,7 @@ public sealed class ConnectionMiddleware
 
 public sealed class HttpsRedirectionMiddleware
 {
-    public required bool Enabled { get; init; }
+    public required bool IsEnabled { get; init; }
 }
 
 public sealed class HstsMiddleware

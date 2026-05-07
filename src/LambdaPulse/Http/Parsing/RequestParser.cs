@@ -26,12 +26,12 @@ internal sealed class RequestParser : IRequestParser
         var rawUrl = controlDataItems[1];
         var protocol = controlDataItems[2];
 
-        //seperate path and query parameters from raw URL
+        //separate path and query parameters from raw URL
         var urlSegments = rawUrl.Split('?', 2);
         var path = urlSegments[0];
         var queryParameters = urlSegments.Length > 1 ? ParseQueryParameters(urlSegments[1]) : new Dictionary<string, string>();
 
-        var headers = new Dictionary<string, string>();
+        var headers = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
         string? header;
         while (!string.IsNullOrWhiteSpace(header = reader.ReadLine()))
         {

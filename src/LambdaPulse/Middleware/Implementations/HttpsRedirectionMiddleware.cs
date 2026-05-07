@@ -1,28 +1,34 @@
 ﻿using LambdaPulse.Engine.Configuration;
+using LambdaPulse.Engine.Features.Logging;
 using LambdaPulse.Engine.Http.Abstractions;
 using LambdaPulse.Engine.Shared.Extensions;
 
 namespace LambdaPulse.Engine.Middleware.Implementations;
 
 /// <summary>
-/// Constructs a redirect response for http requests 
+/// Constructs a redirect response for http requests if the server is configured to enforce https.
+/// Skips redirection if the request is forwarded as https by a reverse proxy
 /// </summary>
 internal sealed class HttpsRedirectionMiddleware : MiddlewareBase
 {
     protected override string MiddlewareName => "HTTPS";
 
-    private readonly bool _Enabled;
+    private readonly bool _isEnabled;
     public HttpsRedirectionMiddleware(Func<WebContext, CancellationToken, Task> nextFunction, IConfigProvider configProvider) : base(nextFunction)
     {
-        _Enabled = configProvider.ServerConfig.MiddlewareConfig.HttpsRedirectionMiddleware.Enabled;
+        _isEnabled = configProvider.ServerConfig.MiddlewareConfig.HttpsRedirectionMiddleware.IsEnabled;
     }
 
     public override async Task Invoke(WebContext webContext, CancellationToken cancellationToken = default)
     {
+        var downstreamStart = DateTimeOffset.UtcNow;
+
         //https redirect disabled by server or request is https -forwarded by reverse proxy
-        if (!_Enabled || (webContext.WebRequest.Headers.TryGetValue("X-Forwarded-Proto", out var fwProtocol) && string.Equals(fwProtocol, "https", StringComparison.OrdinalIgnoreCase)))
+        if (!_isEnabled || (webContext.WebRequest.Headers.TryGetValue("X-Forwarded-Proto", out var fwProtocol) && string.Equals(fwProtocol, "https", StringComparison.OrdinalIgnoreCase)))
         {
+            RecordTelemetry(webContext, FlowDirection.Downstream, ExecutionEvent.Success, downstreamStart, new List<string> { !_isEnabled ? "HTTPS redirection is disabled by the server." : "Request is forwarded as HTTPS by a reverse proxy.", });
             await _nextFunction(webContext, cancellationToken);
+            RecordTelemetry(webContext, FlowDirection.Upstream, ExecutionEvent.Success, DateTimeOffset.UtcNow);
             return;
         }
 
@@ -33,6 +39,7 @@ internal sealed class HttpsRedirectionMiddleware : MiddlewareBase
             webContext.WebResponse.ResponsePhrase = "Bad Request";
             await webContext.WebResponse.WriteStringToBody("Missing Host Header.", cancellationToken);
 
+            RecordTelemetry(webContext, FlowDirection.Downstream, ExecutionEvent.ShortCircuit, downstreamStart, new List<string> { "Missing host header." });
             return;
         }
         else
@@ -40,17 +47,20 @@ internal sealed class HttpsRedirectionMiddleware : MiddlewareBase
             //strip out port if included 
             var portStartIndex = hostHeaderValue?.LastIndexOf(":", StringComparison.OrdinalIgnoreCase);
             var hostNoPort = (portStartIndex != null && portStartIndex > 0) ? hostHeaderValue?[..(int)portStartIndex] : hostHeaderValue;
+            var queryString = string.Join("&", webContext.WebRequest.QueryParameters.Select(param => $"{param.Key}={param.Value}"));
 
             //default port is 443 if not specified
-            var redirectUrl = $"https://{hostNoPort}{webContext.WebRequest.Path}";
+            var redirectUrl = $"https://{hostNoPort}{webContext.WebRequest.Path}?{queryString}";
 
             webContext.WebResponse.StatusCode = 307;
-            webContext.WebResponse.ResponsePhrase = "Internal Redirect";
+            webContext.WebResponse.ResponsePhrase = "Temporary Redirect";
             webContext.WebResponse.Headers["Location"] = redirectUrl;
-            if (!webContext.WebRequest.Headers.ContainsKey("X-Forwarded-For"))
-            {
-                webContext.WebResponse.Headers["Connection"] = "close";
-            }
+
+            //client will open a new connection to the redirect url, so close the current connection
+            webContext.WebResponse.Headers["Connection"] = "close";
+            webContext.ConnectionCloseRequested = true;
+
+            RecordTelemetry(webContext, FlowDirection.Downstream, ExecutionEvent.ShortCircuit, downstreamStart, new List<string> { $"Temporary redirect to {redirectUrl}.", "Connection 'close' set." });
         }
     }
 }
