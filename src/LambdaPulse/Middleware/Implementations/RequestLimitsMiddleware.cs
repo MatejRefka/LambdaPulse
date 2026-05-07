@@ -1,4 +1,5 @@
 ﻿using LambdaPulse.Engine.Configuration;
+using LambdaPulse.Engine.Features.Logging;
 using LambdaPulse.Engine.Http.Abstractions;
 using LambdaPulse.Engine.Shared.Extensions;
 using System.Text;
@@ -6,8 +7,7 @@ using System.Text;
 namespace LambdaPulse.Engine.Middleware.Implementations;
 
 /// <summary>
-/// Enforces request limits, protecting the server from requests that are too large or too slow.
-/// Constructs a cancelation source, passing a cancelation token to downstream middleware.
+/// Enforces request limits, protecting the server from requests that are too large.
 /// </summary>
 internal sealed class RequestLimitsMiddleware : MiddlewareBase
 {
@@ -26,6 +26,8 @@ internal sealed class RequestLimitsMiddleware : MiddlewareBase
 
     public override async Task Invoke(WebContext webContext, CancellationToken cancellationToken)
     {
+        var downstreamStart = DateTimeOffset.UtcNow;
+
         //control data size limit
         var controlDataSize = Encoding.UTF8.GetByteCount(webContext.WebRequest.Protocol) + Encoding.UTF8.GetByteCount(webContext.WebRequest.Method) + Encoding.UTF8.GetByteCount(webContext.WebRequest.Path);
         if (controlDataSize > _maxControlDataSizeBytes)
@@ -33,6 +35,7 @@ internal sealed class RequestLimitsMiddleware : MiddlewareBase
             webContext.WebResponse.StatusCode = 414;
             webContext.WebResponse.ResponsePhrase = "Request URI too long";
             await webContext.WebResponse.WriteStringToBody("Request control data is too large.", cancellationToken);
+            RecordTelemetry(webContext, FlowDirection.Downstream, ExecutionEvent.ShortCircuit, downstreamStart, new List<string> { $"Request control data is too large (URI). Maximum bytes allowed: {_maxControlDataSizeBytes}." });
             return;
         }
 
@@ -43,6 +46,7 @@ internal sealed class RequestLimitsMiddleware : MiddlewareBase
             webContext.WebResponse.StatusCode = 431;
             webContext.WebResponse.ResponsePhrase = "Request header fields are too large";
             await webContext.WebResponse.WriteStringToBody("Request header fields are too large.", cancellationToken);
+            RecordTelemetry(webContext, FlowDirection.Downstream, ExecutionEvent.ShortCircuit, downstreamStart, new List<string> { $"Request header fields are too large. Maximum bytes allowed: {_maxHeaderSizeBytes}." });
             return;
         }
 
@@ -55,25 +59,13 @@ internal sealed class RequestLimitsMiddleware : MiddlewareBase
                 webContext.WebResponse.StatusCode = 413;
                 webContext.WebResponse.ResponsePhrase = "Request body is too large";
                 await webContext.WebResponse.WriteStringToBody("Request body is too large.", cancellationToken);
+                RecordTelemetry(webContext, FlowDirection.Downstream, ExecutionEvent.ShortCircuit, downstreamStart, new List<string> { $"Request body too large. Maximum bytes allowed: {_maxBodySizeBytes}." });
                 return;
             }
         }
 
-        try
-        {
-            await _nextFunction(webContext, cancellationToken);
-        }
-        catch (OperationCanceledException)
-        {
-            Console.WriteLine($"[RequestLimits] request timed out");
-
-            //timeout occurred due to client-side or network delay
-            if (!webContext.WebResponse.StatusCode.HasValue && !webContext.WebResponse.HasBody)
-            {
-                webContext.WebResponse.StatusCode = 408;
-                webContext.WebResponse.ResponsePhrase = "Request timed out";
-                await webContext.WebResponse.WriteStringToBody("The server did not receive a complete request in time.", cancellationToken);
-            }
-        }
+        RecordTelemetry(webContext, FlowDirection.Downstream, ExecutionEvent.Success, downstreamStart);
+        await _nextFunction(webContext, cancellationToken);
+        RecordTelemetry(webContext, FlowDirection.Upstream, ExecutionEvent.Success, DateTimeOffset.UtcNow);
     }
 }
