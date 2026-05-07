@@ -44,7 +44,7 @@ internal sealed class ConnectionMiddleware : MiddlewareBase
             //downstream middleware already set the connection header
             if (webContext.WebResponse.Headers.ContainsKey("Connection"))
             {
-                RecordTelemetry(webContext, FlowDirection.Upstream, ExecutionEvent.Success, upstreamStart, new List<string> { $"Connection header already set by downstream middleware." });
+                RecordTelemetry(webContext, FlowDirection.Upstream, ExecutionEvent.Success, upstreamStart, new List<string> { $"'Connection' header already set by downstream middleware." });
                 return;
             }
 
@@ -55,19 +55,19 @@ internal sealed class ConnectionMiddleware : MiddlewareBase
                 {
                     webContext.WebResponse.Headers["Connection"] = "close";
                     webContext.ConnectionCloseRequested = true;
-                    RecordTelemetry(webContext, FlowDirection.Upstream, ExecutionEvent.Success, upstreamStart, new List<string> { $"Connection 'close' requested by the client." });
+                    RecordTelemetry(webContext, FlowDirection.Upstream, ExecutionEvent.Success, upstreamStart, new List<string> { $"'Connection: close' requested by the client." });
                 }
                 else
                 {
                     webContext.WebResponse.Headers["Connection"] = "keep-alive";
-                    RecordTelemetry(webContext, FlowDirection.Upstream, ExecutionEvent.Success, upstreamStart, new List<string> { $"Connection 'keep-alive' requested by the client." });
+                    RecordTelemetry(webContext, FlowDirection.Upstream, ExecutionEvent.Success, upstreamStart, new List<string> { $"'Connection: keep-alive' requested by the client." });
                 }
             }
             else
             {
                 //default to keep-alive if no header specified in request or set by downstream middleware
                 webContext.WebResponse.Headers["Connection"] = "keep-alive";
-                RecordTelemetry(webContext, FlowDirection.Upstream, ExecutionEvent.Success, upstreamStart, new List<string> { $"Connection 'keep-alive' set by default." });
+                RecordTelemetry(webContext, FlowDirection.Upstream, ExecutionEvent.Success, upstreamStart, new List<string> { $"'Connection: keep-alive' set by default." });
             }
         }
         //only catch request execution timeout
@@ -89,7 +89,7 @@ internal sealed class ConnectionMiddleware : MiddlewareBase
             webContext.WebResponse.Body.Position = 0;
             await webContext.WebResponse.WriteStringToBody("The server did not process the request in a timely manner.", cancellationToken);
 
-            RecordTelemetry(webContext, FlowDirection.Upstream, ExecutionEvent.Success, upstreamStart, new List<string> { $"The server did not process the request within {_requestExecutionTimeoutMS}ms.", "Connection 'close' set." });
+            RecordTelemetry(webContext, FlowDirection.Upstream, ExecutionEvent.Success, upstreamStart, new List<string> { $"The server did not process the request within {_requestExecutionTimeoutMS}ms.", "'Connection: close' set." });
         }
     }
 }

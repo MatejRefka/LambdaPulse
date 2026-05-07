@@ -42,7 +42,7 @@ internal sealed class ExceptionMiddleware : MiddlewareBase
             webContext.WebResponse.Body.Position = 0;
             await webContext.WebResponse.WriteStringToBody("The server encountered an unexpected condition that prevented it from fulfilling the request.", cancellationToken);
 
-            RecordTelemetry(webContext, FlowDirection.Upstream, ExecutionEvent.Success, downstreamStart, new List<string> { "500 response written. Response headers cleared." });
+            RecordTelemetry(webContext, FlowDirection.Upstream, ExecutionEvent.Success, downstreamStart, new List<string> { "Overwrite with a 500 response.", "Response headers and cookies cleared." });
         }
     }
 }

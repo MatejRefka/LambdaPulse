@@ -46,6 +46,6 @@ internal sealed class HstsMiddleware : MiddlewareBase
         }
 
         webContext.WebResponse.Headers["Strict-Transport-Security"] = hstsHeaderValue;
-        RecordTelemetry(webContext, FlowDirection.Upstream, ExecutionEvent.Success, downstreamStart, new List<string?> { $"Set 'max-age' to {_maxAge}.", _includeSubDomains ? "Set 'includeSubDomains'." : null, _preload ? "Set 'preload'." : null }.OfType<string>().ToList());
+        RecordTelemetry(webContext, FlowDirection.Upstream, ExecutionEvent.Success, downstreamStart, new List<string?> { $"Set 'max-age={_maxAge}'.", _includeSubDomains ? "Appended 'includeSubDomains'." : null, _preload ? "Appended 'preload'." : null }.OfType<string>().ToList());
     }
 }

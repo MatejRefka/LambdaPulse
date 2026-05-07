@@ -35,7 +35,7 @@ internal sealed class RequestLimitsMiddleware : MiddlewareBase
             webContext.WebResponse.StatusCode = 414;
             webContext.WebResponse.ResponsePhrase = "Request URI too long";
             await webContext.WebResponse.WriteStringToBody("Request control data is too large.", cancellationToken);
-            RecordTelemetry(webContext, FlowDirection.Downstream, ExecutionEvent.ShortCircuit, downstreamStart, new List<string> { $"Request control data is too large (URI). Maximum bytes allowed: {_maxControlDataSizeBytes}." });
+            RecordTelemetry(webContext, FlowDirection.Downstream, ExecutionEvent.ShortCircuit, downstreamStart, new List<string> { $"Request control data is too large (URL). Maximum bytes allowed: {_maxControlDataSizeBytes}." });
             return;
         }
 
@@ -59,7 +59,7 @@ internal sealed class RequestLimitsMiddleware : MiddlewareBase
                 webContext.WebResponse.StatusCode = 413;
                 webContext.WebResponse.ResponsePhrase = "Request body is too large";
                 await webContext.WebResponse.WriteStringToBody("Request body is too large.", cancellationToken);
-                RecordTelemetry(webContext, FlowDirection.Downstream, ExecutionEvent.ShortCircuit, downstreamStart, new List<string> { $"Request body too large. Maximum bytes allowed: {_maxBodySizeBytes}." });
+                RecordTelemetry(webContext, FlowDirection.Downstream, ExecutionEvent.ShortCircuit, downstreamStart, new List<string> { $"Request body is too large. Maximum bytes allowed: {_maxBodySizeBytes}." });
                 return;
             }
         }

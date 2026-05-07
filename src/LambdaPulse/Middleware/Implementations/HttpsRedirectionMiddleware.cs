@@ -39,7 +39,7 @@ internal sealed class HttpsRedirectionMiddleware : MiddlewareBase
             webContext.WebResponse.ResponsePhrase = "Bad Request";
             await webContext.WebResponse.WriteStringToBody("Missing Host Header.", cancellationToken);
 
-            RecordTelemetry(webContext, FlowDirection.Downstream, ExecutionEvent.ShortCircuit, downstreamStart, new List<string> { "Missing host header." });
+            RecordTelemetry(webContext, FlowDirection.Downstream, ExecutionEvent.ShortCircuit, downstreamStart, new List<string> { "Missing 'Host' header." });
             return;
         }
         else
@@ -60,7 +60,7 @@ internal sealed class HttpsRedirectionMiddleware : MiddlewareBase
             webContext.WebResponse.Headers["Connection"] = "close";
             webContext.ConnectionCloseRequested = true;
 
-            RecordTelemetry(webContext, FlowDirection.Downstream, ExecutionEvent.ShortCircuit, downstreamStart, new List<string> { $"Temporary redirect to {redirectUrl}.", "Connection 'close' set." });
+            RecordTelemetry(webContext, FlowDirection.Downstream, ExecutionEvent.ShortCircuit, downstreamStart, new List<string> { $"Temporary redirect to {redirectUrl}.", "Set 'Connection: close'." });
         }
     }
 }
