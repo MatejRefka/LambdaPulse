@@ -5,6 +5,17 @@
 		<TargetFramework>net10.0</TargetFramework>
 		<ImplicitUsings>enable</ImplicitUsings>
 		<Nullable>enable</Nullable>
+		<EnforceCodeStyleInBuild>False</EnforceCodeStyleInBuild>
+	</PropertyGroup>
+
+	<PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
+	  <NoWarn />
+	  <WarningLevel>4</WarningLevel>
+	</PropertyGroup>
+
+	<PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
+	  <NoWarn />
+	  <WarningLevel>4</WarningLevel>
 	</PropertyGroup>
 
 	<ItemGroup>
