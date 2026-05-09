@@ -29,7 +29,7 @@ internal sealed class ConnectionMiddleware : MiddlewareBase
 
         try
         {
-            RecordTelemetry(webContext, FlowDirection.Downstream, ExecutionEvent.Success, downstreamStart, new List<string> { $"Time to fully process request: {_requestExecutionTimeoutMS}ms." });
+            RecordTelemetry(webContext, FlowDirection.Downstream, ExecutionEvent.Success, downstreamStart, new List<string> { $"Time to fully process request: {_requestExecutionTimeoutMS} ms." });
             await _nextFunction(webContext, requestTimeoutCTS.Token);
 
             var upstreamStart = DateTimeOffset.UtcNow;
@@ -89,7 +89,7 @@ internal sealed class ConnectionMiddleware : MiddlewareBase
             webContext.WebResponse.Body.Position = 0;
             await webContext.WebResponse.WriteStringToBody("The server did not process the request in a timely manner.", cancellationToken);
 
-            RecordTelemetry(webContext, FlowDirection.Upstream, ExecutionEvent.Success, upstreamStart, new List<string> { $"The server did not process the request within {_requestExecutionTimeoutMS}ms.", "'Connection: close' set." });
+            RecordTelemetry(webContext, FlowDirection.Upstream, ExecutionEvent.Success, upstreamStart, new List<string> { $"The server did not process the request within {_requestExecutionTimeoutMS} ms.", "'Connection: close' set." });
         }
     }
 }
