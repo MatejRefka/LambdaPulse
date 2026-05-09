@@ -26,7 +26,7 @@ internal sealed class SessionMiddleware : MiddlewareBase
         var downstreamLogs = new List<string>();
 
         webContext.WebRequest.Cookies.TryGetValue(SessionCookieName, out var sessionId);
-        downstreamLogs.Add(string.IsNullOrWhiteSpace(sessionId) ? "Session cookie not present." : $"Session cookie '{SessionCookieName}={sessionId}'.");
+        downstreamLogs.Add(string.IsNullOrWhiteSpace(sessionId) ? "Session cookie not present." : $"Session cookie '{SessionCookieName}' present.");
 
         var requestSession = string.IsNullOrWhiteSpace(sessionId) ? CreateSession() : await _sessionStore.GetSession(sessionId, cancellationToken);
         downstreamLogs.Add(string.IsNullOrWhiteSpace(sessionId) ? "New session created." : (requestSession != null ? $"Session found in store." : $"Session not found in store. New session created."));
@@ -49,7 +49,7 @@ internal sealed class SessionMiddleware : MiddlewareBase
         if (webContext.Session.IsNew)
         {
             webContext.WebResponse.Cookies.Add($"{SessionCookieName}={webContext.Session.Id}; Path=/; HttpOnly; Secure");
-            upstreamLogs.Add($"Set '{SessionCookieName}={webContext.Session.Id}; Path=/; HttpOnly; Secure' cookie.");
+            upstreamLogs.Add($"Set '{SessionCookieName}=xyz; Path=/; HttpOnly; Secure' cookie.");
         }
 
         RecordTelemetry(webContext, FlowDirection.Upstream, ExecutionEvent.Success, upstreamStart, upstreamLogs);
