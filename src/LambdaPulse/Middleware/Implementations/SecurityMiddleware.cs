@@ -35,7 +35,7 @@ internal sealed class SecurityMiddleware : MiddlewareBase
         RecordTelemetry(webContext, FlowDirection.Downstream, ExecutionEvent.Success, DateTimeOffset.UtcNow);
         await _nextFunction(webContext, cancellationToken);
 
-        var downstreamStart = DateTimeOffset.UtcNow;
+        var upstreamStart = DateTimeOffset.UtcNow;
         var logs = new List<string>();
 
         if (_xContentTypeOptions)
@@ -80,6 +80,6 @@ internal sealed class SecurityMiddleware : MiddlewareBase
             logs.Add("Removed 'Server' header.");
         }
 
-        RecordTelemetry(webContext, FlowDirection.Upstream, ExecutionEvent.Success, downstreamStart, logs);
+        RecordTelemetry(webContext, FlowDirection.Upstream, ExecutionEvent.Success, upstreamStart, logs);
     }
 }

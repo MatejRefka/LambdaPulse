@@ -14,7 +14,7 @@ internal sealed class ResponseWriter : IResponseWriter
         webContext.WebResponse.Body.Position = 0;
         var bodyBytes = webContext.WebResponse.Body.ToArray();
 
-        //recommended response headers for http/1.1
+        //recommended response headers for HTTP/1.1
         if (!webContext.WebResponse.Headers.ContainsKey("Content-Length"))
         {
             webContext.WebResponse.Headers["Content-Length"] = bodyBytes.Length > 0 ? bodyBytes.Length.ToString(CultureInfo.InvariantCulture) : "0";
@@ -34,6 +34,12 @@ internal sealed class ResponseWriter : IResponseWriter
         {
             headersBlock += $"{header.Key}: {header.Value}\r\n";
         }
+        //parse Cookies into the headers block
+        foreach (var cookie in webContext.WebResponse.Cookies)
+        {
+            headersBlock += $"Set-Cookie: {cookie}\r\n";
+        }
+
         headersBlock += "\r\n";
 
         //encode headers

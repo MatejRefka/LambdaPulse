@@ -26,12 +26,12 @@ internal sealed class HstsMiddleware : MiddlewareBase
         RecordTelemetry(webContext, FlowDirection.Downstream, ExecutionEvent.Success, DateTimeOffset.UtcNow);
         await _nextFunction(webContext, cancellationToken);
 
-        var downstreamStart = DateTimeOffset.UtcNow;
+        var upstreamStart = DateTimeOffset.UtcNow;
 
         //HSTS only applies to HTTPS
         if (!(webContext.WebRequest.Headers.TryGetValue("X-Forwarded-Proto", out var fwProtocol) || !string.Equals(fwProtocol, "https", StringComparison.OrdinalIgnoreCase)))
         {
-            RecordTelemetry(webContext, FlowDirection.Upstream, ExecutionEvent.Success, downstreamStart, new List<string> { "HSTS is skipped because the request was not forwarded as HTTPS." });
+            RecordTelemetry(webContext, FlowDirection.Upstream, ExecutionEvent.Success, upstreamStart, new List<string> { "HSTS is skipped because the request was not forwarded as HTTPS." });
             return;
         }
 
@@ -46,6 +46,6 @@ internal sealed class HstsMiddleware : MiddlewareBase
         }
 
         webContext.WebResponse.Headers["Strict-Transport-Security"] = hstsHeaderValue;
-        RecordTelemetry(webContext, FlowDirection.Upstream, ExecutionEvent.Success, downstreamStart, new List<string?> { $"Set 'max-age={_maxAge}'.", _includeSubDomains ? "Appended 'includeSubDomains'." : null, _preload ? "Appended 'preload'." : null }.OfType<string>().ToList());
+        RecordTelemetry(webContext, FlowDirection.Upstream, ExecutionEvent.Success, upstreamStart, new List<string?> { $"Set 'max-age={_maxAge}'.", _includeSubDomains ? "Appended 'includeSubDomains'." : null, _preload ? "Appended 'preload'." : null }.OfType<string>().ToList());
     }
 }
