@@ -2,7 +2,7 @@
 
 public interface ISessionStore
 {
-    Session? GetSession(string sessionId);
+    Task<Session?> GetSession(string sessionId, CancellationToken cancellationToken);
 
-    void SaveSession(Session session);
+    Task SaveSession(Session session, CancellationToken cancellationToken);
 }

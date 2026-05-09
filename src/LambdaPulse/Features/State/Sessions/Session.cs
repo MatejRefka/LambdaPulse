@@ -4,7 +4,7 @@ public sealed class Session : IDisposable
 {
     private readonly Dictionary<string, object> _data = new();
 
-    //ensures only one request can access session at a time, avoding race conditions
+    //ensures only one request can access session at a time, avoiding race conditions
     private readonly SemaphoreSlim _gate = new(1);
 
     public string Id { get; }

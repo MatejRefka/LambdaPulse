@@ -16,11 +16,11 @@ internal sealed class InMemorySessionStore : ISessionStore
         _idleTimeout = TimeSpan.FromMinutes(configProvider.ServerConfig.MiddlewareConfig.SessionMiddleware.IdleTimeoutMinutes);
     }
 
-    public Session? GetSession(string sessionId)
+    public Task<Session?> GetSession(string sessionId, CancellationToken cancellationToken)
     {
         if (!_sessions.TryGetValue(sessionId, out var session))
         {
-            return null;
+            return Task.FromResult<Session?>(null);
         }
 
         var now = DateTimeOffset.UtcNow;
@@ -29,21 +29,22 @@ internal sealed class InMemorySessionStore : ISessionStore
         {
             //session has expired
             RemoveSession(sessionId);
-            return null;
+            return Task.FromResult<Session?>(null);
         }
 
         //update last accessed time after session is read
         session.LastAccessedUtc = now;
-        return session;
+        return Task.FromResult<Session?>(session);
     }
 
-    public void SaveSession(Session session)
+    public Task SaveSession(Session session, CancellationToken cancellationToken)
     {
         _sessions[session.Id] = session;
         session.IsNew = false;
+        return Task.CompletedTask;
     }
 
-    public void RemoveSession(string sessionId)
+    private void RemoveSession(string sessionId)
     {
         _sessions.TryRemove(sessionId, out var session);
         session?.Dispose();
