@@ -25,7 +25,7 @@ internal sealed class EndpointRegistry : IEndpointRegistry
             //requested path matches registered endpoint path
             if (pathsMatch)
             {
-                //needs a fresh endpoint isntance because each request will have different path parameters
+                //needs a fresh endpoint instance because each request will have different path parameters
                 return new Endpoint { Method = endpoint.Method, Path = endpoint.Path, ApplicationFunction = endpoint.ApplicationFunction, PathParameters = pathParameters, AllowAnonymous = endpoint.AllowAnonymous, RequiredRole = endpoint.RequiredRole };
             }
         }
