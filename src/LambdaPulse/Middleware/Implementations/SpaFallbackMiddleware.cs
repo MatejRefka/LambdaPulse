@@ -4,6 +4,10 @@ using LambdaPulse.Engine.Http.Abstractions;
 
 namespace LambdaPulse.Engine.Middleware.Implementations;
 
+/// <summary>
+/// Serves a fallback web page when no endpoint is matched.
+/// Applies to GET requests accepting HTML. Does not apply to file requests and API routes.
+/// </summary>
 internal sealed class SpaFallbackMiddleware : MiddlewareBase
 {
     protected override string MiddlewareName => "SPA Fallback";
