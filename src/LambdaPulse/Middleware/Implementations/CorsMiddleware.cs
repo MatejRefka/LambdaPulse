@@ -1,9 +1,15 @@
 ﻿using LambdaPulse.Engine.Configuration;
+using LambdaPulse.Engine.Features.Logging;
 using LambdaPulse.Engine.Http.Abstractions;
 using System.Globalization;
 
 namespace LambdaPulse.Engine.Middleware.Implementations;
 
+/// <summary>
+/// Inspects the origin header of incoming requests and adds CORS headers based on the server's configuration.
+/// These override default same-origin policy browser behavior and allow or restrict cross-origin requests.
+/// Response headers pertain to origins, methods, headers, exposed headers, and credentials allowed by the server.
+/// </summary>
 internal sealed class CorsMiddleware : MiddlewareBase
 {
     protected override string MiddlewareName => "CORS";
@@ -26,46 +32,58 @@ internal sealed class CorsMiddleware : MiddlewareBase
 
     public override async Task Invoke(WebContext webContext, CancellationToken cancellationToken = default)
     {
+        var downstreamStart = DateTimeOffset.UtcNow;
+        var logs = new List<string>();
+
         webContext.WebRequest.Headers.TryGetValue("Origin", out var origin);
 
         //same-origin or non-browser request
         if (string.IsNullOrWhiteSpace(origin))
         {
+            RecordTelemetry(webContext, FlowDirection.Downstream, ExecutionEvent.Success, downstreamStart, new List<string> { "No origin header. CORS skipped." });
             await _nextFunction(webContext, cancellationToken);
+            RecordTelemetry(webContext, FlowDirection.Upstream, ExecutionEvent.Success, DateTimeOffset.UtcNow);
             return;
         }
 
         //origin is not within the allowed list
         if (!_allowedOrigins.Contains(origin))
         {
+            RecordTelemetry(webContext, FlowDirection.Downstream, ExecutionEvent.Success, downstreamStart, new List<string> { "Origin not allowed. CORS skipped." });
             await _nextFunction(webContext, cancellationToken);
+            RecordTelemetry(webContext, FlowDirection.Upstream, ExecutionEvent.Success, DateTimeOffset.UtcNow);
             return;
         }
 
         //allow sending to origin
         webContext.WebResponse.Headers["Access-Control-Allow-Origin"] = origin;
+        logs.Add($"Allowed origin: '{origin}'.");
 
         //add "Origin" to Vary header. Cache now needs to check request Origin before serving cached content
         webContext.WebResponse.Headers.TryGetValue("Vary", out var varyHeaderValue);
         if (string.IsNullOrWhiteSpace(varyHeaderValue))
         {
             webContext.WebResponse.Headers["Vary"] = "Origin";
+            logs.Add("Set 'Vary: Origin'.");
         }
         else if (!varyHeaderValue.Contains("Origin", StringComparison.OrdinalIgnoreCase))
         {
             webContext.WebResponse.Headers["Vary"] = $"{varyHeaderValue}, Origin";
+            logs.Add("Appended 'Origin' to 'Vary' header.");
         }
 
         //browser-stored credentials are sent with the request (session cookies, http auth,...)
         if (_allowCredentials)
         {
             webContext.WebResponse.Headers["Access-Control-Allow-Credentials"] = "true";
+            logs.Add("Credentials allowed.");
         }
 
         //allow JS to read these headers
         if (_exposedHeaders.Count > 0)
         {
             webContext.WebResponse.Headers["Access-Control-Expose-Headers"] = string.Join(", ", _exposedHeaders);
+            logs.Add($"Exposed headers: {string.Join(", ", _exposedHeaders)}.");
         }
 
         //preflight request
@@ -75,23 +93,31 @@ internal sealed class CorsMiddleware : MiddlewareBase
             if (_allowedMethods.Count > 0)
             {
                 webContext.WebResponse.Headers["Access-Control-Allow-Methods"] = string.Join(", ", _allowedMethods);
+                logs.Add($"Set 'Access-Control-Allow-Methods: {string.Join(", ", _allowedMethods)}'.");
             }
             //browser blocks requests containing headers outside of this list + its small set of default headers
             if (_allowedHeaders.Count > 0)
             {
                 webContext.WebResponse.Headers["Access-Control-Allow-Headers"] = string.Join(", ", _allowedHeaders);
+                logs.Add($"Set 'Access-Control-Allow-Headers: {string.Join(", ", _allowedHeaders)}'.");
             }
             //how long the browser should cache the OPTIONS response.
             if (_preflightMaxAgeSeconds > 0)
             {
                 webContext.WebResponse.Headers["Access-Control-Max-Age"] = _preflightMaxAgeSeconds.ToString(CultureInfo.InvariantCulture);
+                logs.Add($"Set 'Access-Control-Max-Age: {_preflightMaxAgeSeconds}'.");
             }
 
             webContext.WebResponse.StatusCode = 204;
-            webContext.WebResponse.ResponsePhrase = "Preflight response";
+            webContext.WebResponse.ResponsePhrase = "No content";
+
+            logs.Add("Preflight request. Short-circuit with 204.");
+            RecordTelemetry(webContext, FlowDirection.Downstream, ExecutionEvent.ShortCircuit, downstreamStart, logs);
             return;
         }
 
+        RecordTelemetry(webContext, FlowDirection.Downstream, ExecutionEvent.Success, downstreamStart, logs);
         await _nextFunction(webContext, cancellationToken);
+        RecordTelemetry(webContext, FlowDirection.Upstream, ExecutionEvent.Success, DateTimeOffset.UtcNow);
     }
 }
