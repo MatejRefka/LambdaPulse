@@ -37,6 +37,9 @@
       "StaticFilesMiddleware": {
         "FileRootPath": ""
       },
+      "SpaFallbackMiddleware": {
+        "IndexPageRelativePath": ""
+      },
       "CorsMiddleware": {
         "AllowedOrigins": [ "http://localhost:8081" ],
         "AllowCredentials": true,

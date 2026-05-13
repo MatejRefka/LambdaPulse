@@ -52,7 +52,7 @@ public static class ServerBuilder
                         .AddMiddleware<ResponseCompressionMiddleware>()
                         .AddMiddleware<StaticFilesMiddleware>()
                         .AddMiddleware<RoutingMiddleware>()
-                        .AddMiddleware<SpaMiddleware>()
+                        .AddMiddleware<SpaFallbackMiddleware>()
                         .AddMiddleware<CorsMiddleware>()
                         .AddMiddleware<CacheMiddleware>()
                         .AddMiddleware<AuthenticationMiddleware>()

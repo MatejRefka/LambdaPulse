@@ -23,6 +23,7 @@ public sealed class MiddlewareConfig
     public required SecurityMiddleware SecurityMiddleware { get; init; }
     public required SessionMiddleware SessionMiddleware { get; init; }
     public required StaticFilesMiddleware StaticFilesMiddleware { get; init; }
+    public required SpaMiddleware SpaFallbackMiddleware { get; init; }
     public required CorsMiddleware CorsMiddleware { get; init; }
 }
 
@@ -70,6 +71,11 @@ public sealed class SessionMiddleware
 public sealed class StaticFilesMiddleware
 {
     public required string FileRootPath { get; init; }
+}
+
+public sealed class SpaMiddleware
+{
+    public required string IndexPageRelativePath { get; init; }
 }
 
 public sealed class CorsMiddleware
