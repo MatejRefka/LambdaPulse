@@ -3,7 +3,8 @@ using LambdaPulse.Engine.DI;
 using LambdaPulse.Engine.Features.Compression;
 using LambdaPulse.Engine.Features.Logging;
 using LambdaPulse.Engine.Features.Routing;
-using LambdaPulse.Engine.Features.State;
+using LambdaPulse.Engine.Features.State.Cache;
+using LambdaPulse.Engine.Features.State.Sessions;
 using LambdaPulse.Engine.Hosting.Client;
 using LambdaPulse.Engine.Hosting.Connection;
 using LambdaPulse.Engine.Http.Parsing;
@@ -83,6 +84,7 @@ public static class ServerBuilder
         container.AddSingleton<IEngineLogger, ConsoleEngineLogger>();
         container.AddSingleton<ITraceLogger, NullTraceLogger>();
         container.AddSingleton<ISessionStore, InMemorySessionStore>();
+        container.AddSingleton<ICacheStore, InMemoryCacheStore>();
 
         container.AddSingleton<IEndpointRegistry, EndpointRegistry>();
         container.AddSingleton<IEndpointComparer, EndpointComparer>();

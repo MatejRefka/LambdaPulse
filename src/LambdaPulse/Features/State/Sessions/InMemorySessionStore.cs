@@ -1,7 +1,7 @@
 ﻿using LambdaPulse.Engine.Configuration;
 using System.Collections.Concurrent;
 
-namespace LambdaPulse.Engine.Features.State;
+namespace LambdaPulse.Engine.Features.State.Sessions;
 
 internal sealed class InMemorySessionStore : ISessionStore
 {
@@ -16,7 +16,7 @@ internal sealed class InMemorySessionStore : ISessionStore
         _idleTimeout = TimeSpan.FromMinutes(configProvider.ServerConfig.MiddlewareConfig.SessionMiddleware.IdleTimeoutMinutes);
     }
 
-    public Task<Session?> GetSession(string sessionId, CancellationToken cancellationToken)
+    public Task<Session?> GetSession(string sessionId, CancellationToken cancellation = default)
     {
         if (!_sessions.TryGetValue(sessionId, out var session))
         {
@@ -28,7 +28,8 @@ internal sealed class InMemorySessionStore : ISessionStore
         if (now - session.LastAccessedUtc > _idleTimeout || now - session.CreatedUtc > _absoluteTimeout)
         {
             //session has expired
-            RemoveSession(sessionId);
+            _sessions.TryRemove(sessionId, out _);
+            session?.Dispose();
             return Task.FromResult<Session?>(null);
         }
 
@@ -37,16 +38,10 @@ internal sealed class InMemorySessionStore : ISessionStore
         return Task.FromResult<Session?>(session);
     }
 
-    public Task SaveSession(Session session, CancellationToken cancellationToken)
+    public Task SaveSession(Session session, CancellationToken cancellationToken = default)
     {
         _sessions[session.Id] = session;
         session.IsNew = false;
         return Task.CompletedTask;
-    }
-
-    private void RemoveSession(string sessionId)
-    {
-        _sessions.TryRemove(sessionId, out var session);
-        session?.Dispose();
     }
 }

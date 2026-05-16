@@ -1,5 +1,5 @@
 ﻿using LambdaPulse.Engine.Features.Logging;
-using LambdaPulse.Engine.Features.State;
+using LambdaPulse.Engine.Features.State.Sessions;
 using LambdaPulse.Engine.Http.Abstractions;
 
 namespace LambdaPulse.Engine.Middleware.Implementations;

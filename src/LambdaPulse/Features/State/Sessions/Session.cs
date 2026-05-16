@@ -1,4 +1,4 @@
-﻿namespace LambdaPulse.Engine.Features.State;
+﻿namespace LambdaPulse.Engine.Features.State.Sessions;
 
 public sealed class Session : IDisposable
 {
