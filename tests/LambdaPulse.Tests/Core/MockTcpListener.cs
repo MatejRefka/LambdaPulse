@@ -12,7 +12,7 @@ public class MockTcpListener : IConnectionListener
 
     public void Stop() { }
 
-    public Task<TcpClient> AcceptTcpClientAsync(CancellationToken cancellationToken)
+    public Task<TcpClient> AcceptTcpClientAsync(CancellationToken cancellationToken = default)
     {
         return _connections.Reader.ReadAsync(cancellationToken).AsTask();
     }

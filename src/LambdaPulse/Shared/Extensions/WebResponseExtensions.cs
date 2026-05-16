@@ -6,13 +6,13 @@ namespace LambdaPulse.Engine.Shared.Extensions;
 
 public static class WebResponseExtensions
 {
-    public static async Task WriteBytesToBody(this WebResponse webResponse, byte[] bytes, CancellationToken cancellationToken)
+    public static async Task WriteBytesToBody(this WebResponse webResponse, byte[] bytes, CancellationToken cancellationToken = default)
     {
         webResponse.HasBody = true;
         await webResponse.Body.WriteAsync(bytes, cancellationToken);
     }
 
-    public static async Task WriteStringToBody(this WebResponse webResponse, string text, CancellationToken cancellationToken)
+    public static async Task WriteStringToBody(this WebResponse webResponse, string text, CancellationToken cancellationToken = default)
     {
         var bytes = Encoding.UTF8.GetBytes(text);
 
@@ -25,7 +25,7 @@ public static class WebResponseExtensions
         await webResponse.Body.WriteAsync(bytes, cancellationToken);
     }
 
-    public static async Task WriteJsonToBody<T>(this WebResponse webResponse, T anonymousObject, CancellationToken cancellationToken)
+    public static async Task WriteJsonToBody<T>(this WebResponse webResponse, T anonymousObject, CancellationToken cancellationToken = default)
     {
         var json = JsonSerializer.Serialize(anonymousObject);
         var bytes = Encoding.UTF8.GetBytes(json);

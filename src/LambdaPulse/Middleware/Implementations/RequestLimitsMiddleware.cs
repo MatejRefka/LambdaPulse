@@ -24,7 +24,7 @@ internal sealed class RequestLimitsMiddleware : MiddlewareBase
         _maxBodySizeBytes = configProvider.ServerConfig.MiddlewareConfig.RequestLimitsMiddleware.MaxBodySizeBytes;
     }
 
-    public override async Task Invoke(WebContext webContext, CancellationToken cancellationToken)
+    public override async Task Invoke(WebContext webContext, CancellationToken cancellationToken = default)
     {
         var downstreamStart = DateTimeOffset.UtcNow;
 

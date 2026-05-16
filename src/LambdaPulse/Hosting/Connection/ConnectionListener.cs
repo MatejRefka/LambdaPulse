@@ -25,7 +25,7 @@ internal sealed class ConnectionListener : IConnectionListener, IDisposable
         _listener.Stop();
     }
 
-    public async Task<TcpClient> AcceptTcpClientAsync(CancellationToken cancellationToken)
+    public async Task<TcpClient> AcceptTcpClientAsync(CancellationToken cancellationToken = default)
     {
         return await _listener.AcceptTcpClientAsync(cancellationToken);
     }

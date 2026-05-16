@@ -6,5 +6,5 @@ public interface IConnectionListener
 {
     void Start(int backlog);
     void Stop();
-    Task<TcpClient> AcceptTcpClientAsync(CancellationToken cancellationToken);
+    Task<TcpClient> AcceptTcpClientAsync(CancellationToken cancellationToken = default);
 }

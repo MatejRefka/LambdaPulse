@@ -93,7 +93,7 @@ internal sealed class StaticFilesMiddleware : MiddlewareBase
         RecordTelemetry(webContext, FlowDirection.Upstream, ExecutionEvent.Success, upstreamStart, upstreamLogs);
     }
 
-    private async Task ServeStaticFile(string filePath, WebContext webContext, List<string> logs, CancellationToken cancellationToken)
+    private async Task ServeStaticFile(string filePath, WebContext webContext, List<string> logs, CancellationToken cancellationToken = default)
     {
         //normalize path
         filePath = Path.GetFullPath(filePath);

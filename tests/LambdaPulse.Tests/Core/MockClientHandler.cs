@@ -13,7 +13,7 @@ public class MockClientHandler : IClientHandler
         _throwException = throwException;
     }
 
-    public Task HandleClient(TcpClient tcpClient, CancellationToken serverCancellationToken)
+    public Task HandleClient(TcpClient tcpClient, CancellationToken serverCancellationToken = default)
     {
         ClientConnections++;
 

@@ -30,7 +30,7 @@ internal sealed class ClientHandler : IClientHandler
         _connectionIdleTimeoutMS = configProvider.ServerConfig.ConnectionIdleTimeoutMS;
     }
 
-    public async Task HandleClient(TcpClient tcpClient, CancellationToken serverCancellationToken)
+    public async Task HandleClient(TcpClient tcpClient, CancellationToken serverCancellationToken = default)
     {
         //client-level token
         using var clientCTS = CancellationTokenSource.CreateLinkedTokenSource(serverCancellationToken);
