@@ -1,42 +1,32 @@
 ﻿using LambdaPulse.Engine.Features.Authentication;
+using LambdaPulse.Engine.Features.Logging;
 using LambdaPulse.Engine.Http.Abstractions;
 
 namespace LambdaPulse.Engine.Middleware.Implementations;
 
+/// <summary>
+/// Sets the User by authenticating the incoming request using the configured authentication scheme.
+/// Session authentication is the default scheme.
+/// </summary>
 internal sealed class AuthenticationMiddleware : MiddlewareBase
 {
     protected override string MiddlewareName => "Authentication";
 
-    private const string UserIdSessionKey = "auth.user_id";
+    private readonly IAuthenticationScheme _authenticationScheme;
 
-    public AuthenticationMiddleware(Func<WebContext, CancellationToken, Task> nextFunction) : base(nextFunction)
+    public AuthenticationMiddleware(Func<WebContext, CancellationToken, Task> nextFunction, IAuthenticationScheme authenticationScheme) : base(nextFunction)
     {
+        _authenticationScheme = authenticationScheme;
     }
 
     public override async Task Invoke(WebContext webContext, CancellationToken cancellationToken = default)
     {
-        var session = webContext.Session;
+        var downstreamStart = DateTimeOffset.UtcNow;
 
-        //No session so assign a guest user and continue to downstream middleware
-        if (session == null)
-        {
-            webContext.User = GuestUser.Instance;
-            await _nextFunction(webContext, cancellationToken);
-            return;
-        }
+        webContext.User = await _authenticationScheme.Authenticate(webContext, cancellationToken);
 
-        var userId = await session.GetValue<string>(UserIdSessionKey);
-
-        //No userId in session so assign a guest user and continue to downstream middleware
-        if (userId == null)
-        {
-            webContext.User = GuestUser.Instance;
-            await _nextFunction(webContext, cancellationToken);
-            return;
-        }
-
-        webContext.User = new AuthenticatedUser(userId);
-
+        RecordTelemetry(webContext, FlowDirection.Downstream, ExecutionEvent.Success, downstreamStart, webContext.User.IsAuthenticated ? new List<string> { "User authenticated." } : new List<string> { "No authenticated user found. Assigned GuestUser." });
         await _nextFunction(webContext, cancellationToken);
+        RecordTelemetry(webContext, FlowDirection.Upstream, ExecutionEvent.Success, DateTimeOffset.UtcNow);
     }
 }

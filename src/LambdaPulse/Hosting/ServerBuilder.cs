@@ -1,5 +1,6 @@
 ﻿using LambdaPulse.Engine.Configuration;
 using LambdaPulse.Engine.DI;
+using LambdaPulse.Engine.Features.Authentication;
 using LambdaPulse.Engine.Features.Compression;
 using LambdaPulse.Engine.Features.Logging;
 using LambdaPulse.Engine.Features.Routing;
@@ -85,6 +86,7 @@ public static class ServerBuilder
         container.AddSingleton<ITraceLogger, NullTraceLogger>();
         container.AddSingleton<ISessionStore, InMemorySessionStore>();
         container.AddSingleton<ICacheStore, InMemoryCacheStore>();
+        container.AddSingleton<IAuthenticationScheme, SessionAuthenticationScheme>();
 
         container.AddSingleton<IEndpointRegistry, EndpointRegistry>();
         container.AddSingleton<IEndpointComparer, EndpointComparer>();

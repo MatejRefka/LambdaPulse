@@ -1,4 +1,4 @@
-﻿namespace LambdaPulse.Engine.Features.Authentication;
+﻿namespace LambdaPulse.Engine.Features.Authentication.Abstractions;
 
 internal sealed class AuthenticatedUser : IUser
 {
