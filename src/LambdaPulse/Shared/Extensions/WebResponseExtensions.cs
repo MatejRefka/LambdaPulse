@@ -35,4 +35,15 @@ public static class WebResponseExtensions
         webResponse.HasBody = true;
         await webResponse.Body.WriteAsync(bytes, cancellationToken);
     }
+
+    public static void ClearResponse(this WebResponse webResponse)
+    {
+        webResponse.StatusCode = null;
+        webResponse.ResponsePhrase = null;
+        webResponse.Headers.Clear();
+        webResponse.Cookies.Clear();
+        webResponse.Body.SetLength(0);
+        webResponse.Body.Position = 0;
+        webResponse.HasBody = false;
+    }
 }

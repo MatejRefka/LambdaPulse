@@ -2,13 +2,15 @@
 using LambdaPulse.Engine.Features.Logging;
 using LambdaPulse.Engine.Http.Abstractions;
 using LambdaPulse.Engine.Shared.Extensions;
+using System.Globalization;
 
 namespace LambdaPulse.Engine.Middleware.Implementations;
 
 /// <summary>
 /// Serves static files for GET request explicitly targeting a file. 
 /// Requests that do not explicitly target a file may be mapped to a static file by the routing middleware. These are served upstream.
-/// Non-GET requests are skipped and continue downstream.
+/// Static files within /assets/* are set to be aggressively cached via cache busting.
+/// Any other static files, including index.html, are set with 'no-cache', forcing the browser to revalidate with the server on each request.
 /// </summary>
 internal sealed class StaticFilesMiddleware : MiddlewareBase
 {
@@ -64,7 +66,7 @@ internal sealed class StaticFilesMiddleware : MiddlewareBase
             var relativePathExplicit = requestPath.TrimStart('/').Replace('/', Path.DirectorySeparatorChar);
             var filePathExplicit = Path.Combine(_fileRootPath, relativePathExplicit);
 
-            await ServeStaticFile(filePathExplicit, webContext, downstreamLogs, cancellationToken);
+            await ServeStaticFile(filePathExplicit, requestPath, webContext, downstreamLogs, cancellationToken);
             RecordTelemetry(webContext, FlowDirection.Downstream, ExecutionEvent.ShortCircuit, downstreamStart, downstreamLogs);
             return;
         }
@@ -85,7 +87,7 @@ internal sealed class StaticFilesMiddleware : MiddlewareBase
 
         var relativePathImplicit = webContext.StaticFileRelativePath.TrimStart('/').Replace('/', Path.DirectorySeparatorChar);
         var filePathImplicit = Path.Combine(_fileRootPath, relativePathImplicit);
-        await ServeStaticFile(filePathImplicit, webContext, upstreamLogs, cancellationToken);
+        await ServeStaticFile(filePathImplicit, webContext.StaticFileRelativePath, webContext, upstreamLogs, cancellationToken);
 
         //cleanup
         webContext.StaticFileRelativePath = null;
@@ -93,7 +95,7 @@ internal sealed class StaticFilesMiddleware : MiddlewareBase
         RecordTelemetry(webContext, FlowDirection.Upstream, ExecutionEvent.Success, upstreamStart, upstreamLogs);
     }
 
-    private async Task ServeStaticFile(string filePath, WebContext webContext, List<string> logs, CancellationToken cancellationToken = default)
+    private async Task ServeStaticFile(string filePath, string relativePath, WebContext webContext, List<string> logs, CancellationToken cancellationToken = default)
     {
         //normalize path
         filePath = Path.GetFullPath(filePath);
@@ -101,6 +103,7 @@ internal sealed class StaticFilesMiddleware : MiddlewareBase
         //protect against directory traversal
         if (!filePath.StartsWith(_fileRootPath, StringComparison.OrdinalIgnoreCase))
         {
+            webContext.WebResponse.ClearResponse();
             webContext.WebResponse.StatusCode = 400;
             webContext.WebResponse.ResponsePhrase = "Bad Request";
             await webContext.WebResponse.WriteStringToBody("Bad Request.", cancellationToken);
@@ -110,6 +113,7 @@ internal sealed class StaticFilesMiddleware : MiddlewareBase
 
         if (!File.Exists(filePath))
         {
+            webContext.WebResponse.ClearResponse();
             webContext.WebResponse.StatusCode = 404;
             webContext.WebResponse.ResponsePhrase = "Not Found";
             await webContext.WebResponse.WriteStringToBody("Not Found.", cancellationToken);
@@ -124,6 +128,60 @@ internal sealed class StaticFilesMiddleware : MiddlewareBase
         {
             contentType = "application/octet-stream";
             logs.Add($"MIME type for '{extension}' not found, default to application/octet-stream.");
+        }
+
+        webContext.WebResponse.ClearResponse();
+
+        //aggressive cache for hashed static files
+        if (relativePath.StartsWith("/assets/", StringComparison.OrdinalIgnoreCase))
+        {
+            webContext.WebResponse.Headers["Cache-Control"] = "public, max-age=31536000, immutable";
+            logs.Add("Set 'Cache-Control: public, max-age=31536000, immutable' for asset file.");
+        }
+        //no-cache for other static files, forcing revalidation
+        else
+        {
+            var fileInfo = new FileInfo(filePath);
+            var lastModified = fileInfo.LastWriteTimeUtc;
+            //round down to nearest second
+            lastModified = new DateTime(lastModified.Ticks - (lastModified.Ticks % TimeSpan.TicksPerSecond), DateTimeKind.Utc);
+            var eTag = $"W/\"{lastModified.Ticks}-{fileInfo.Length}\"";
+
+            webContext.WebResponse.Headers["Cache-Control"] = "no-cache";
+            webContext.WebResponse.Headers["ETag"] = eTag;
+            webContext.WebResponse.Headers["Last-Modified"] = lastModified.ToString("R", CultureInfo.InvariantCulture);
+
+            //'If-None-Match' exists
+            if (webContext.WebRequest.Headers.TryGetValue("If-None-Match", out var ifNoneMatch))
+            {
+                var entries = ifNoneMatch.Split(',', StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries);
+
+                //ETag matches, return 304 Not Modified
+                if (entries.Any(entry => entry == "*" || string.Equals(entry, eTag, StringComparison.Ordinal)))
+                {
+                    webContext.WebResponse.StatusCode = 304;
+                    webContext.WebResponse.ResponsePhrase = "Not Modified";
+
+                    logs.Add($"ETag matched for '{relativePath}'. Returned 304 Not Modified.");
+                    return;
+                }
+            }
+            //fallback 'If-Modified-Since' exists
+            else if (webContext.WebRequest.Headers.TryGetValue("If-Modified-Since", out var ifModifiedSince))
+            {
+                if (DateTimeOffset.TryParse(ifModifiedSince, CultureInfo.InvariantCulture, DateTimeStyles.AssumeUniversal | DateTimeStyles.AdjustToUniversal, out var ifModifiedSinceDate))
+                {
+                    //file last modified is earlier than or equal to 'If-Modified-Since', return 304 Not Modified
+                    if (lastModified <= ifModifiedSinceDate.UtcDateTime)
+                    {
+                        webContext.WebResponse.StatusCode = 304;
+                        webContext.WebResponse.ResponsePhrase = "Not Modified";
+
+                        logs.Add($"Static file not modified since '{ifModifiedSince}'. Returned 304 Not Modified.");
+                        return;
+                    }
+                }
+            }
         }
 
         var fileBytes = await File.ReadAllBytesAsync(filePath, cancellationToken);
