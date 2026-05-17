@@ -1,4 +1,5 @@
-﻿using LambdaPulse.Engine.Http.Abstractions;
+﻿using LambdaPulse.Engine.Features.Logging;
+using LambdaPulse.Engine.Http.Abstractions;
 using LambdaPulse.Engine.Shared.Extensions;
 
 namespace LambdaPulse.Engine.Middleware.Implementations;
@@ -13,17 +14,23 @@ internal sealed class AuthorizationMiddleware : MiddlewareBase
 
     public override async Task Invoke(WebContext webContext, CancellationToken cancellationToken = default)
     {
+        var downstreamStart = DateTimeOffset.UtcNow;
+
         //no endpoint so nothing to authorize
         if (webContext.Endpoint == null)
         {
+            RecordTelemetry(webContext, FlowDirection.Downstream, ExecutionEvent.Success, downstreamStart, new List<string> { "No endpoint matched for the request. Skipping authorization." });
             await _nextFunction(webContext, cancellationToken);
+            RecordTelemetry(webContext, FlowDirection.Upstream, ExecutionEvent.Success, DateTimeOffset.UtcNow);
             return;
         }
 
         //public endpoint so continue to downstream middleware
         if (webContext.Endpoint.AllowAnonymous)
         {
+            RecordTelemetry(webContext, FlowDirection.Downstream, ExecutionEvent.Success, downstreamStart, new List<string> { "Endpoint allows anonymous access. Skipping authorization." });
             await _nextFunction(webContext, cancellationToken);
+            RecordTelemetry(webContext, FlowDirection.Upstream, ExecutionEvent.Success, DateTimeOffset.UtcNow);
             return;
         }
 
@@ -34,6 +41,7 @@ internal sealed class AuthorizationMiddleware : MiddlewareBase
             webContext.WebResponse.ResponsePhrase = "Unauthorized";
             webContext.WebResponse.Headers["Content-Type"] = "text/plain; charset=utf-8";
             await webContext.WebResponse.WriteStringToBody("User authentication is required to access this resource.", cancellationToken);
+            RecordTelemetry(webContext, FlowDirection.Downstream, ExecutionEvent.ShortCircuit, downstreamStart, new List<string> { "User is not authenticated." });
             return;
         }
 
@@ -49,12 +57,15 @@ internal sealed class AuthorizationMiddleware : MiddlewareBase
                 webContext.WebResponse.ResponsePhrase = "Forbidden";
                 webContext.WebResponse.Headers["Content-Type"] = "text/plain; charset=utf-8";
                 await webContext.WebResponse.WriteStringToBody("User is not authorized to access this resource.", cancellationToken);
+                RecordTelemetry(webContext, FlowDirection.Downstream, ExecutionEvent.ShortCircuit, downstreamStart, new List<string> { "User does not have the required role to access the endpoint." });
                 return;
             }
         }
 
         //user is authorized, continue to downstream middleware
+        RecordTelemetry(webContext, FlowDirection.Downstream, ExecutionEvent.Success, downstreamStart, new List<string> { "User is authorized." });
         await _nextFunction(webContext, cancellationToken);
+        RecordTelemetry(webContext, FlowDirection.Upstream, ExecutionEvent.Success, DateTimeOffset.UtcNow);
 
     }
 }
