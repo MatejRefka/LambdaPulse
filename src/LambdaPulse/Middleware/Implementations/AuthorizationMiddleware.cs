@@ -4,6 +4,9 @@ using LambdaPulse.Engine.Shared.Extensions;
 
 namespace LambdaPulse.Engine.Middleware.Implementations;
 
+/// <summary>
+/// Determines whether a user is authorized to access the requested endpoint 
+/// </summary>
 internal sealed class AuthorizationMiddleware : MiddlewareBase
 {
     protected override string MiddlewareName => "Authorization";
