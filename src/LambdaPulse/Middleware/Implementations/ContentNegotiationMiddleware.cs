@@ -1,4 +1,5 @@
-﻿using LambdaPulse.Engine.Http.Abstractions;
+﻿using LambdaPulse.Engine.Features.Logging;
+using LambdaPulse.Engine.Http.Abstractions;
 using LambdaPulse.Engine.Shared.Extensions;
 
 namespace LambdaPulse.Engine.Middleware.Implementations;
@@ -26,8 +27,11 @@ internal sealed class ContentNegotiationMiddleware : MiddlewareBase
 
     public override async Task Invoke(WebContext webContext, CancellationToken cancellationToken = default)
     {
+        var downstreamStart = DateTime.UtcNow;
+        var downstreamLogs = new List<string>();
+
         //default mime type is text/html unless it's an api request
-        var defaultMimeType = webContext.WebRequest.Path.StartsWith("/api", StringComparison.OrdinalIgnoreCase) ? "application/json" : "text/html";
+        var defaultMimeType = webContext.WebRequest.Path.StartsWith("/api/", StringComparison.OrdinalIgnoreCase) ? "application/json" : "text/html";
 
         var mimeTypes = webContext.WebRequest.Headers.ParseAcceptHeader();
 
@@ -69,16 +73,24 @@ internal sealed class ContentNegotiationMiddleware : MiddlewareBase
                 webContext.WebResponse.StatusCode = 406;
                 webContext.WebResponse.ResponsePhrase = "Not Acceptable";
                 await webContext.WebResponse.WriteStringToBody("The requested mime type is not supported by the server.", cancellationToken);
+
+                RecordTelemetry(webContext, FlowDirection.Downstream, ExecutionEvent.ShortCircuit, downstreamStart, new List<string> { "No acceptable MIME type found. Returning 406 Not Acceptable." });
                 return;
             }
+            downstreamLogs.Add($"Negotiated MIME type: {webContext.NegotiatedMimeType}");
         }
         else
         {
             //no accept header sent
             webContext.NegotiatedMimeType = defaultMimeType;
+            downstreamLogs.Add($"No Accept header sent. Set to default MIME type: {defaultMimeType}");
         }
 
+        RecordTelemetry(webContext, FlowDirection.Downstream, ExecutionEvent.Success, downstreamStart, downstreamLogs);
         await _nextFunction(webContext, cancellationToken);
+
+        var upstreamStart = DateTime.UtcNow;
+        var upstreamLogs = new List<string>();
 
         //set content-type header if not already set and body was written to
         if (webContext.WebResponse.HasBody && !webContext.WebResponse.Headers.ContainsKey("Content-Type"))
@@ -89,6 +101,9 @@ internal sealed class ContentNegotiationMiddleware : MiddlewareBase
             contentType = contentType.StartsWith("text/", StringComparison.OrdinalIgnoreCase) ? contentType + "; charset=utf-8" : contentType;
 
             webContext.WebResponse.Headers["Content-Type"] = contentType;
+            upstreamLogs.Add($"Set Content-Type header to: {contentType}");
         }
+
+        RecordTelemetry(webContext, FlowDirection.Upstream, ExecutionEvent.Success, upstreamStart, upstreamLogs);
     }
 }
