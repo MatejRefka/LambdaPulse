@@ -28,6 +28,6 @@ internal sealed class InvokeMiddleware : MiddlewareBase
 
         RecordTelemetry(webContext, FlowDirection.Downstream, ExecutionEvent.Success, downstreamStart);
         await _nextFunction(webContext, cancellationToken);
-        RecordTelemetry(webContext, FlowDirection.Upstream, ExecutionEvent.Success, DateTime.UtcNow);
+        RecordTelemetry(webContext, FlowDirection.Upstream, ExecutionEvent.Success, DateTimeOffset.UtcNow);
     }
 }

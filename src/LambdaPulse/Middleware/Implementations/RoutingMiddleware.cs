@@ -28,6 +28,6 @@ internal sealed class RoutingMiddleware : MiddlewareBase
 
         RecordTelemetry(webContext, FlowDirection.Downstream, ExecutionEvent.Success, downstreamStart, new List<string> { endpoint == null ? $"No endpoints found for '{webContext.WebRequest.Method} {webContext.WebRequest.Path}'." : $"Endpoint found for '{webContext.WebRequest.Method} {webContext.WebRequest.Path}'." });
         await _nextFunction(webContext, cancellationToken);
-        RecordTelemetry(webContext, FlowDirection.Upstream, ExecutionEvent.Success, DateTime.UtcNow);
+        RecordTelemetry(webContext, FlowDirection.Upstream, ExecutionEvent.Success, DateTimeOffset.UtcNow);
     }
 }

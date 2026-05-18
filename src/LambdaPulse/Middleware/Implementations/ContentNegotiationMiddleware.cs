@@ -27,7 +27,7 @@ internal sealed class ContentNegotiationMiddleware : MiddlewareBase
 
     public override async Task Invoke(WebContext webContext, CancellationToken cancellationToken = default)
     {
-        var downstreamStart = DateTime.UtcNow;
+        var downstreamStart = DateTimeOffset.UtcNow;
         var downstreamLogs = new List<string>();
 
         //default mime type is text/html unless it's an api request
@@ -89,7 +89,7 @@ internal sealed class ContentNegotiationMiddleware : MiddlewareBase
         RecordTelemetry(webContext, FlowDirection.Downstream, ExecutionEvent.Success, downstreamStart, downstreamLogs);
         await _nextFunction(webContext, cancellationToken);
 
-        var upstreamStart = DateTime.UtcNow;
+        var upstreamStart = DateTimeOffset.UtcNow;
         var upstreamLogs = new List<string>();
 
         //set content-type header if not already set and body was written to

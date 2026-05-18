@@ -24,7 +24,7 @@ internal sealed class CacheMiddleware : MiddlewareBase
 
     public override async Task Invoke(WebContext webContext, CancellationToken cancellationToken = default)
     {
-        var downstreamStart = DateTime.UtcNow;
+        var downstreamStart = DateTimeOffset.UtcNow;
         var logs = new List<string>();
 
         //skip non-get requests
@@ -32,7 +32,7 @@ internal sealed class CacheMiddleware : MiddlewareBase
         {
             RecordTelemetry(webContext, FlowDirection.Downstream, ExecutionEvent.Success, downstreamStart, new List<string> { "Non-GET request. Cache skipped." });
             await _nextFunction(webContext, cancellationToken);
-            RecordTelemetry(webContext, FlowDirection.Upstream, ExecutionEvent.Success, DateTime.UtcNow);
+            RecordTelemetry(webContext, FlowDirection.Upstream, ExecutionEvent.Success, DateTimeOffset.UtcNow);
             return;
         }
 
@@ -41,7 +41,7 @@ internal sealed class CacheMiddleware : MiddlewareBase
         {
             RecordTelemetry(webContext, FlowDirection.Downstream, ExecutionEvent.Success, downstreamStart, new List<string> { "No endpoint matched. Cache skipped." });
             await _nextFunction(webContext, cancellationToken);
-            RecordTelemetry(webContext, FlowDirection.Upstream, ExecutionEvent.Success, DateTime.UtcNow);
+            RecordTelemetry(webContext, FlowDirection.Upstream, ExecutionEvent.Success, DateTimeOffset.UtcNow);
             return;
         }
 
@@ -50,7 +50,7 @@ internal sealed class CacheMiddleware : MiddlewareBase
         {
             RecordTelemetry(webContext, FlowDirection.Downstream, ExecutionEvent.Success, downstreamStart, new List<string> { "No cache policy set. Cache skipped." });
             await _nextFunction(webContext, cancellationToken);
-            RecordTelemetry(webContext, FlowDirection.Upstream, ExecutionEvent.Success, DateTime.UtcNow);
+            RecordTelemetry(webContext, FlowDirection.Upstream, ExecutionEvent.Success, DateTimeOffset.UtcNow);
             return;
         }
 
@@ -59,7 +59,7 @@ internal sealed class CacheMiddleware : MiddlewareBase
         {
             RecordTelemetry(webContext, FlowDirection.Downstream, ExecutionEvent.Success, downstreamStart, new List<string> { "Cache policy disabled. Cache skipped." });
             await _nextFunction(webContext, cancellationToken);
-            RecordTelemetry(webContext, FlowDirection.Upstream, ExecutionEvent.Success, DateTime.UtcNow);
+            RecordTelemetry(webContext, FlowDirection.Upstream, ExecutionEvent.Success, DateTimeOffset.UtcNow);
             return;
         }
 
@@ -68,7 +68,7 @@ internal sealed class CacheMiddleware : MiddlewareBase
         {
             RecordTelemetry(webContext, FlowDirection.Downstream, ExecutionEvent.Success, downstreamStart, new List<string> { "Cache policy duration is 0 or negative. Cache skipped." });
             await _nextFunction(webContext, cancellationToken);
-            RecordTelemetry(webContext, FlowDirection.Upstream, ExecutionEvent.Success, DateTime.UtcNow);
+            RecordTelemetry(webContext, FlowDirection.Upstream, ExecutionEvent.Success, DateTimeOffset.UtcNow);
             return;
         }
 
@@ -77,7 +77,7 @@ internal sealed class CacheMiddleware : MiddlewareBase
         {
             RecordTelemetry(webContext, FlowDirection.Downstream, ExecutionEvent.Success, downstreamStart, new List<string> { "Endpoint does not allow anonymous access. Cache skipped." });
             await _nextFunction(webContext, cancellationToken);
-            RecordTelemetry(webContext, FlowDirection.Upstream, ExecutionEvent.Success, DateTime.UtcNow);
+            RecordTelemetry(webContext, FlowDirection.Upstream, ExecutionEvent.Success, DateTimeOffset.UtcNow);
             return;
         }
 
@@ -105,7 +105,7 @@ internal sealed class CacheMiddleware : MiddlewareBase
 
         await _nextFunction(webContext, cancellationToken);
 
-        var upstreamStart = DateTime.UtcNow;
+        var upstreamStart = DateTimeOffset.UtcNow;
 
         //skip caching for malformed response
         if (webContext.WebResponse.StatusCode == null || webContext.WebResponse.ResponsePhrase == null)
@@ -172,7 +172,7 @@ internal sealed class CacheMiddleware : MiddlewareBase
             //separate dictionary reference for cache and response
             Headers = new Dictionary<string, string>(webContext.WebResponse.Headers, StringComparer.OrdinalIgnoreCase),
             Body = webContext.WebResponse.Body.ToArray(),
-            ExpiresAt = DateTime.UtcNow.AddSeconds(webContext.Endpoint.CachePolicy.DurationSeconds)
+            ExpiresAt = DateTimeOffset.UtcNow.AddSeconds(webContext.Endpoint.CachePolicy.DurationSeconds)
         };
 
         await _cacheStore.SetCachedResponse(cacheKey, cacheResponse, cancellationToken);
