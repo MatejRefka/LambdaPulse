@@ -5,7 +5,7 @@ using LambdaPulse.Engine.Shared.Extensions;
 namespace LambdaPulse.Engine.Middleware.Implementations;
 
 /// <summary>
-/// Sets 404 Not Found response when no response body has been written.
+/// Sets 404 Not Found response when no response status code has been written.
 /// </summary>
 internal sealed class TerminationMiddleware : MiddlewareBase
 {
