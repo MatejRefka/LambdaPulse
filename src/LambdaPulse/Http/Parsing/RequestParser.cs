@@ -5,7 +5,7 @@ namespace LambdaPulse.Engine.Http.Parsing;
 
 internal sealed class RequestParser : IRequestParser
 {
-    public WebContext ParseHttpRequest(string httpRequest, DateTimeOffset requestStartTimestamp)
+    public WebContext ParseHttpRequest(string httpRequest, DateTimeOffset requestStartTimestamp, string? remoteIpAddress)
     {
         if (string.IsNullOrWhiteSpace(httpRequest))
         {
@@ -53,6 +53,7 @@ internal sealed class RequestParser : IRequestParser
 
         var webContext = new WebContext
         {
+            RemoteIpAddress = remoteIpAddress,
             WebRequest = new WebRequest()
             {
                 Method = method,

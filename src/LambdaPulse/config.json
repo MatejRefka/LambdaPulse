@@ -10,6 +10,9 @@
         "MaxHeaderSizeBytes": 15000,
         "MaxBodySizeBytes": 3000000
       },
+      "IpBlocklistMiddleware": {
+        "BlockedIPs": [ "" ]
+      },
       "ConnectionMiddleware": {
         "RequestExecutionTimeoutMS": 10000
       },

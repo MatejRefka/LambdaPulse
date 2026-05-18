@@ -44,6 +44,7 @@ public static class ServerBuilder
         var pipeline = new Pipeline(resolver)
                         .AddMiddleware<ExceptionMiddleware>()
                         .AddMiddleware<RequestLimitsMiddleware>()
+                        .AddMiddleware<IpBlocklistMiddleware>()
                         .AddMiddleware<ConnectionMiddleware>()
                         .AddMiddleware<HttpsRedirectionMiddleware>()
                         .AddMiddleware<HstsMiddleware>()

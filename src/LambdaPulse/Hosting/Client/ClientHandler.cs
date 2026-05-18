@@ -4,6 +4,7 @@ using LambdaPulse.Engine.Http.Abstractions;
 using LambdaPulse.Engine.Http.Parsing;
 using LambdaPulse.Engine.Http.Reading;
 using LambdaPulse.Engine.Http.Writing;
+using System.Net;
 using System.Net.Sockets;
 using System.Text;
 
@@ -41,6 +42,9 @@ internal sealed class ClientHandler : IClientHandler
             //abstraction for reading and sending bytes over the TCP connection
             await using var networkStream = tcpClient.GetStream();
 
+            //remote IP to be passed to WebContext
+            var remoteIpAddress = (tcpClient.Client.RemoteEndPoint as IPEndPoint)?.Address.ToString();
+
             //keep accepting requests over the same connection
             while (!clientCancellationToken.IsCancellationRequested)
             {
@@ -69,7 +73,7 @@ internal sealed class ClientHandler : IClientHandler
 
                     try
                     {
-                        webContext = _requestParser.ParseHttpRequest(requestString, requestStartTimestamp);
+                        webContext = _requestParser.ParseHttpRequest(requestString, requestStartTimestamp, remoteIpAddress);
                     }
                     catch (Exception e)
                     {

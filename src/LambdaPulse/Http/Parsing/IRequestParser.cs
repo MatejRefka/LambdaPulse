@@ -4,5 +4,5 @@ namespace LambdaPulse.Engine.Http.Parsing;
 
 public interface IRequestParser
 {
-    WebContext ParseHttpRequest(string httpRequest, DateTimeOffset requestStartTimestamp);
+    WebContext ParseHttpRequest(string httpRequest, DateTimeOffset requestStartTimestamp, string? remoteIpAddress);
 }

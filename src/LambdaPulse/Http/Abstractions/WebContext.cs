@@ -7,6 +7,7 @@ namespace LambdaPulse.Engine.Http.Abstractions;
 
 public sealed class WebContext
 {
+    public string? RemoteIpAddress { get; init; }
     public required WebRequest WebRequest { get; init; }
     public required WebResponse WebResponse { get; init; }
     public Session? Session { get; set; }

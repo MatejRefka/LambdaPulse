@@ -17,6 +17,7 @@ public sealed class ServerConfig
 public sealed class MiddlewareConfig
 {
     public required RequestLimitsMiddleware RequestLimitsMiddleware { get; init; }
+    public required IpBlocklistMiddleware IpBlocklistMiddleware { get; init; }
     public required ConnectionMiddleware ConnectionMiddleware { get; init; }
     public required HttpsRedirectionMiddleware HttpsRedirectionMiddleware { get; init; }
     public required HstsMiddleware HstsMiddleware { get; init; }
@@ -37,6 +38,11 @@ public sealed class RequestLimitsMiddleware
 public sealed class ConnectionMiddleware
 {
     public required int RequestExecutionTimeoutMS { get; init; }
+}
+
+public sealed class IpBlocklistMiddleware
+{
+    public HashSet<string> BlockedIpAddresses { get; init; } = new();
 }
 
 public sealed class HttpsRedirectionMiddleware
