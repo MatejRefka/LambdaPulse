@@ -175,8 +175,8 @@ internal sealed class CacheMiddleware : MiddlewareBase
             ExpiresAt = DateTimeOffset.UtcNow.AddSeconds(webContext.Endpoint.CachePolicy.DurationSeconds)
         };
 
-        await _cacheStore.SetCachedResponse(cacheKey, cacheResponse, cancellationToken);
+        var isCacheSet = await _cacheStore.SetCachedResponse(cacheKey, cacheResponse, cancellationToken);
 
-        RecordTelemetry(webContext, FlowDirection.Upstream, ExecutionEvent.Success, upstreamStart, new List<string> { "Response cached." });
+        RecordTelemetry(webContext, FlowDirection.Upstream, ExecutionEvent.Success, upstreamStart, isCacheSet ? new List<string> { "Response cached." } : new List<string> { "Failed caching response." });
     }
 }

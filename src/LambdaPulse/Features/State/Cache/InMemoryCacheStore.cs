@@ -23,9 +23,9 @@ internal sealed class InMemoryCacheStore : ICacheStore
         return Task.FromResult<CachedResponse?>(cachedResponse);
     }
 
-    public Task SetCachedResponse(string key, CachedResponse cachedResponse, CancellationToken cancellationToken = default)
+    public Task<bool> SetCachedResponse(string key, CachedResponse cachedResponse, CancellationToken cancellationToken = default)
     {
         _cachedResponses[key] = cachedResponse;
-        return Task.CompletedTask;
+        return Task.FromResult(true);
     }
 }
