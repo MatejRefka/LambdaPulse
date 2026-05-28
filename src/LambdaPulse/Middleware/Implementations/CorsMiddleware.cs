@@ -1,6 +1,7 @@
 ﻿using LambdaPulse.Engine.Configuration;
 using LambdaPulse.Engine.Features.Logging;
 using LambdaPulse.Engine.Http.Abstractions;
+using LambdaPulse.Engine.Shared.Extensions;
 using System.Globalization;
 
 namespace LambdaPulse.Engine.Middleware.Implementations;
@@ -42,7 +43,13 @@ internal sealed class CorsMiddleware : MiddlewareBase
         {
             RecordTelemetry(webContext, FlowDirection.Downstream, ExecutionEvent.Success, downstreamStart, new List<string> { "No origin header. CORS skipped." });
             await _nextFunction(webContext, cancellationToken);
-            RecordTelemetry(webContext, FlowDirection.Upstream, ExecutionEvent.Success, DateTimeOffset.UtcNow);
+
+            var upstreamStart = DateTimeOffset.UtcNow;
+
+            //add "Origin" to Vary header. Cache now needs to check request Origin before serving cached content
+            webContext.WebResponse.ApplyVaryHeader("Origin");
+
+            RecordTelemetry(webContext, FlowDirection.Upstream, ExecutionEvent.Success, upstreamStart, new List<string> { "Apply 'Vary: Origin' header for external caching." });
             return;
         }
 
@@ -51,44 +58,27 @@ internal sealed class CorsMiddleware : MiddlewareBase
         {
             RecordTelemetry(webContext, FlowDirection.Downstream, ExecutionEvent.Success, downstreamStart, new List<string> { "Origin not allowed. CORS skipped." });
             await _nextFunction(webContext, cancellationToken);
-            RecordTelemetry(webContext, FlowDirection.Upstream, ExecutionEvent.Success, DateTimeOffset.UtcNow);
+            var upstreamStart = DateTimeOffset.UtcNow;
+
+            //add "Origin" to Vary header. Cache now needs to check request Origin before serving cached content
+            webContext.WebResponse.ApplyVaryHeader("Origin");
+
+            RecordTelemetry(webContext, FlowDirection.Upstream, ExecutionEvent.Success, upstreamStart, new List<string> { "Apply 'Vary: Origin' header for external caching." });
             return;
-        }
-
-        //allow sending to origin
-        webContext.WebResponse.Headers["Access-Control-Allow-Origin"] = origin;
-        logs.Add($"Allowed origin: '{origin}'.");
-
-        //add "Origin" to Vary header. Cache now needs to check request Origin before serving cached content
-        webContext.WebResponse.Headers.TryGetValue("Vary", out var varyHeaderValue);
-        if (string.IsNullOrWhiteSpace(varyHeaderValue))
-        {
-            webContext.WebResponse.Headers["Vary"] = "Origin";
-            logs.Add("Set 'Vary: Origin'.");
-        }
-        else if (!varyHeaderValue.Contains("Origin", StringComparison.OrdinalIgnoreCase))
-        {
-            webContext.WebResponse.Headers["Vary"] = $"{varyHeaderValue}, Origin";
-            logs.Add("Appended 'Origin' to 'Vary' header.");
-        }
-
-        //browser-stored credentials are sent with the request (session cookies, http auth,...)
-        if (_allowCredentials)
-        {
-            webContext.WebResponse.Headers["Access-Control-Allow-Credentials"] = "true";
-            logs.Add("Credentials allowed.");
-        }
-
-        //allow JS to read these headers
-        if (_exposedHeaders.Count > 0)
-        {
-            webContext.WebResponse.Headers["Access-Control-Expose-Headers"] = string.Join(", ", _exposedHeaders);
-            logs.Add($"Exposed headers: {string.Join(", ", _exposedHeaders)}.");
         }
 
         //preflight request
         if (string.Equals(webContext.WebRequest.Method, "OPTIONS", StringComparison.OrdinalIgnoreCase) && webContext.WebRequest.Headers.ContainsKey("Access-Control-Request-Method"))
         {
+            //add "Origin" to Vary header. Cache now needs to check request Origin before serving cached content
+            webContext.WebResponse.ApplyVaryHeader("Origin");
+            webContext.WebResponse.ApplyVaryHeader("Access-Control-Request-Method");
+            webContext.WebResponse.ApplyVaryHeader("Access-Control-Request-Headers");
+            logs.Add("Apply CORS preflight Vary headers for external caching.");
+
+            webContext.WebResponse.Headers["Access-Control-Allow-Origin"] = origin;
+            logs.Add($"Set 'Access-Control-Allow-Origin: {origin}'.");
+
             //methods that are allowed when making cross-origin requests
             if (_allowedMethods.Count > 0)
             {
@@ -118,6 +108,32 @@ internal sealed class CorsMiddleware : MiddlewareBase
 
         RecordTelemetry(webContext, FlowDirection.Downstream, ExecutionEvent.Success, downstreamStart, logs);
         await _nextFunction(webContext, cancellationToken);
-        RecordTelemetry(webContext, FlowDirection.Upstream, ExecutionEvent.Success, DateTimeOffset.UtcNow);
+
+        var upstreamStartDefault = DateTimeOffset.UtcNow;
+        var upstreamLogs = new List<string>();
+
+        //add "Origin" to Vary header. Cache now needs to check request Origin before serving cached content
+        webContext.WebResponse.ApplyVaryHeader("Origin");
+        upstreamLogs.Add("Apply 'Vary: Origin' header for external caching.");
+
+        //allow sending to origin
+        webContext.WebResponse.Headers["Access-Control-Allow-Origin"] = origin;
+        upstreamLogs.Add($"Allowed origin: '{origin}'.");
+
+        //browser-stored credentials are sent with the request (session cookies, http auth,...)
+        if (_allowCredentials)
+        {
+            webContext.WebResponse.Headers["Access-Control-Allow-Credentials"] = "true";
+            upstreamLogs.Add("Credentials allowed.");
+        }
+
+        //allow JS to read these headers
+        if (_exposedHeaders.Count > 0)
+        {
+            webContext.WebResponse.Headers["Access-Control-Expose-Headers"] = string.Join(", ", _exposedHeaders);
+            upstreamLogs.Add($"Exposed headers: {string.Join(", ", _exposedHeaders)}.");
+        }
+
+        RecordTelemetry(webContext, FlowDirection.Upstream, ExecutionEvent.Success, upstreamStartDefault, upstreamLogs);
     }
 }

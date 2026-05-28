@@ -46,4 +46,17 @@ public static class WebResponseExtensions
         webResponse.Body.Position = 0;
         webResponse.HasBody = false;
     }
+
+    public static void ApplyVaryHeader(this WebResponse webResponse, string headerName)
+    {
+        webResponse.Headers.TryGetValue("Vary", out var varyHeaderValue);
+        if (string.IsNullOrWhiteSpace(varyHeaderValue))
+        {
+            webResponse.Headers["Vary"] = headerName;
+        }
+        else if (!varyHeaderValue.Contains(headerName, StringComparison.OrdinalIgnoreCase))
+        {
+            webResponse.Headers["Vary"] = $"{varyHeaderValue}, {headerName}";
+        }
+    }
 }

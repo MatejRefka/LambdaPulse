@@ -42,6 +42,10 @@ internal sealed class ResponseCompressionMiddleware : MiddlewareBase
         var upstreamStart = DateTimeOffset.UtcNow;
         var logs = new List<string>();
 
+        //add Accept-Encoding to Vary header for external caching if not already set
+        webContext.WebResponse.ApplyVaryHeader("Accept-Encoding");
+        logs.Add("Applied 'Vary: Accept-Encoding' for external caching.");
+
         //body is empty so nothing to compress
         if (!webContext.WebResponse.HasBody)
         {
@@ -111,19 +115,6 @@ internal sealed class ResponseCompressionMiddleware : MiddlewareBase
         //Content-Length differs so remove header. Response writer will recalculate.
         webContext.WebResponse.Headers.Remove("Content-Length");
         logs.Add($"Removed 'Content-Length' header.");
-
-        //add Accept-Encoding to Vary header for caching if not already set
-        webContext.WebResponse.Headers.TryGetValue("Vary", out var varyHeaderValue);
-        if (string.IsNullOrWhiteSpace(varyHeaderValue))
-        {
-            webContext.WebResponse.Headers["Vary"] = "Accept-Encoding";
-            logs.Add("Set 'Vary: Accept-Encoding'.");
-        }
-        else if (!varyHeaderValue.Contains("Accept-Encoding", StringComparison.OrdinalIgnoreCase))
-        {
-            webContext.WebResponse.Headers["Vary"] = $"{varyHeaderValue}, Accept-Encoding";
-            logs.Add("Appended 'Accept-Encoding' to 'Vary' header.");
-        }
 
         RecordTelemetry(webContext, FlowDirection.Upstream, ExecutionEvent.Success, upstreamStart, logs);
     }
