@@ -91,8 +91,10 @@ internal sealed class CacheMiddleware : MiddlewareBase
         {
             webContext.WebResponse.StatusCode = cachedResponse.StatusCode;
             webContext.WebResponse.ResponsePhrase = cachedResponse.ResponsePhrase;
-            //separate dictionary reference for response and cache
-            webContext.WebResponse.Headers = new Dictionary<string, string>(cachedResponse.Headers, StringComparer.OrdinalIgnoreCase);
+            if (!string.IsNullOrWhiteSpace(cachedResponse.ContentType))
+            {
+                webContext.WebResponse.Headers["Content-Type"] = cachedResponse.ContentType;
+            }
             await webContext.WebResponse.WriteBytesToBody(cachedResponse.Body, cancellationToken);
 
             logs.Add("Cache hit. Returning cached response.");
@@ -169,8 +171,7 @@ internal sealed class CacheMiddleware : MiddlewareBase
         {
             StatusCode = webContext.WebResponse.StatusCode.Value,
             ResponsePhrase = webContext.WebResponse.ResponsePhrase,
-            //separate dictionary reference for cache and response
-            Headers = new Dictionary<string, string>(webContext.WebResponse.Headers, StringComparer.OrdinalIgnoreCase),
+            ContentType = webContext.WebResponse.Headers.TryGetValue("Content-Type", out var contentType) ? contentType : null,
             Body = webContext.WebResponse.Body.ToArray(),
             ExpiresAt = DateTimeOffset.UtcNow.AddSeconds(webContext.Endpoint.CachePolicy.DurationSeconds)
         };
