@@ -75,18 +75,15 @@ internal sealed class ConnectionMiddleware : MiddlewareBase
         {
             var upstreamStart = DateTimeOffset.UtcNow;
 
+            webContext.WebResponse.ClearResponse();
+
             webContext.WebResponse.StatusCode = 408;
             webContext.WebResponse.ResponsePhrase = "Request timed out";
-
-            webContext.WebResponse.Headers.Clear();
-            webContext.WebResponse.Cookies.Clear();
 
             //close the connection for safety
             webContext.WebResponse.Headers["Connection"] = "close";
             webContext.ConnectionCloseRequested = true;
 
-            webContext.WebResponse.Body.SetLength(0);
-            webContext.WebResponse.Body.Position = 0;
             await webContext.WebResponse.WriteStringToBody("The server did not process the request in a timely manner.", cancellationToken);
 
             RecordTelemetry(webContext, FlowDirection.Upstream, ExecutionEvent.Success, upstreamStart, new List<string> { $"The server did not process the request within {_requestExecutionTimeoutMS} ms.", "'Connection: close' set." });

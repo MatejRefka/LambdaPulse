@@ -32,14 +32,11 @@ internal sealed class ExceptionMiddleware : MiddlewareBase
             var downstreamStart = DateTimeOffset.UtcNow;
             _engineLogger.Log(LogLevel.Error, "ExceptionMiddleware", "Pipeline threw an unhandled exception.", e);
 
+            webContext.WebResponse.ClearResponse();
+
             webContext.WebResponse.StatusCode = 500;
             webContext.WebResponse.ResponsePhrase = "Internal Server Error";
 
-            webContext.WebResponse.Headers.Clear();
-            webContext.WebResponse.Cookies.Clear();
-
-            webContext.WebResponse.Body.SetLength(0);
-            webContext.WebResponse.Body.Position = 0;
             await webContext.WebResponse.WriteStringToBody("The server encountered an unexpected condition that prevented it from fulfilling the request.", cancellationToken);
 
             RecordTelemetry(webContext, FlowDirection.Upstream, ExecutionEvent.Success, downstreamStart, new List<string> { "Overwrite with a 500 response.", "Response headers and cookies cleared." });
