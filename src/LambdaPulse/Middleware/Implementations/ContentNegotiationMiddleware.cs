@@ -89,21 +89,6 @@ internal sealed class ContentNegotiationMiddleware : MiddlewareBase
         RecordTelemetry(webContext, FlowDirection.Downstream, ExecutionEvent.Success, downstreamStart, downstreamLogs);
         await _nextFunction(webContext, cancellationToken);
 
-        var upstreamStart = DateTimeOffset.UtcNow;
-        var upstreamLogs = new List<string>();
-
-        //set content-type header if not already set and body was written to
-        if (webContext.WebResponse.HasBody && !webContext.WebResponse.Headers.ContainsKey("Content-Type"))
-        {
-            var contentType = webContext.NegotiatedMimeType ?? defaultMimeType;
-
-            //UTF-8 modern standard for text content, tells browser how to interpret raw bytes into characters
-            contentType = contentType.StartsWith("text/", StringComparison.OrdinalIgnoreCase) ? contentType + "; charset=utf-8" : contentType;
-
-            webContext.WebResponse.Headers["Content-Type"] = contentType;
-            upstreamLogs.Add($"Set Content-Type header to: {contentType}");
-        }
-
-        RecordTelemetry(webContext, FlowDirection.Upstream, ExecutionEvent.Success, upstreamStart, upstreamLogs);
+        RecordTelemetry(webContext, FlowDirection.Upstream, ExecutionEvent.Success, DateTimeOffset.UtcNow);
     }
 }

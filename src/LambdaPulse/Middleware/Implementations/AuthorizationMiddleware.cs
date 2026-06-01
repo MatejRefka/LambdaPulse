@@ -42,7 +42,6 @@ internal sealed class AuthorizationMiddleware : MiddlewareBase
         {
             webContext.WebResponse.StatusCode = 401;
             webContext.WebResponse.ResponsePhrase = "Unauthorized";
-            webContext.WebResponse.Headers["Content-Type"] = "text/plain; charset=utf-8";
             await webContext.WebResponse.WriteStringToBody("User authentication is required to access this resource.", cancellationToken);
             RecordTelemetry(webContext, FlowDirection.Downstream, ExecutionEvent.ShortCircuit, downstreamStart, new List<string> { "User is not authenticated." });
             return;
@@ -58,7 +57,6 @@ internal sealed class AuthorizationMiddleware : MiddlewareBase
             {
                 webContext.WebResponse.StatusCode = 403;
                 webContext.WebResponse.ResponsePhrase = "Forbidden";
-                webContext.WebResponse.Headers["Content-Type"] = "text/plain; charset=utf-8";
                 await webContext.WebResponse.WriteStringToBody("User is not authorized to access this resource.", cancellationToken);
                 RecordTelemetry(webContext, FlowDirection.Downstream, ExecutionEvent.ShortCircuit, downstreamStart, new List<string> { "User does not have the required role to access the endpoint." });
                 return;
