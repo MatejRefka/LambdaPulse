@@ -29,7 +29,7 @@ internal sealed class HstsMiddleware : MiddlewareBase
         var upstreamStart = DateTimeOffset.UtcNow;
 
         //HSTS only applies to HTTPS
-        if (!(webContext.WebRequest.Headers.TryGetValue("X-Forwarded-Proto", out var fwProtocol) || !string.Equals(fwProtocol, "https", StringComparison.OrdinalIgnoreCase)))
+        if (!webContext.WebRequest.Headers.TryGetValue("X-Forwarded-Proto", out var fwProtocol) || !string.Equals(fwProtocol, "https", StringComparison.OrdinalIgnoreCase))
         {
             RecordTelemetry(webContext, FlowDirection.Upstream, ExecutionEvent.Success, upstreamStart, new List<string> { "HSTS is skipped because the request was not forwarded as HTTPS." });
             return;
