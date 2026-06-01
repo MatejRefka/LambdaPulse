@@ -10,7 +10,7 @@ public sealed class ServerConfig
     public required string Address { get; init; }
     public required int Port { get; init; }
     public int BackLog { get; init; }
-    public required int ConnectionIdleTimeoutMS { get; init; }
+    public required int ReadTimeoutMS { get; init; }
     public required MiddlewareConfig MiddlewareConfig { get; init; }
 }
 

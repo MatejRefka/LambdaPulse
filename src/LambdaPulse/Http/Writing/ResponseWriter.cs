@@ -7,7 +7,7 @@ namespace LambdaPulse.Engine.Http.Writing;
 
 internal sealed class ResponseWriter : IResponseWriter
 {
-    public async Task WriteHttpResponse(NetworkStream networkStream, WebContext webContext)
+    public async Task WriteHttpResponse(NetworkStream networkStream, WebContext webContext, CancellationToken cancellationToken = default)
     {
         var responseStatusLine = $"HTTP/1.1 {webContext.WebResponse.StatusCode} {webContext.WebResponse.ResponsePhrase}\r\n";
 
@@ -46,18 +46,18 @@ internal sealed class ResponseWriter : IResponseWriter
         var headerBytes = Encoding.ASCII.GetBytes(headersBlock);
 
         //send headers and body
-        await networkStream.WriteAsync(headerBytes);
+        await networkStream.WriteAsync(headerBytes, cancellationToken);
         if (bodyBytes.Length > 0)
         {
-            await networkStream.WriteAsync(bodyBytes);
+            await networkStream.WriteAsync(bodyBytes, cancellationToken);
         }
     }
 
-    public async Task WriterRaw400Response(NetworkStream networkStream)
+    public async Task WriterRaw400Response(NetworkStream networkStream, CancellationToken cancellationToken = default)
     {
         var response = "HTTP/1.1 400 Bad Request\r\nContent-Length: 0\r\nConnection: close\r\n\r\n";
         var bytes = Encoding.ASCII.GetBytes(response);
 
-        await networkStream.WriteAsync(bytes);
+        await networkStream.WriteAsync(bytes, cancellationToken);
     }
 }

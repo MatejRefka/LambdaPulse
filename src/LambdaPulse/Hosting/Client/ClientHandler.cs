@@ -18,7 +18,7 @@ internal sealed class ClientHandler : IClientHandler
     private readonly IResponseWriter _responseWriter;
     private readonly IEngineLogger _engineLogger;
     private readonly ITraceLogger _traceLogger;
-    private readonly int _connectionIdleTimeoutMS;
+    private readonly int _readTimeoutMS;
 
     public ClientHandler(Func<WebContext, CancellationToken, Task> pipeline, IRequestReader requestReader, IRequestParser requestParser, IResponseWriter responseWriter, IConfigProvider configProvider, IEngineLogger engineLogger, ITraceLogger traceLogger)
     {
@@ -28,14 +28,14 @@ internal sealed class ClientHandler : IClientHandler
         _responseWriter = responseWriter;
         _engineLogger = engineLogger;
         _traceLogger = traceLogger;
-        _connectionIdleTimeoutMS = configProvider.ServerConfig.ConnectionIdleTimeoutMS;
+        _readTimeoutMS = configProvider.ServerConfig.ReadTimeoutMS;
     }
 
     public async Task HandleClient(TcpClient tcpClient, CancellationToken serverCancellationToken = default)
     {
         //client-level token
-        using var clientCTS = CancellationTokenSource.CreateLinkedTokenSource(serverCancellationToken);
-        var clientCancellationToken = clientCTS.Token;
+        using var clientCts = CancellationTokenSource.CreateLinkedTokenSource(serverCancellationToken);
+        var clientCancellationToken = clientCts.Token;
 
         try
         {
@@ -48,15 +48,15 @@ internal sealed class ClientHandler : IClientHandler
             //keep accepting requests over the same connection
             while (!clientCancellationToken.IsCancellationRequested)
             {
-                //request-level token. sets idle timeout between requests
-                using var connectionIdleCTS = CancellationTokenSource.CreateLinkedTokenSource(clientCancellationToken);
-                connectionIdleCTS.CancelAfter(_connectionIdleTimeoutMS);
-                var timeoutToken = connectionIdleCTS.Token;
+                //connection-level token. sets idle timeout between requests
+                using var readTimeoutCts = CancellationTokenSource.CreateLinkedTokenSource(clientCancellationToken);
+                readTimeoutCts.CancelAfter(_readTimeoutMS);
+                var readTimeoutToken = readTimeoutCts.Token;
 
                 string? requestString = null;
                 try
                 {
-                    requestString = await _requestReader.ReadHttpRequest(networkStream, timeoutToken);
+                    requestString = await _requestReader.ReadHttpRequest(networkStream, readTimeoutToken);
 
                     //client disconnected gracefully before sending anything
                     if (string.IsNullOrWhiteSpace(requestString))
@@ -91,15 +91,15 @@ internal sealed class ClientHandler : IClientHandler
 
                         _traceLogger.Log(trace);
 
-                        await _responseWriter.WriterRaw400Response(networkStream);
+                        await _responseWriter.WriterRaw400Response(networkStream, clientCancellationToken);
 
                         break;
                     }
 
                     //invoke the delegate
-                    await _pipeline(webContext, timeoutToken);
+                    await _pipeline(webContext, clientCancellationToken);
 
-                    await _responseWriter.WriteHttpResponse(networkStream, webContext);
+                    await _responseWriter.WriteHttpResponse(networkStream, webContext, clientCancellationToken);
 
                     timer.Stop();
                     //log the request + response metadata (Trace)
