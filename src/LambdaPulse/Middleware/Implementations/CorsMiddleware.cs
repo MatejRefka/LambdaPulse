@@ -109,7 +109,7 @@ internal sealed class CorsMiddleware : MiddlewareBase
         RecordTelemetry(webContext, FlowDirection.Downstream, ExecutionEvent.Success, downstreamStart, logs);
         await _nextFunction(webContext, cancellationToken);
 
-        var upstreamStartDefault = DateTimeOffset.UtcNow;
+        var upstreamStart = DateTimeOffset.UtcNow;
         var upstreamLogs = new List<string>();
 
         //add "Origin" to Vary header. Cache now needs to check request Origin before serving cached content
@@ -134,6 +134,6 @@ internal sealed class CorsMiddleware : MiddlewareBase
             upstreamLogs.Add($"Exposed headers: {string.Join(", ", _exposedHeaders)}.");
         }
 
-        RecordTelemetry(webContext, FlowDirection.Upstream, ExecutionEvent.Success, upstreamStartDefault, upstreamLogs);
+        RecordTelemetry(webContext, FlowDirection.Upstream, ExecutionEvent.Success, upstreamStart, upstreamLogs);
     }
 }
