@@ -43,10 +43,12 @@ internal sealed class SessionMiddleware : MiddlewareBase
         var upstreamStart = DateTimeOffset.UtcNow;
         var upstreamLogs = new List<string>();
 
+        var sessionIsNew = webContext.Session.IsNew;
+
         await _sessionStore.SaveSession(webContext.Session, cancellationToken);
         upstreamLogs.Add("Session saved to store.");
 
-        if (webContext.Session.IsNew)
+        if (sessionIsNew)
         {
             webContext.WebResponse.Cookies.Add($"{SessionCookieName}={webContext.Session.Id}; Path=/; HttpOnly; Secure");
             upstreamLogs.Add($"Set '{SessionCookieName}=xyz; Path=/; HttpOnly; Secure' cookie.");
