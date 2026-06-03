@@ -37,7 +37,7 @@ internal sealed class RequestLimitsMiddleware : MiddlewareBase
             webContext.WebResponse.StatusCode = 414;
             webContext.WebResponse.ResponsePhrase = "Request URI too long";
             await webContext.WebResponse.WriteStringToBody("Request control data is too large.", cancellationToken);
-            RecordTelemetry(webContext, FlowDirection.Downstream, ExecutionEvent.ShortCircuit, downstreamStart, new List<string> { $"Request control data is too large (URL). Maximum bytes allowed: {_maxControlDataSizeBytes}." });
+            RecordTelemetry(webContext, FlowDirection.Downstream, ExecutionEvent.ShortCircuit, downstreamStart, new List<string> { $"Request control data exceeds limit. limitBytes={_maxControlDataSizeBytes}." });
             _engineLogger.Log(LogLevel.Warning, "RequestLimitsMiddleware", $"Request control data is too large. Method: {webContext.WebRequest.Method}, Path: {webContext.WebRequest.Path}, Protocol: {webContext.WebRequest.Protocol}, Size: {controlDataSize}bytes. Maximum allowed: {_maxControlDataSizeBytes}bytes. Remote Ip Address: {webContext.RemoteIpAddress}");
             return;
         }
@@ -49,7 +49,7 @@ internal sealed class RequestLimitsMiddleware : MiddlewareBase
             webContext.WebResponse.StatusCode = 431;
             webContext.WebResponse.ResponsePhrase = "Request header fields are too large";
             await webContext.WebResponse.WriteStringToBody("Request header fields are too large.", cancellationToken);
-            RecordTelemetry(webContext, FlowDirection.Downstream, ExecutionEvent.ShortCircuit, downstreamStart, new List<string> { $"Request header fields are too large. Maximum bytes allowed: {_maxHeaderSizeBytes}." });
+            RecordTelemetry(webContext, FlowDirection.Downstream, ExecutionEvent.ShortCircuit, downstreamStart, new List<string> { $"Request headers exceed limit. limitBytes={_maxHeaderSizeBytes}." });
             _engineLogger.Log(LogLevel.Warning, "RequestLimitsMiddleware", $"Request header fields are too large. Method: {webContext.WebRequest.Method}, Path: {webContext.WebRequest.Path}, Protocol: {webContext.WebRequest.Protocol}, Size: {headerBytes}bytes. Maximum allowed: {_maxHeaderSizeBytes}bytes. Remote Ip Address: {webContext.RemoteIpAddress}");
             return;
         }
@@ -63,7 +63,7 @@ internal sealed class RequestLimitsMiddleware : MiddlewareBase
                 webContext.WebResponse.StatusCode = 413;
                 webContext.WebResponse.ResponsePhrase = "Request body is too large";
                 await webContext.WebResponse.WriteStringToBody("Request body is too large.", cancellationToken);
-                RecordTelemetry(webContext, FlowDirection.Downstream, ExecutionEvent.ShortCircuit, downstreamStart, new List<string> { $"Request body is too large. Maximum bytes allowed: {_maxBodySizeBytes}." });
+                RecordTelemetry(webContext, FlowDirection.Downstream, ExecutionEvent.ShortCircuit, downstreamStart, new List<string> { $"Request body exceeds limit. limitBytes={_maxBodySizeBytes}." });
                 _engineLogger.Log(LogLevel.Warning, "RequestLimitsMiddleware", $"Request body is too large. Method: {webContext.WebRequest.Method}, Path: {webContext.WebRequest.Path}, Protocol: {webContext.WebRequest.Protocol}, Size: {bodyBytes}bytes. Maximum allowed: {_maxBodySizeBytes}bytes. Remote Ip Address: {webContext.RemoteIpAddress}");
                 return;
             }

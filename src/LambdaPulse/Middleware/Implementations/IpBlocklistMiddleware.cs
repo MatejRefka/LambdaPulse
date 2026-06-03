@@ -28,7 +28,7 @@ internal sealed class IpBlocklistMiddleware : MiddlewareBase
             webContext.WebResponse.StatusCode = 403;
             webContext.WebResponse.ResponsePhrase = "Forbidden";
             await webContext.WebResponse.WriteStringToBody("Forbidden.", cancellationToken);
-            RecordTelemetry(webContext, FlowDirection.Downstream, ExecutionEvent.ShortCircuit, downstreamStart, new List<string> { $"Blocked request from IP address: {webContext.RemoteIpAddress}" });
+            RecordTelemetry(webContext, FlowDirection.Downstream, ExecutionEvent.ShortCircuit, downstreamStart, new List<string> { $"Remote IP is blocklisted. ip={webContext.RemoteIpAddress}." });
             return;
         }
 

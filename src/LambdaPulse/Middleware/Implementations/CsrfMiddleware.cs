@@ -31,12 +31,12 @@ internal sealed class CsrfMiddleware : MiddlewareBase
             webContext.WebResponse.ResponsePhrase = "Internal Server Error";
             await webContext.WebResponse.WriteStringToBody("Session is required before CSRF middleware.", cancellationToken);
 
-            RecordTelemetry(webContext, FlowDirection.Downstream, ExecutionEvent.ShortCircuit, downstreamStart, new List<string> { "No session available." });
+            RecordTelemetry(webContext, FlowDirection.Downstream, ExecutionEvent.ShortCircuit, downstreamStart, new List<string> { "CSRF requires session state. Return 500." });
             return;
         }
 
         var csrfToken = await webContext.Session.GetValue<string>(CsrfTokenSessionKey);
-        logs.Add(string.IsNullOrWhiteSpace(csrfToken) ? "CSRF token missing from session, generated new CSRF token." : "CSRF token loaded from session.");
+        logs.Add(string.IsNullOrWhiteSpace(csrfToken) ? "Session has no CSRF token. Create CSRF token." : "Session CSRF token exists. Reuse CSRF token.");
 
         //Generate new CSRF token if not in session
         if (string.IsNullOrWhiteSpace(csrfToken))
@@ -60,11 +60,11 @@ internal sealed class CsrfMiddleware : MiddlewareBase
                 webContext.WebResponse.ResponsePhrase = "Forbidden";
                 await webContext.WebResponse.WriteStringToBody("CSRF token missing or invalid.", cancellationToken);
 
-                logs.Add(string.IsNullOrWhiteSpace(requestCsrfToken) ? "CSRF token missing from request." : "CSRF token invalid.");
+                logs.Add(string.IsNullOrWhiteSpace(requestCsrfToken) ? "CSRF token is missing." : "CSRF token is invalid.");
                 RecordTelemetry(webContext, FlowDirection.Downstream, ExecutionEvent.ShortCircuit, downstreamStart, logs);
                 return;
             }
-            logs.Add("CSRF token validated.");
+            logs.Add("CSRF token is valid. Allow request.");
         }
 
         RecordTelemetry(webContext, FlowDirection.Downstream, ExecutionEvent.Success, downstreamStart, logs);
@@ -76,7 +76,7 @@ internal sealed class CsrfMiddleware : MiddlewareBase
         //Set/re-set CSRF token header for client to use in future requests
         webContext.WebResponse.Headers["X-CSRF-Token"] = csrfToken;
 
-        RecordTelemetry(webContext, FlowDirection.Upstream, ExecutionEvent.Success, upstreamStart, new List<string> { "Set 'X-CSRF-Token' header." });
+        RecordTelemetry(webContext, FlowDirection.Upstream, ExecutionEvent.Success, upstreamStart, new List<string> { "Set CSRF token. header=X-CSRF-Token." });
     }
 
     private static bool IsTokenValid(string? requestToken, string? expectedToken)

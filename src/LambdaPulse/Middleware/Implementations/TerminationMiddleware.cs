@@ -27,7 +27,7 @@ internal sealed class TerminationMiddleware : MiddlewareBase
             webContext.WebResponse.StatusCode = 404;
             webContext.WebResponse.ResponsePhrase = "Not Found";
             await webContext.WebResponse.WriteStringToBody("Not Found.", cancellationToken);
-            logs.Add("No response status code was set. Set 404 Not Found.");
+            logs.Add("No response status code was set. Return 404.");
         }
 
         RecordTelemetry(webContext, FlowDirection.Downstream, ExecutionEvent.Success, downstreamStart, logs);

@@ -23,7 +23,7 @@ internal sealed class InvokeMiddleware : MiddlewareBase
         {
             //user application code is invoked here
             await webContext.Endpoint.ApplicationFunction(webContext, cancellationToken);
-            logs.Add("Endpoint invoked.");
+            logs.Add("Endpoint matched the request. Invoke endpoint.");
         }
 
         RecordTelemetry(webContext, FlowDirection.Downstream, ExecutionEvent.Success, downstreamStart);

@@ -25,7 +25,7 @@ internal sealed class AuthenticationMiddleware : MiddlewareBase
 
         webContext.User = await _authenticationScheme.Authenticate(webContext, cancellationToken);
 
-        RecordTelemetry(webContext, FlowDirection.Downstream, ExecutionEvent.Success, downstreamStart, webContext.User.IsAuthenticated ? new List<string> { "User authenticated." } : new List<string> { "No authenticated user found. Assigned GuestUser." });
+        RecordTelemetry(webContext, FlowDirection.Downstream, ExecutionEvent.Success, downstreamStart, webContext.User.IsAuthenticated ? new List<string> { "User authenticated." } : new List<string> { "Authentication scheme did not return an authenticated user. Authenticate as guest." });
         await _nextFunction(webContext, cancellationToken);
         RecordTelemetry(webContext, FlowDirection.Upstream, ExecutionEvent.Success, DateTimeOffset.UtcNow);
     }

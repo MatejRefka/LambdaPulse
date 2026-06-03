@@ -22,7 +22,7 @@ internal sealed class AuthorizationMiddleware : MiddlewareBase
         //no endpoint so nothing to authorize
         if (webContext.Endpoint == null)
         {
-            RecordTelemetry(webContext, FlowDirection.Downstream, ExecutionEvent.Success, downstreamStart, new List<string> { "No endpoint matched for the request. Skipping authorization." });
+            RecordTelemetry(webContext, FlowDirection.Downstream, ExecutionEvent.Success, downstreamStart, new List<string> { "No endpoint matched the request. Skip authorization." });
             await _nextFunction(webContext, cancellationToken);
             RecordTelemetry(webContext, FlowDirection.Upstream, ExecutionEvent.Success, DateTimeOffset.UtcNow);
             return;
@@ -31,7 +31,7 @@ internal sealed class AuthorizationMiddleware : MiddlewareBase
         //public endpoint so continue to downstream middleware
         if (webContext.Endpoint.AllowAnonymous)
         {
-            RecordTelemetry(webContext, FlowDirection.Downstream, ExecutionEvent.Success, downstreamStart, new List<string> { "Endpoint allows anonymous access. Skipping authorization." });
+            RecordTelemetry(webContext, FlowDirection.Downstream, ExecutionEvent.Success, downstreamStart, new List<string> { "Endpoint allows anonymous access. Skip authorization." });
             await _nextFunction(webContext, cancellationToken);
             RecordTelemetry(webContext, FlowDirection.Upstream, ExecutionEvent.Success, DateTimeOffset.UtcNow);
             return;
@@ -58,7 +58,7 @@ internal sealed class AuthorizationMiddleware : MiddlewareBase
                 webContext.WebResponse.StatusCode = 403;
                 webContext.WebResponse.ResponsePhrase = "Forbidden";
                 await webContext.WebResponse.WriteStringToBody("User is not authorized to access this resource.", cancellationToken);
-                RecordTelemetry(webContext, FlowDirection.Downstream, ExecutionEvent.ShortCircuit, downstreamStart, new List<string> { "User does not have the required role to access the endpoint." });
+                RecordTelemetry(webContext, FlowDirection.Downstream, ExecutionEvent.ShortCircuit, downstreamStart, new List<string> { "User is missing the required role." });
                 return;
             }
         }

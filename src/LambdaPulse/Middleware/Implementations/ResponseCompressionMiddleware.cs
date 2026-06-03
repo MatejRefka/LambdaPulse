@@ -44,19 +44,19 @@ internal sealed class ResponseCompressionMiddleware : MiddlewareBase
 
         //add Accept-Encoding to Vary header for external caching if not already set
         webContext.WebResponse.ApplyVaryHeader("Accept-Encoding");
-        logs.Add("Applied 'Vary: Accept-Encoding' for external caching.");
+        logs.Add("Compression depends on client encodings. Append Accept-Encoding to Vary header for external cache.");
 
         //body is empty so nothing to compress
         if (!webContext.WebResponse.HasBody)
         {
-            RecordTelemetry(webContext, FlowDirection.Upstream, ExecutionEvent.Success, upstreamStart, new List<string> { "Compression skipped: payload is empty." });
+            RecordTelemetry(webContext, FlowDirection.Upstream, ExecutionEvent.Success, upstreamStart, new List<string> { "Response body is empty. Skip compression." });
             return;
         }
 
         //body content is already compressed
         if (webContext.WebResponse.Headers.ContainsKey("Content-Encoding"))
         {
-            RecordTelemetry(webContext, FlowDirection.Upstream, ExecutionEvent.Success, upstreamStart, new List<string> { "Compression skipped: payload is already compressed." });
+            RecordTelemetry(webContext, FlowDirection.Upstream, ExecutionEvent.Success, upstreamStart, new List<string> { "Response is already encoded. Skip compression." });
             return;
         }
 
@@ -64,7 +64,7 @@ internal sealed class ResponseCompressionMiddleware : MiddlewareBase
         webContext.WebRequest.Headers.TryGetValue("Accept-Encoding", out var acceptEncodingValue);
         if (string.IsNullOrWhiteSpace(acceptEncodingValue))
         {
-            RecordTelemetry(webContext, FlowDirection.Upstream, ExecutionEvent.Success, upstreamStart, new List<string> { "Compression skipped: browser did not advertise any encodings." });
+            RecordTelemetry(webContext, FlowDirection.Upstream, ExecutionEvent.Success, upstreamStart, new List<string> { "Accept-Encoding header is missing. Skip compression." });
             return;
         }
 
@@ -73,14 +73,14 @@ internal sealed class ResponseCompressionMiddleware : MiddlewareBase
         //browser advertised encodings do not match the compressor
         if (!encodings.Any(encoding => string.Equals(encoding, _compressor.Encoding, StringComparison.OrdinalIgnoreCase)))
         {
-            RecordTelemetry(webContext, FlowDirection.Upstream, ExecutionEvent.Success, upstreamStart, new List<string> { "Compression skipped: Cannot compress using the advertised encoding(s)." });
+            RecordTelemetry(webContext, FlowDirection.Upstream, ExecutionEvent.Success, upstreamStart, new List<string> { "Client does not accept the configured encoding. Skip compression." });
             return;
         }
 
         //no need to compress small payloads
         if (webContext.WebResponse.Body.Length < _minBodySize)
         {
-            RecordTelemetry(webContext, FlowDirection.Upstream, ExecutionEvent.Success, upstreamStart, new List<string> { $"Compression skipped: payload is below {_minBodySize} bytes." });
+            RecordTelemetry(webContext, FlowDirection.Upstream, ExecutionEvent.Success, upstreamStart, new List<string> { $"Response body is below minimum size. Skip compression. minBytes={_minBodySize}." });
             return;
         }
 
@@ -88,14 +88,14 @@ internal sealed class ResponseCompressionMiddleware : MiddlewareBase
         webContext.WebResponse.Headers.TryGetValue("Content-Type", out var contentTypeValue);
         if (string.IsNullOrWhiteSpace(contentTypeValue))
         {
-            RecordTelemetry(webContext, FlowDirection.Upstream, ExecutionEvent.Success, upstreamStart, new List<string> { $"Compression skipped: payload MIME type not set." });
+            RecordTelemetry(webContext, FlowDirection.Upstream, ExecutionEvent.Success, upstreamStart, new List<string> { "Content-Type header is missing. Skip compression." });
             return;
         }
 
         //MIME type is not supported for compression
         if (!_supportedMimeTypes.Any(supportedMimeType => contentTypeValue.Contains(supportedMimeType, StringComparison.OrdinalIgnoreCase)))
         {
-            RecordTelemetry(webContext, FlowDirection.Upstream, ExecutionEvent.Success, upstreamStart, new List<string> { $"MIME type '{contentTypeValue}' is not supported." });
+            RecordTelemetry(webContext, FlowDirection.Upstream, ExecutionEvent.Success, upstreamStart, new List<string> { $"Content-Type is not compressible. Skip compression. contentType={contentTypeValue}." });
             return;
         }
 
@@ -107,14 +107,14 @@ internal sealed class ResponseCompressionMiddleware : MiddlewareBase
         webContext.WebResponse.Body.Position = 0;
         await webContext.WebResponse.WriteBytesToBody(compressedBody, cancellationToken);
         webContext.WebResponse.Body.Position = 0;
-        logs.Add($"Compressed payload using {_compressor.Encoding}.");
+        logs.Add($"Compress response. encoding={_compressor.Encoding}.");
 
         webContext.WebResponse.Headers["Content-Encoding"] = _compressor.Encoding;
-        logs.Add($"Set 'Content-Encoding: {_compressor.Encoding}'");
+        logs.Add($"Set response header. Content-Encoding={_compressor.Encoding}.");
 
         //Content-Length differs so remove header. Response writer will recalculate.
         webContext.WebResponse.Headers.Remove("Content-Length");
-        logs.Add($"Removed 'Content-Length' header.");
+        logs.Add("Content-Length must be recalculated. Remove response header.");
 
         RecordTelemetry(webContext, FlowDirection.Upstream, ExecutionEvent.Success, upstreamStart, logs);
     }

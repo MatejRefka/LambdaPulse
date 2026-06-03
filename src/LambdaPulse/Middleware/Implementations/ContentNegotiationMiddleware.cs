@@ -74,16 +74,16 @@ internal sealed class ContentNegotiationMiddleware : MiddlewareBase
                 webContext.WebResponse.ResponsePhrase = "Not Acceptable";
                 await webContext.WebResponse.WriteStringToBody("The requested mime type is not supported by the server.", cancellationToken);
 
-                RecordTelemetry(webContext, FlowDirection.Downstream, ExecutionEvent.ShortCircuit, downstreamStart, new List<string> { "No acceptable MIME type found. Returning 406 Not Acceptable." });
+                RecordTelemetry(webContext, FlowDirection.Downstream, ExecutionEvent.ShortCircuit, downstreamStart, new List<string> { "No supported MIME type matched the Accept header. Return 406." });
                 return;
             }
-            downstreamLogs.Add($"Negotiated MIME type: {webContext.NegotiatedMimeType}");
+            downstreamLogs.Add($"Accept header matched supported MIME type. mimeType={webContext.NegotiatedMimeType}.");
         }
         else
         {
             //no accept header sent
             webContext.NegotiatedMimeType = defaultMimeType;
-            downstreamLogs.Add($"No Accept header sent. Set to default MIME type: {defaultMimeType}");
+            downstreamLogs.Add($"Accept header is missing. Use default MIME type. mimeType={defaultMimeType}.");
         }
 
         RecordTelemetry(webContext, FlowDirection.Downstream, ExecutionEvent.Success, downstreamStart, downstreamLogs);

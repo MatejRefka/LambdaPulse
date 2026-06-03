@@ -26,7 +26,7 @@ internal sealed class HttpsRedirectionMiddleware : MiddlewareBase
         //https redirect disabled by server or request is https -forwarded by reverse proxy
         if (!_isEnabled || (webContext.WebRequest.Headers.TryGetValue("X-Forwarded-Proto", out var fwProtocol) && string.Equals(fwProtocol, "https", StringComparison.OrdinalIgnoreCase)))
         {
-            RecordTelemetry(webContext, FlowDirection.Downstream, ExecutionEvent.Success, downstreamStart, new List<string> { !_isEnabled ? "HTTPS redirection is disabled by the server." : "Request is forwarded as HTTPS by a reverse proxy.", });
+            RecordTelemetry(webContext, FlowDirection.Downstream, ExecutionEvent.Success, downstreamStart, new List<string> { !_isEnabled ? "HTTPS redirection disabled by server." : "Request is forwarded as HTTPS. Skip HTTPS redirection.", });
             await _nextFunction(webContext, cancellationToken);
             RecordTelemetry(webContext, FlowDirection.Upstream, ExecutionEvent.Success, DateTimeOffset.UtcNow);
             return;
@@ -39,7 +39,7 @@ internal sealed class HttpsRedirectionMiddleware : MiddlewareBase
             webContext.WebResponse.ResponsePhrase = "Bad Request";
             await webContext.WebResponse.WriteStringToBody("Missing Host Header.", cancellationToken);
 
-            RecordTelemetry(webContext, FlowDirection.Downstream, ExecutionEvent.ShortCircuit, downstreamStart, new List<string> { "Missing 'Host' header." });
+            RecordTelemetry(webContext, FlowDirection.Downstream, ExecutionEvent.ShortCircuit, downstreamStart, new List<string> { "Host header is required for HTTPS redirection. Return 400." });
             return;
         }
         else
@@ -60,7 +60,7 @@ internal sealed class HttpsRedirectionMiddleware : MiddlewareBase
             webContext.WebResponse.Headers["Connection"] = "close";
             webContext.ConnectionCloseRequested = true;
 
-            RecordTelemetry(webContext, FlowDirection.Downstream, ExecutionEvent.ShortCircuit, downstreamStart, new List<string> { $"Temporary redirect to {redirectUrl}.", "Set 'Connection: close'." });
+            RecordTelemetry(webContext, FlowDirection.Downstream, ExecutionEvent.ShortCircuit, downstreamStart, new List<string> { $"Redirect to HTTPS. location={redirectUrl}.", "Client must open a new HTTPS request. Close connection." });
         }
     }
 }

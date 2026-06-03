@@ -26,10 +26,10 @@ internal sealed class SessionMiddleware : MiddlewareBase
         var downstreamLogs = new List<string>();
 
         webContext.WebRequest.Cookies.TryGetValue(SessionCookieName, out var sessionId);
-        downstreamLogs.Add(string.IsNullOrWhiteSpace(sessionId) ? "Session cookie not present." : $"Session cookie '{SessionCookieName}' present.");
+        downstreamLogs.Add(string.IsNullOrWhiteSpace(sessionId) ? "Session cookie is missing. Create session." : $"Session cookie is present. Load session. cookie={SessionCookieName}.");
 
         var requestSession = string.IsNullOrWhiteSpace(sessionId) ? CreateSession() : await _sessionStore.GetSession(sessionId, cancellationToken);
-        downstreamLogs.Add(string.IsNullOrWhiteSpace(sessionId) ? "New session created." : (requestSession != null ? $"Session found in store." : $"Session not found in store. New session created."));
+        downstreamLogs.Add(string.IsNullOrWhiteSpace(sessionId) ? "No session cookie was provided. Use new session." : (requestSession != null ? "Session id matched the store. Use stored session." : "Session id not found in store. Use new session."));
 
         //sessionId from client not found in store
         requestSession ??= CreateSession();
@@ -46,12 +46,12 @@ internal sealed class SessionMiddleware : MiddlewareBase
         var sessionIsNew = webContext.Session.IsNew;
 
         await _sessionStore.SaveSession(webContext.Session, cancellationToken);
-        upstreamLogs.Add("Session saved to store.");
+        upstreamLogs.Add("Store session in store.");
 
         if (sessionIsNew)
         {
             webContext.WebResponse.Cookies.Add($"{SessionCookieName}={webContext.Session.Id}; Path=/; HttpOnly; Secure");
-            upstreamLogs.Add($"Set '{SessionCookieName}=xyz; Path=/; HttpOnly; Secure' cookie.");
+            upstreamLogs.Add($"Issue session cookie. cookie={SessionCookieName}.");
         }
 
         RecordTelemetry(webContext, FlowDirection.Upstream, ExecutionEvent.Success, upstreamStart, upstreamLogs);

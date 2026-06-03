@@ -39,7 +39,7 @@ internal sealed class ExceptionMiddleware : MiddlewareBase
 
             await webContext.WebResponse.WriteStringToBody("The server encountered an unexpected condition that prevented it from fulfilling the request.", cancellationToken);
 
-            RecordTelemetry(webContext, FlowDirection.Upstream, ExecutionEvent.Success, upstreamStart, new List<string> { "Overwrite with a 500 response.", "Response headers and cookies cleared." });
+            RecordTelemetry(webContext, FlowDirection.Upstream, ExecutionEvent.Success, upstreamStart, new List<string> { "Unhandled exception reached exception middleware.", "Clear response.", "Return 500." });
         }
     }
 }

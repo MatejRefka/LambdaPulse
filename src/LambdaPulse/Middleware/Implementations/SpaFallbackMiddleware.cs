@@ -26,7 +26,7 @@ internal sealed class SpaFallbackMiddleware : MiddlewareBase
         //skip non-GET requests
         if (!string.Equals(webContext.WebRequest.Method, "GET", StringComparison.OrdinalIgnoreCase))
         {
-            RecordTelemetry(webContext, FlowDirection.Downstream, ExecutionEvent.Success, downstreamStart, new List<string> { $"{webContext.WebRequest.Method} request. SPA fallback skipped." });
+            RecordTelemetry(webContext, FlowDirection.Downstream, ExecutionEvent.Success, downstreamStart, new List<string> { $"{webContext.WebRequest.Method} request. Skip SPA fallback." });
             await _nextFunction(webContext, cancellationToken);
             RecordTelemetry(webContext, FlowDirection.Upstream, ExecutionEvent.Success, DateTimeOffset.UtcNow);
             return;
@@ -35,7 +35,7 @@ internal sealed class SpaFallbackMiddleware : MiddlewareBase
         //skip if endpoint already matched
         if (webContext.Endpoint != null)
         {
-            RecordTelemetry(webContext, FlowDirection.Downstream, ExecutionEvent.Success, downstreamStart, new List<string> { $"Endpoint already matched. SPA fallback skipped." });
+            RecordTelemetry(webContext, FlowDirection.Downstream, ExecutionEvent.Success, downstreamStart, new List<string> { "Endpoint already matched. Skip SPA fallback." });
             await _nextFunction(webContext, cancellationToken);
             RecordTelemetry(webContext, FlowDirection.Upstream, ExecutionEvent.Success, DateTimeOffset.UtcNow);
             return;
@@ -44,7 +44,7 @@ internal sealed class SpaFallbackMiddleware : MiddlewareBase
         //skip static file request
         if (Path.HasExtension(webContext.WebRequest.Path))
         {
-            RecordTelemetry(webContext, FlowDirection.Downstream, ExecutionEvent.Success, downstreamStart, new List<string> { $"File request. SPA fallback skipped." });
+            RecordTelemetry(webContext, FlowDirection.Downstream, ExecutionEvent.Success, downstreamStart, new List<string> { "Request targets a file path. Skip SPA fallback." });
             await _nextFunction(webContext, cancellationToken);
             RecordTelemetry(webContext, FlowDirection.Upstream, ExecutionEvent.Success, DateTimeOffset.UtcNow);
             return;
@@ -53,7 +53,7 @@ internal sealed class SpaFallbackMiddleware : MiddlewareBase
         //skip if request doesn't accept text/html
         if (!webContext.WebRequest.Headers.TryGetValue("Accept", out var value) || !value.Contains("text/html", StringComparison.OrdinalIgnoreCase))
         {
-            RecordTelemetry(webContext, FlowDirection.Downstream, ExecutionEvent.Success, downstreamStart, new List<string> { $"Request does not accept text/html. SPA fallback skipped." });
+            RecordTelemetry(webContext, FlowDirection.Downstream, ExecutionEvent.Success, downstreamStart, new List<string> { "Request does not accept text/html. Skip SPA fallback." });
             await _nextFunction(webContext, cancellationToken);
             RecordTelemetry(webContext, FlowDirection.Upstream, ExecutionEvent.Success, DateTimeOffset.UtcNow);
             return;
@@ -62,7 +62,7 @@ internal sealed class SpaFallbackMiddleware : MiddlewareBase
         //skip if path starts with /api
         if (webContext.WebRequest.Path.StartsWith("/api/", StringComparison.OrdinalIgnoreCase))
         {
-            RecordTelemetry(webContext, FlowDirection.Downstream, ExecutionEvent.Success, downstreamStart, new List<string> { $"API route. SPA fallback skipped." });
+            RecordTelemetry(webContext, FlowDirection.Downstream, ExecutionEvent.Success, downstreamStart, new List<string> { "Request targets an API route. Skip SPA fallback." });
             await _nextFunction(webContext, cancellationToken);
             RecordTelemetry(webContext, FlowDirection.Upstream, ExecutionEvent.Success, DateTimeOffset.UtcNow);
             return;
@@ -70,7 +70,7 @@ internal sealed class SpaFallbackMiddleware : MiddlewareBase
 
         //indicate to serve the fallback file
         webContext.StaticFileRelativePath = _indexPageRelativePath;
-        RecordTelemetry(webContext, FlowDirection.Downstream, ExecutionEvent.ShortCircuit, downstreamStart, new List<string> { $"Mapped SPA route '{webContext.WebRequest.Path}' to '{_indexPageRelativePath}'." });
+        RecordTelemetry(webContext, FlowDirection.Downstream, ExecutionEvent.ShortCircuit, downstreamStart, new List<string> { $"Map request to fallback. {webContext.WebRequest.Path} -> {_indexPageRelativePath}." });
 
         return;
     }

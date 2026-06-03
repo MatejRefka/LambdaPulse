@@ -41,43 +41,43 @@ internal sealed class SecurityMiddleware : MiddlewareBase
         if (_xContentTypeOptions)
         {
             webContext.WebResponse.Headers["X-Content-Type-Options"] = "nosniff";
-            logs.Add("Set 'X-Content-Type-Options: nosniff'.");
+            logs.Add("Set X-Content-Type-Options=nosniff.");
         }
 
         if (!string.IsNullOrWhiteSpace(_referrerPolicy))
         {
             webContext.WebResponse.Headers["Referrer-Policy"] = _referrerPolicy;
-            logs.Add($"Set 'Referrer-Policy: {_referrerPolicy}'.");
+            logs.Add($"Set Referrer-Policy={_referrerPolicy}.");
         }
 
         if (!string.IsNullOrWhiteSpace(_permissionsPolicy))
         {
             webContext.WebResponse.Headers["Permissions-Policy"] = _permissionsPolicy;
-            logs.Add($"Set 'Permissions-Policy: {_permissionsPolicy}'.");
+            logs.Add($"Set Permissions-Policy={_permissionsPolicy}.");
         }
 
         if (!string.IsNullOrWhiteSpace(_crossOriginOpenerPolicy))
         {
             webContext.WebResponse.Headers["Cross-Origin-Opener-Policy"] = _crossOriginOpenerPolicy;
-            logs.Add($"Set 'Cross-Origin-Opener-Policy: {_crossOriginOpenerPolicy}'.");
+            logs.Add($"Set Cross-Origin-Opener-Policy={_crossOriginOpenerPolicy}.");
         }
 
         if (!string.IsNullOrWhiteSpace(_crossOriginResourcePolicy))
         {
             webContext.WebResponse.Headers["Cross-Origin-Resource-Policy"] = _crossOriginResourcePolicy;
-            logs.Add($"Set 'Cross-Origin-Resource-Policy: {_crossOriginResourcePolicy}'.");
+            logs.Add($"Set Cross-Origin-Resource-Policy={_crossOriginResourcePolicy}.");
         }
 
         if (!string.IsNullOrWhiteSpace(_crossOriginEmbedderPolicy))
         {
             webContext.WebResponse.Headers["Cross-Origin-Embedder-Policy"] = _crossOriginEmbedderPolicy;
-            logs.Add($"Set 'Cross-Origin-Embedder-Policy: {_crossOriginEmbedderPolicy}'.");
+            logs.Add($"Set Cross-Origin-Embedder-Policy={_crossOriginEmbedderPolicy}.");
         }
 
         if (_removeServerHeader && webContext.WebResponse.Headers.ContainsKey("Server"))
         {
             webContext.WebResponse.Headers.Remove("Server");
-            logs.Add("Removed 'Server' header.");
+            logs.Add("Remove response header.");
         }
 
         RecordTelemetry(webContext, FlowDirection.Upstream, ExecutionEvent.Success, upstreamStart, logs);

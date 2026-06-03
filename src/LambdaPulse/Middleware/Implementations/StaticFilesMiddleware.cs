@@ -52,7 +52,7 @@ internal sealed class StaticFilesMiddleware : MiddlewareBase
         //non-GET requests continue to downstream middleware
         if (!string.Equals(webContext.WebRequest.Method, "GET", StringComparison.OrdinalIgnoreCase))
         {
-            RecordTelemetry(webContext, FlowDirection.Downstream, ExecutionEvent.Success, downstreamStart, new List<string> { $"{webContext.WebRequest.Method} request skipped static file handling." });
+            RecordTelemetry(webContext, FlowDirection.Downstream, ExecutionEvent.Success, downstreamStart, new List<string> { $"{webContext.WebRequest.Method} request. Skip static file handling." });
             await _nextFunction(webContext, cancellationToken);
             RecordTelemetry(webContext, FlowDirection.Upstream, ExecutionEvent.Success, DateTimeOffset.UtcNow);
             return;
@@ -81,7 +81,7 @@ internal sealed class StaticFilesMiddleware : MiddlewareBase
         if (string.IsNullOrWhiteSpace(webContext.StaticFileRelativePath))
         {
             webContext.StaticFileRelativePath = null;
-            RecordTelemetry(webContext, FlowDirection.Upstream, ExecutionEvent.Success, upstreamStart, new List<string> { "No static file mapping." });
+            RecordTelemetry(webContext, FlowDirection.Upstream, ExecutionEvent.Success, upstreamStart, new List<string> { "No static file mapping. Skip implicit static file handling." });
             return;
         }
 
@@ -107,7 +107,7 @@ internal sealed class StaticFilesMiddleware : MiddlewareBase
             webContext.WebResponse.StatusCode = 400;
             webContext.WebResponse.ResponsePhrase = "Bad Request";
             await webContext.WebResponse.WriteStringToBody("Bad Request.", cancellationToken);
-            logs.Add("Directory traversal attempt detected, request blocked.");
+            logs.Add("Static file path escapes the file root.");
             return;
         }
 
@@ -117,7 +117,7 @@ internal sealed class StaticFilesMiddleware : MiddlewareBase
             webContext.WebResponse.StatusCode = 404;
             webContext.WebResponse.ResponsePhrase = "Not Found";
             await webContext.WebResponse.WriteStringToBody("Not Found.", cancellationToken);
-            logs.Add($"Static file not found: '{webContext.WebRequest.Path}'.");
+            logs.Add($"Static file was not found. Return 404. path={webContext.WebRequest.Path}.");
             return;
         }
 
@@ -127,7 +127,7 @@ internal sealed class StaticFilesMiddleware : MiddlewareBase
         if (!_mimeTypes.TryGetValue(extension, out var contentType))
         {
             contentType = "application/octet-stream";
-            logs.Add($"MIME type for '{extension}' not found, default to application/octet-stream.");
+            logs.Add($"File extension is not mapped. Use default content type. extension={extension}.");
         }
 
         webContext.WebResponse.ClearResponse();
@@ -136,7 +136,7 @@ internal sealed class StaticFilesMiddleware : MiddlewareBase
         if (relativePath.StartsWith("/assets/", StringComparison.OrdinalIgnoreCase))
         {
             webContext.WebResponse.Headers["Cache-Control"] = "public, max-age=31536000, immutable";
-            logs.Add("Set 'Cache-Control: public, max-age=31536000, immutable' for asset file.");
+            logs.Add("Set aggressive cache for hashed static files. Cache-Control=public, max-age=31536000, immutable.");
         }
         //no-cache for other static files, forcing revalidation
         else
@@ -162,7 +162,7 @@ internal sealed class StaticFilesMiddleware : MiddlewareBase
                     webContext.WebResponse.StatusCode = 304;
                     webContext.WebResponse.ResponsePhrase = "Not Modified";
 
-                    logs.Add($"ETag matched for '{relativePath}'. Returned 304 Not Modified.");
+                    logs.Add($"ETag matched. Return 304. path={relativePath}.");
                     return;
                 }
             }
@@ -177,7 +177,7 @@ internal sealed class StaticFilesMiddleware : MiddlewareBase
                         webContext.WebResponse.StatusCode = 304;
                         webContext.WebResponse.ResponsePhrase = "Not Modified";
 
-                        logs.Add($"Static file not modified since '{ifModifiedSince}'. Returned 304 Not Modified.");
+                        logs.Add($"File has not changed since If-Modified-Since. Return 304. ifModifiedSince={ifModifiedSince}.");
                         return;
                     }
                 }
@@ -191,6 +191,6 @@ internal sealed class StaticFilesMiddleware : MiddlewareBase
         webContext.WebResponse.Headers["Content-Type"] = contentType;
 
         await webContext.WebResponse.WriteBytesToBody(fileBytes, cancellationToken);
-        logs.Add($"Static file served: '{webContext.WebRequest.Path}'.");
+        logs.Add($"Serve static file. path={webContext.WebRequest.Path}.");
     }
 }
