@@ -8,7 +8,7 @@
 public sealed class Trace
 {
     public required DateTimeOffset TimestampStart { get; set; }
-    public float DurationMs { get; set; }
+    public long DurationMs { get; set; }
 
     public string? RequestMethod { get; set; }
     public string? RequestPath { get; set; }
