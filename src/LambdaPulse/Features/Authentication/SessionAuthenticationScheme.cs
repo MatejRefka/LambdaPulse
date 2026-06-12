@@ -16,7 +16,7 @@ internal sealed class SessionAuthenticationScheme : IAuthenticationScheme
             return GuestUser.Instance;
         }
 
-        var userId = await session.GetValue<string>(AuthenticationDefaults.UserIdSessionKey);
+        var userId = await session.GetValue<string>(AuthenticationConstants.UserIdSessionKey);
 
         if (string.IsNullOrWhiteSpace(userId))
         {

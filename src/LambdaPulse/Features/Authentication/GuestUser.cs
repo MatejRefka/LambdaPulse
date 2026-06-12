@@ -1,4 +1,4 @@
-﻿namespace LambdaPulse.Engine.Features.Authentication.Abstractions;
+﻿namespace LambdaPulse.Engine.Features.Authentication;
 
 /// <summary>
 /// GuestUser is a singleton, one shared instance reused across the application.

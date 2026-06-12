@@ -1,4 +1,4 @@
-﻿namespace LambdaPulse.Engine.Features.Authentication.Abstractions;
+﻿namespace LambdaPulse.Engine.Features.Authentication;
 
 public interface IUser
 {

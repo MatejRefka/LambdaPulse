@@ -1,4 +1,5 @@
 ﻿using LambdaPulse.Engine.Features.Logging;
+using LambdaPulse.Engine.Features.Security;
 using LambdaPulse.Engine.Http.Abstractions;
 using LambdaPulse.Engine.Shared.Extensions;
 using System.Security.Cryptography;
@@ -12,8 +13,6 @@ namespace LambdaPulse.Engine.Middleware.Implementations;
 internal sealed class CsrfMiddleware : MiddlewareBase
 {
     protected override string MiddlewareName => "CSRF";
-
-    private const string CsrfTokenSessionKey = "csrf.token";
 
     public CsrfMiddleware(Func<WebContext, CancellationToken, Task> nextFunction) : base(nextFunction)
     {
@@ -44,7 +43,7 @@ internal sealed class CsrfMiddleware : MiddlewareBase
             return;
         }
 
-        var csrfToken = await webContext.Session.GetValue<string>(CsrfTokenSessionKey);
+        var csrfToken = await webContext.Session.GetValue<string>(SecurityConstants.CsrfTokenSessionKey);
         logs.Add(string.IsNullOrWhiteSpace(csrfToken) ? "Session has no CSRF token. Create CSRF token." : "Session CSRF token exists. Reuse CSRF token.");
 
         //Generate new CSRF token if not in session
@@ -52,7 +51,7 @@ internal sealed class CsrfMiddleware : MiddlewareBase
         {
             //OS-generated random 32-byte token
             csrfToken = Convert.ToBase64String(RandomNumberGenerator.GetBytes(32));
-            await webContext.Session.SetValue(CsrfTokenSessionKey, csrfToken);
+            await webContext.Session.SetValue(SecurityConstants.CsrfTokenSessionKey, csrfToken);
         }
 
         var method = webContext.WebRequest.Method;

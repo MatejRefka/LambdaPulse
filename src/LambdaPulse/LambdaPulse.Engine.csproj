@@ -31,8 +31,4 @@
 		<InternalsVisibleTo Include="LambdaPulse.Tests" />
 	</ItemGroup>
 
-	<ItemGroup>
-	  <Folder Include="Features\Security\" />
-	</ItemGroup>
-
 </Project>

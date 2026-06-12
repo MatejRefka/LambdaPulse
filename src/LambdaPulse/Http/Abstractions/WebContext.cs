@@ -1,4 +1,4 @@
-﻿using LambdaPulse.Engine.Features.Authentication.Abstractions;
+﻿using LambdaPulse.Engine.Features.Authentication;
 using LambdaPulse.Engine.Features.Logging;
 using LambdaPulse.Engine.Features.Routing;
 using LambdaPulse.Engine.Features.State.Sessions;

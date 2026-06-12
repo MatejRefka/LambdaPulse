@@ -12,7 +12,6 @@ internal sealed class SessionMiddleware : MiddlewareBase
 {
     protected override string MiddlewareName => "Session";
 
-    private const string SessionCookieName = "LambdaPulse.Session";
     private readonly ISessionStore _sessionStore;
 
     public SessionMiddleware(Func<WebContext, CancellationToken, Task> nextFunction, ISessionStore sessionStore) : base(nextFunction)
@@ -25,8 +24,8 @@ internal sealed class SessionMiddleware : MiddlewareBase
         var downstreamStart = DateTimeOffset.UtcNow;
         var downstreamLogs = new List<string>();
 
-        webContext.WebRequest.Cookies.TryGetValue(SessionCookieName, out var sessionId);
-        downstreamLogs.Add(string.IsNullOrWhiteSpace(sessionId) ? "Session cookie is missing. Create session." : $"Session cookie is present. Load session. cookie={SessionCookieName}.");
+        webContext.WebRequest.Cookies.TryGetValue(SessionConstants.SessionCookieName, out var sessionId);
+        downstreamLogs.Add(string.IsNullOrWhiteSpace(sessionId) ? "Session cookie is missing. Create session." : $"Session cookie is present. Load session. cookie={SessionConstants.SessionCookieName}.");
 
         var requestSession = string.IsNullOrWhiteSpace(sessionId) ? CreateSession() : await _sessionStore.GetSession(sessionId, cancellationToken);
         downstreamLogs.Add(string.IsNullOrWhiteSpace(sessionId) ? "No session cookie was provided. Use new session." : (requestSession != null ? "Session id matched the store. Use stored session." : "Session id not found in store. Use new session."));
@@ -50,8 +49,8 @@ internal sealed class SessionMiddleware : MiddlewareBase
 
         if (sessionIsNew)
         {
-            webContext.WebResponse.Cookies.Add($"{SessionCookieName}={webContext.Session.Id}; Path=/; HttpOnly; Secure");
-            upstreamLogs.Add($"Issue session cookie. cookie={SessionCookieName}.");
+            webContext.WebResponse.Cookies.Add($"{SessionConstants.SessionCookieName}={webContext.Session.Id}; Path=/; HttpOnly; Secure");
+            upstreamLogs.Add($"Issue session cookie. cookie={SessionConstants.SessionCookieName}.");
         }
 
         RecordTelemetry(webContext, FlowDirection.Upstream, ExecutionEvent.Success, upstreamStart, upstreamLogs);

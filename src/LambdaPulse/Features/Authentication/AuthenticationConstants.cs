@@ -1,6 +1,6 @@
-﻿namespace LambdaPulse.Engine.Features.Authentication.Abstractions;
+﻿namespace LambdaPulse.Engine.Features.Authentication;
 
-public static class AuthenticationDefaults
+public static class AuthenticationConstants
 {
     public const string UserIdSessionKey = "auth.user_id";
 
