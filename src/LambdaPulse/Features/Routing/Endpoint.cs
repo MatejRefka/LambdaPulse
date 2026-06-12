@@ -12,4 +12,5 @@ public sealed class Endpoint
     public bool AllowAnonymous { get; init; }
     public string? RequiredRole { get; init; }
     public CachePolicy? CachePolicy { get; init; }
+    public bool SkipCsrf { get; init; }
 }

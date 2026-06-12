@@ -24,6 +24,15 @@ internal sealed class CsrfMiddleware : MiddlewareBase
         var downstreamStart = DateTimeOffset.UtcNow;
         var logs = new List<string>();
 
+        //Skip CSRF if marked by endpoint (csrf endpoint)
+        if (webContext.Endpoint != null && webContext.Endpoint.SkipCsrf)
+        {
+            RecordTelemetry(webContext, FlowDirection.Downstream, ExecutionEvent.ShortCircuit, downstreamStart, new List<string> { "Endpoint is marked to skip CSRF validation. Skip CSRF middleware." });
+            await _nextFunction(webContext, cancellationToken);
+            RecordTelemetry(webContext, FlowDirection.Upstream, ExecutionEvent.Success, DateTimeOffset.UtcNow);
+            return;
+        }
+
         //Short-circuit if no session
         if (webContext.Session == null)
         {
