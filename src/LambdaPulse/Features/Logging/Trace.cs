@@ -13,19 +13,9 @@ public sealed class Trace
     public string? RequestMethod { get; set; }
     public string? RequestPath { get; set; }
     public string? RequestProtocol { get; set; }
-    public Dictionary<string, string> RequestHeaders { get; set; } = new();
-
-    //key-value pairs
-    public Dictionary<string, string> RequestCookies { get; set; } = new();
-    public string? RequestBody { get; set; }
 
     public int? ResponseStatusCode { get; set; }
     public string? ResponsePhrase { get; set; }
-    public Dictionary<string, string> ResponseHeaders { get; set; } = new();
-
-    //raw strings to preserve metadata flags
-    public List<string> ResponseCookies { get; set; } = new();
-    public string? ResponseBody { get; set; }
 
     public List<MiddlewareStep> Steps { get; set; } = new();
 }

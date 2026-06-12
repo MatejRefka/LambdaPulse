@@ -69,9 +69,7 @@ internal sealed class RequestParser : IRequestParser
                 TimestampStart = requestStartTimestamp,
                 RequestMethod = method,
                 RequestPath = path,
-                RequestProtocol = protocol,
-                RequestHeaders = headers,
-                RequestBody = body
+                RequestProtocol = protocol
             }
         };
 

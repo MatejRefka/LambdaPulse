@@ -6,7 +6,6 @@ using LambdaPulse.Engine.Http.Reading;
 using LambdaPulse.Engine.Http.Writing;
 using System.Net;
 using System.Net.Sockets;
-using System.Text;
 
 namespace LambdaPulse.Engine.Hosting.Client;
 
@@ -106,9 +105,6 @@ internal sealed class ClientHandler : IClientHandler
                     webContext.Trace.DurationMs = timer.ElapsedMilliseconds;
                     webContext.Trace.ResponseStatusCode = webContext.WebResponse.StatusCode;
                     webContext.Trace.ResponsePhrase = webContext.WebResponse.ResponsePhrase;
-                    webContext.Trace.ResponseHeaders = webContext.WebResponse.Headers;
-                    webContext.Trace.ResponseCookies = webContext.WebResponse.Cookies;
-                    webContext.Trace.ResponseBody = webContext.WebResponse.Body != null ? Encoding.UTF8.GetString(webContext.WebResponse.Body.ToArray()) : null;
 
                     _traceLogger.Log(webContext.Trace);
 
