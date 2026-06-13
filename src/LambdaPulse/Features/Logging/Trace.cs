@@ -7,16 +7,15 @@
 /// </summary>
 public sealed class Trace
 {
+    public long Id { get; set; }
+    public long? UserId { get; set; }
     public required DateTimeOffset TimestampStart { get; set; }
     public long DurationMs { get; set; }
-
     public string? RequestMethod { get; set; }
     public string? RequestPath { get; set; }
     public string? RequestProtocol { get; set; }
-
     public int? ResponseStatusCode { get; set; }
     public string? ResponsePhrase { get; set; }
-
     public List<MiddlewareStep> Steps { get; set; } = new();
 }
 
