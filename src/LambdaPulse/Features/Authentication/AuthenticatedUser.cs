@@ -1,6 +1,6 @@
-﻿namespace LambdaPulse.Engine.Features.Authentication.Abstractions;
+﻿namespace LambdaPulse.Engine.Features.Authentication;
 
-internal sealed class AuthenticatedUser : IUser
+public sealed class AuthenticatedUser : IUser
 {
     public string? Id { get; }
     public bool IsAuthenticated => true;

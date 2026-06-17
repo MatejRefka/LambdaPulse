@@ -1,5 +1,4 @@
-﻿using LambdaPulse.Engine.Features.Authentication.Abstractions;
-using LambdaPulse.Engine.Http.Abstractions;
+﻿using LambdaPulse.Engine.Http.Abstractions;
 
 namespace LambdaPulse.Engine.Features.Authentication;
 
