@@ -46,6 +46,19 @@ public sealed class Session : IDisposable
         }
     }
 
+    public async Task RemoveValue(string key)
+    {
+        await _gate.WaitAsync();
+        try
+        {
+            _data.Remove(key);
+        }
+        finally
+        {
+            _gate.Release();
+        }
+    }
+
     public void Dispose()
     {
         _gate.Dispose();
