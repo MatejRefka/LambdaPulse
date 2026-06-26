@@ -1,11 +1,21 @@
 ﻿using LambdaPulse.Engine.Http.Abstractions;
 using System.Text;
 using System.Text.Json;
+using System.Text.Json.Serialization;
 
 namespace LambdaPulse.Engine.Shared.Extensions;
 
 public static class WebResponseExtensions
 {
+    public static readonly JsonSerializerOptions CamelCase = new()
+    {
+        PropertyNamingPolicy = JsonNamingPolicy.CamelCase,
+        Converters =
+        {
+            new JsonStringEnumConverter(JsonNamingPolicy.KebabCaseLower)
+        }
+    };
+
     public static async Task WriteBytesToBody(this WebResponse webResponse, byte[] bytes, CancellationToken cancellationToken = default)
     {
         webResponse.HasBody = true;
@@ -27,7 +37,7 @@ public static class WebResponseExtensions
 
     public static async Task WriteJsonToBody<T>(this WebResponse webResponse, T anonymousObject, CancellationToken cancellationToken = default)
     {
-        var json = JsonSerializer.Serialize(anonymousObject);
+        var json = JsonSerializer.Serialize(anonymousObject, CamelCase);
         var bytes = Encoding.UTF8.GetBytes(json);
 
         webResponse.Headers["Content-Type"] = "application/json";
