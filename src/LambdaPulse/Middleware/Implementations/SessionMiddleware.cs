@@ -1,5 +1,6 @@
 ﻿using LambdaPulse.Engine.Features.Logging;
 using LambdaPulse.Engine.Features.State.Sessions;
+using LambdaPulse.Engine.Configuration;
 using LambdaPulse.Engine.Http.Abstractions;
 
 namespace LambdaPulse.Engine.Middleware.Implementations;
@@ -13,10 +14,12 @@ internal sealed class SessionMiddleware : MiddlewareBase
     protected override string MiddlewareName => "Session";
 
     private readonly ISessionStore _sessionStore;
+    private readonly bool _cookieSecure;
 
-    public SessionMiddleware(Func<WebContext, CancellationToken, Task> nextFunction, ISessionStore sessionStore) : base(nextFunction)
+    public SessionMiddleware(Func<WebContext, CancellationToken, Task> nextFunction, ISessionStore sessionStore, IConfigProvider configProvider) : base(nextFunction)
     {
         _sessionStore = sessionStore;
+        _cookieSecure = configProvider.ServerConfig.MiddlewareConfig.SessionMiddleware.CookieSecure;
     }
 
     public override async Task Invoke(WebContext webContext, CancellationToken cancellationToken = default)
@@ -49,7 +52,8 @@ internal sealed class SessionMiddleware : MiddlewareBase
 
         if (sessionIsNew)
         {
-            webContext.WebResponse.Cookies.Add($"{SessionConstants.SessionCookieName}={webContext.Session.Id}; Path=/; HttpOnly; Secure");
+            var secureAttribute = _cookieSecure ? "; Secure" : string.Empty;
+            webContext.WebResponse.Cookies.Add($"{SessionConstants.SessionCookieName}={webContext.Session.Id}; Path=/; HttpOnly{secureAttribute}");
             upstreamLogs.Add($"Issue session cookie. cookie={SessionConstants.SessionCookieName}.");
         }
 

@@ -35,7 +35,8 @@
       },
       "SessionMiddleware": {
         "IdleTimeoutMinutes": 20,
-        "AbsoluteTimeoutMinutes": 720
+        "AbsoluteTimeoutMinutes": 720,
+        "CookieSecure": true
       },
       "StaticFilesMiddleware": {
         "FileRootPath": ""
@@ -48,7 +49,7 @@
         "AllowCredentials": true,
         "ExposedHeaders": [ "X-Request-Id" ],
         "AllowedMethods": [ "GET", "POST", "PUT", "DELETE", "OPTIONS" ],
-        "AllowedHeaders": [ "Authorization", "Content-Type" ],
+        "AllowedHeaders": [ "Authorization", "Content-Type", "X-CSRF-Token" ],
         "PreflightMaxAgeSeconds": 60
       }
     }

@@ -72,6 +72,7 @@ public sealed class SessionMiddleware
 {
     public required int IdleTimeoutMinutes { get; init; }
     public required int AbsoluteTimeoutMinutes { get; init; }
+    public required bool CookieSecure { get; init; }
 }
 
 public sealed class StaticFilesMiddleware
