@@ -17,6 +17,7 @@ public sealed class Session : IDisposable
         Id = id;
         var now = DateTimeOffset.UtcNow;
         CreatedUtc = now;
+        LastAccessedUtc = now;
     }
 
     public async Task<T?> GetValue<T>(string key)
