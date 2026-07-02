@@ -72,6 +72,7 @@ internal sealed class StaticFilesMiddleware : MiddlewareBase
         }
 
         //implicit file request. routing middleware will map to a static file
+        RecordTelemetry(webContext, FlowDirection.Downstream, ExecutionEvent.Success, downstreamStart, new List<string> { "Request does not explicitly target a file. Defer implicit static file handling until upstream." });
         await _nextFunction(webContext, cancellationToken);
 
         var upstreamStart = DateTimeOffset.UtcNow;
