@@ -83,7 +83,7 @@ internal sealed class ClientHandler : IClientHandler
                         var trace = new Trace
                         {
                             TimestampStart = requestStartTimestamp,
-                            DurationMs = timer.ElapsedMilliseconds,
+                            DurationMs = (float)timer.Elapsed.TotalMilliseconds,
                             ResponseStatusCode = 400,
                             ResponsePhrase = "Bad request"
                         };
@@ -102,7 +102,7 @@ internal sealed class ClientHandler : IClientHandler
 
                     timer.Stop();
                     //log the request + response metadata (Trace)
-                    webContext.Trace.DurationMs = timer.ElapsedMilliseconds;
+                    webContext.Trace.DurationMs = (float)timer.Elapsed.TotalMilliseconds;
                     webContext.Trace.ResponseStatusCode = webContext.WebResponse.StatusCode;
                     webContext.Trace.ResponsePhrase = webContext.WebResponse.ResponsePhrase;
 

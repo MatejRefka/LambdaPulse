@@ -27,7 +27,7 @@ internal abstract class MiddlewareBase
             Direction = direction,
             Event = executionEvent,
             TimestampStart = startTimestamp,
-            DurationMs = Convert.ToInt64((DateTimeOffset.UtcNow - startTimestamp).TotalMilliseconds),
+            DurationMs = (float)(DateTimeOffset.UtcNow - startTimestamp).TotalMilliseconds,
             Logs = logs
         });
     }

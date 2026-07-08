@@ -10,7 +10,7 @@ public sealed class Trace
     public string? Id { get; set; }
     public string? UserId { get; set; }
     public required DateTimeOffset TimestampStart { get; set; }
-    public long DurationMs { get; set; }
+    public float DurationMs { get; set; }
     public string? RequestMethod { get; set; }
     public string? RequestPath { get; set; }
     public string? RequestProtocol { get; set; }
@@ -25,7 +25,7 @@ public sealed class MiddlewareStep
     public FlowDirection? Direction { get; set; }
     public required ExecutionEvent Event { get; set; }
     public required DateTimeOffset TimestampStart { get; set; }
-    public long DurationMs { get; set; }
+    public float DurationMs { get; set; }
     public List<string>? Logs { get; set; }
 }
 
