@@ -1,4 +1,5 @@
-﻿using LambdaPulse.Engine.Http.Abstractions;
+﻿using LambdaPulse.Engine.Features.State.Sessions;
+using LambdaPulse.Engine.Http.Abstractions;
 using System.Text;
 using System.Text.Json;
 using System.Text.Json.Serialization;
@@ -7,6 +8,13 @@ namespace LambdaPulse.Engine.Shared.Extensions;
 
 public static class WebResponseExtensions
 {
+    private static readonly HashSet<string> EngineCookieNames = new(StringComparer.Ordinal)
+    {
+        SessionConstants.SessionCookieName,
+        SessionConstants.PreSessionCookieName,
+        SessionConstants.AnonymousSessionCookieName
+    };
+
     public static readonly JsonSerializerOptions CamelCase = new()
     {
         PropertyNamingPolicy = JsonNamingPolicy.CamelCase,
@@ -51,7 +59,7 @@ public static class WebResponseExtensions
         webResponse.StatusCode = null;
         webResponse.ResponsePhrase = null;
         webResponse.Headers.Clear();
-        webResponse.Cookies.Clear();
+        webResponse.Cookies.RemoveAll(cookie => !IsEngineCookie(cookie));
         webResponse.Body.SetLength(0);
         webResponse.Body.Position = 0;
         webResponse.HasBody = false;
@@ -68,5 +76,22 @@ public static class WebResponseExtensions
         {
             webResponse.Headers["Vary"] = $"{varyHeaderValue}, {headerName}";
         }
+    }
+
+    private static bool IsEngineCookie(string cookie)
+    {
+        if (string.IsNullOrWhiteSpace(cookie))
+        {
+            return false;
+        }
+
+        var separatorIndex = cookie.IndexOf('=');
+        if (separatorIndex <= 0)
+        {
+            return false;
+        }
+
+        var cookieName = cookie[..separatorIndex].Trim();
+        return EngineCookieNames.Contains(cookieName);
     }
 }
