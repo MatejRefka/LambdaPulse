@@ -1,5 +1,6 @@
 using LambdaPulse.Engine.Configuration;
 using LambdaPulse.Engine.Features.Logging;
+using LambdaPulse.Engine.Features.State.Sessions;
 using LambdaPulse.Engine.Http.Abstractions;
 using LambdaPulse.Engine.Http.Parsing;
 using LambdaPulse.Engine.Http.Reading;
@@ -17,9 +18,10 @@ internal sealed class ClientHandler : IClientHandler
     private readonly IResponseWriter _responseWriter;
     private readonly IEngineLogger _engineLogger;
     private readonly ITraceLogger _traceLogger;
+    private readonly IPreSessionInitializer _preSessionInitializer;
     private readonly int _readTimeoutMS;
 
-    public ClientHandler(Func<WebContext, CancellationToken, Task> pipeline, IRequestReader requestReader, IRequestParser requestParser, IResponseWriter responseWriter, IConfigProvider configProvider, IEngineLogger engineLogger, ITraceLogger traceLogger)
+    public ClientHandler(Func<WebContext, CancellationToken, Task> pipeline, IRequestReader requestReader, IRequestParser requestParser, IResponseWriter responseWriter, IConfigProvider configProvider, IEngineLogger engineLogger, ITraceLogger traceLogger, IPreSessionInitializer preSessionInitializer)
     {
         _pipeline = pipeline;
         _requestReader = requestReader;
@@ -27,6 +29,7 @@ internal sealed class ClientHandler : IClientHandler
         _responseWriter = responseWriter;
         _engineLogger = engineLogger;
         _traceLogger = traceLogger;
+        _preSessionInitializer = preSessionInitializer;
         _readTimeoutMS = configProvider.ServerConfig.ReadTimeoutMS;
     }
 
@@ -73,6 +76,7 @@ internal sealed class ClientHandler : IClientHandler
                     try
                     {
                         webContext = _requestParser.ParseHttpRequest(requestString, requestStartTimestamp, remoteIpAddress);
+                        _preSessionInitializer.Initialize(webContext);
                     }
                     catch (Exception e)
                     {
@@ -101,6 +105,13 @@ internal sealed class ClientHandler : IClientHandler
                     await _responseWriter.WriteHttpResponse(networkStream, webContext, clientCancellationToken);
 
                     timer.Stop();
+                    webContext.Trace.PreSessionToken = webContext.PreSessionToken;
+                    webContext.Trace.AnonymousSessionToken = webContext.AnonymousSessionToken;
+                    if (webContext.User.IsAuthenticated)
+                    {
+                        webContext.Trace.UserId = webContext.User.Id;
+                    }
+
                     //log the request + response metadata (Trace)
                     webContext.Trace.DurationMs = (float)timer.Elapsed.TotalMilliseconds;
                     webContext.Trace.ResponseStatusCode = webContext.WebResponse.StatusCode;

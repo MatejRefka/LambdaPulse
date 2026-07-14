@@ -1,5 +1,6 @@
 ﻿using LambdaPulse.Engine.Features.Logging;
 using LambdaPulse.Engine.Http.Abstractions;
+using LambdaPulse.Engine.Shared.Extensions;
 
 namespace LambdaPulse.Engine.Http.Parsing;
 
@@ -61,6 +62,7 @@ internal sealed class RequestParser : IRequestParser
                 QueryParameters = queryParameters,
                 Protocol = protocol,
                 Headers = headers,
+                Cookies = headers.ParseCookies(),
                 Body = body
             },
             WebResponse = new WebResponse(),

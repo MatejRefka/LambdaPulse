@@ -1,6 +1,7 @@
-﻿using LambdaPulse.Engine.Features.Logging;
+﻿using LambdaPulse.Engine.Configuration;
+using LambdaPulse.Engine.Features.Authentication;
+using LambdaPulse.Engine.Features.Logging;
 using LambdaPulse.Engine.Features.State.Sessions;
-using LambdaPulse.Engine.Configuration;
 using LambdaPulse.Engine.Http.Abstractions;
 
 namespace LambdaPulse.Engine.Middleware.Implementations;
@@ -38,12 +39,63 @@ internal sealed class SessionMiddleware : MiddlewareBase
 
         webContext.Session = requestSession;
 
+        var authenticatedUserId = await webContext.Session.GetValue<string>(AuthenticationConstants.UserIdSessionKey);
+
+        //anonymous endpoints (user is not authenticated)
+        if (string.IsNullOrWhiteSpace(authenticatedUserId))
+        {
+            webContext.Trace.PreSessionToken = webContext.PreSessionToken;
+
+            string? anonymousSessionToken = null;
+
+            //check if anonymous cookie exists and is valid
+            if (webContext.WebRequest.Cookies.TryGetValue(SessionConstants.AnonymousSessionCookieName, out var rawAnonymousSessionToken) && Guid.TryParse(rawAnonymousSessionToken, out var parsedAnonymousSessionToken))
+            {
+                anonymousSessionToken = parsedAnonymousSessionToken.ToString("N");
+            }
+
+            //anonymous cookie is missing or invalid, issue a new one
+            if (anonymousSessionToken == null)
+            {
+                anonymousSessionToken = Guid.CreateVersion7(DateTimeOffset.UtcNow).ToString("N");
+                var secureAttribute = _cookieSecure ? "; Secure" : string.Empty;
+                webContext.WebResponse.Cookies.Add($"{SessionConstants.AnonymousSessionCookieName}={anonymousSessionToken}; Path=/; HttpOnly{secureAttribute}; SameSite=Lax");
+                downstreamLogs.Add($"Anonymous session cookie is missing or invalid. Issue anonymous session cookie. cookie={SessionConstants.AnonymousSessionCookieName}.");
+            }
+            else
+            {
+                downstreamLogs.Add($"Anonymous session cookie is present. cookie={SessionConstants.AnonymousSessionCookieName}.");
+            }
+
+            webContext.AnonymousSessionToken = anonymousSessionToken;
+            webContext.Trace.AnonymousSessionToken = anonymousSessionToken;
+        }
+        else
+        {
+            webContext.PreSessionToken = null;
+            webContext.Trace.PreSessionToken = null;
+            webContext.Trace.UserId = authenticatedUserId;
+            var secureAttribute = _cookieSecure ? "; Secure" : string.Empty;
+            webContext.WebResponse.Cookies.Add($"{SessionConstants.AnonymousSessionCookieName}=; Path=/; Max-Age=0; HttpOnly{secureAttribute}; SameSite=Lax");
+            webContext.WebResponse.Cookies.Add($"{SessionConstants.PreSessionCookieName}=; Path=/; Max-Age=0{secureAttribute}; SameSite=Lax");
+            downstreamLogs.Add("Authenticated session value is present. Skip anonymous session.");
+        }
+
         RecordTelemetry(webContext, FlowDirection.Downstream, ExecutionEvent.Success, downstreamStart, downstreamLogs);
 
         await _nextFunction(webContext, cancellationToken);
 
         var upstreamStart = DateTimeOffset.UtcNow;
         var upstreamLogs = new List<string>();
+
+        var authenticatedUserIdAfterPipeline = await webContext.Session.GetValue<string>(AuthenticationConstants.UserIdSessionKey);
+        if (!string.IsNullOrWhiteSpace(authenticatedUserIdAfterPipeline) && (!string.IsNullOrWhiteSpace(webContext.PreSessionToken) || !string.IsNullOrWhiteSpace(webContext.AnonymousSessionToken)))
+        {
+            var secureAttribute = _cookieSecure ? "; Secure" : string.Empty;
+            webContext.WebResponse.Cookies.Add($"{SessionConstants.AnonymousSessionCookieName}=; Path=/; Max-Age=0; HttpOnly{secureAttribute}; SameSite=Lax");
+            webContext.WebResponse.Cookies.Add($"{SessionConstants.PreSessionCookieName}=; Path=/; Max-Age=0{secureAttribute}; SameSite=Lax");
+            upstreamLogs.Add("Authenticated session value is present after pipeline. Clear anonymous session cookies.");
+        }
 
         var sessionIsNew = webContext.Session.IsNew;
 

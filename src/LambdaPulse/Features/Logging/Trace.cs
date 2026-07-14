@@ -8,6 +8,9 @@
 public sealed class Trace
 {
     public string? Id { get; set; }
+    public string? PreSessionToken { get; set; }
+    public string? AnonymousSessionToken { get; set; }
+    public string? AssociatedUserId { get; set; }
     public string? UserId { get; set; }
     public required DateTimeOffset TimestampStart { get; set; }
     public float DurationMs { get; set; }

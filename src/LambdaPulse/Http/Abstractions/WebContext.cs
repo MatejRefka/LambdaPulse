@@ -10,6 +10,8 @@ public sealed class WebContext
     public string? RemoteIpAddress { get; init; }
     public required WebRequest WebRequest { get; init; }
     public required WebResponse WebResponse { get; init; }
+    public string? PreSessionToken { get; set; }
+    public string? AnonymousSessionToken { get; set; }
     public Session? Session { get; set; }
     public IUser User { get; set; } = GuestUser.Instance;
     public Endpoint? Endpoint { get; set; }
