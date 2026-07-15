@@ -97,6 +97,19 @@ internal sealed class SessionMiddleware : MiddlewareBase
             upstreamLogs.Add("Authenticated session value is present after pipeline. Clear anonymous session cookies.");
         }
 
+        if (webContext.SessionInvalidationRequested)
+        {
+            var secureAttribute = _cookieSecure ? "; Secure" : string.Empty;
+            await _sessionStore.DeleteSession(webContext.Session.Id, cancellationToken);
+
+            //Expire session cookie by setting Max-Age=0. Instructs the browser to delete the cookie.
+            webContext.WebResponse.Cookies.Add($"{SessionConstants.SessionCookieName}=; Path=/; Max-Age=0; HttpOnly{secureAttribute}");
+
+            upstreamLogs.Add("Session invalidation requested. Delete session and expire session cookie.");
+            RecordTelemetry(webContext, FlowDirection.Upstream, ExecutionEvent.Success, upstreamStart, upstreamLogs);
+            return;
+        }
+
         var sessionIsNew = webContext.Session.IsNew;
 
         await _sessionStore.SaveSession(webContext.Session, cancellationToken);

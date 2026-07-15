@@ -18,5 +18,6 @@ public sealed class WebContext
     public string? StaticFileRelativePath { get; set; }
     public string? NegotiatedMimeType { get; set; }
     public bool ConnectionCloseRequested { get; set; }
+    public bool SessionInvalidationRequested { get; set; }
     public required Trace Trace { get; set; }
 }

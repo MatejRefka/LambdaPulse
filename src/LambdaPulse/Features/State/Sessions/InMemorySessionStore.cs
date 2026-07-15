@@ -44,4 +44,14 @@ internal sealed class InMemorySessionStore : ISessionStore
         session.IsNew = false;
         return Task.CompletedTask;
     }
+
+    public Task DeleteSession(string sessionId, CancellationToken cancellationToken = default)
+    {
+        if (_sessions.TryRemove(sessionId, out var session))
+        {
+            session.Dispose();
+        }
+
+        return Task.CompletedTask;
+    }
 }
