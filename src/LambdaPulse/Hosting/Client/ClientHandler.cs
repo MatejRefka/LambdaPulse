@@ -17,18 +17,18 @@ internal sealed class ClientHandler : IClientHandler
     private readonly IRequestParser _requestParser;
     private readonly IResponseWriter _responseWriter;
     private readonly IEngineLogger _engineLogger;
-    private readonly ITraceLogger _traceLogger;
+    private readonly ITraceRecorder _traceRecorder;
     private readonly IPreSessionInitializer _preSessionInitializer;
     private readonly int _readTimeoutMS;
 
-    public ClientHandler(Func<WebContext, CancellationToken, Task> pipeline, IRequestReader requestReader, IRequestParser requestParser, IResponseWriter responseWriter, IConfigProvider configProvider, IEngineLogger engineLogger, ITraceLogger traceLogger, IPreSessionInitializer preSessionInitializer)
+    public ClientHandler(Func<WebContext, CancellationToken, Task> pipeline, IRequestReader requestReader, IRequestParser requestParser, IResponseWriter responseWriter, IConfigProvider configProvider, IEngineLogger engineLogger, ITraceRecorder traceRecorder, IPreSessionInitializer preSessionInitializer)
     {
         _pipeline = pipeline;
         _requestReader = requestReader;
         _requestParser = requestParser;
         _responseWriter = responseWriter;
         _engineLogger = engineLogger;
-        _traceLogger = traceLogger;
+        _traceRecorder = traceRecorder;
         _preSessionInitializer = preSessionInitializer;
         _readTimeoutMS = configProvider.ServerConfig.ReadTimeoutMS;
     }
@@ -77,6 +77,8 @@ internal sealed class ClientHandler : IClientHandler
                     {
                         webContext = _requestParser.ParseHttpRequest(requestString, requestStartTimestamp, remoteIpAddress);
                         _preSessionInitializer.Initialize(webContext);
+                        //set the output stream for real-time response writing
+                        webContext.WebResponse.OutputStream = networkStream;
                     }
                     catch (Exception e)
                     {
@@ -92,7 +94,7 @@ internal sealed class ClientHandler : IClientHandler
                             ResponsePhrase = "Bad request"
                         };
 
-                        _traceLogger.Log(trace);
+                        _traceRecorder.Record(trace);
 
                         await _responseWriter.WriterRaw400Response(networkStream, clientCancellationToken);
 
@@ -102,7 +104,11 @@ internal sealed class ClientHandler : IClientHandler
                     //invoke the delegate
                     await _pipeline(webContext, clientCancellationToken);
 
-                    await _responseWriter.WriteHttpResponse(networkStream, webContext, clientCancellationToken);
+                    //if streaming, the response is already being written in real-time by the pipeline.
+                    if (!webContext.WebResponse.IsStreaming)
+                    {
+                        await _responseWriter.WriteHttpResponse(networkStream, webContext, clientCancellationToken);
+                    }
 
                     timer.Stop();
                     webContext.Trace.PreSessionToken = webContext.PreSessionToken;
@@ -117,7 +123,10 @@ internal sealed class ClientHandler : IClientHandler
                     webContext.Trace.ResponseStatusCode = webContext.WebResponse.StatusCode;
                     webContext.Trace.ResponsePhrase = webContext.WebResponse.ResponsePhrase;
 
-                    _traceLogger.Log(webContext.Trace);
+                    if (webContext.Trace.Enabled)
+                    {
+                        _traceRecorder.Record(webContext.Trace);
+                    }
 
                     //connection middleware flags connection close
                     if (webContext.ConnectionCloseRequested)

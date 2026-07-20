@@ -10,4 +10,11 @@ public sealed class WebResponse
     public List<string> Cookies { get; } = new();
     internal MemoryStream Body { get; } = new();
     public bool HasBody { get; internal set; }
+    //OutputStream used to write response in real-time to the client (SSE)
+    internal Stream? OutputStream { get; set; }
+    //response is being sent in real-time to the client (SSE)
+    public bool IsStreaming { get; internal set; }
+    //response has started being sent to the client (headers sent)
+    public bool HasStarted { get; internal set; }
+
 }

@@ -82,7 +82,7 @@ public static class ServerBuilder
         container.AddSingleton<IResponseWriter, ResponseWriter>();
 
         container.AddSingleton<IEngineLogger, ConsoleEngineLogger>();
-        container.AddSingleton<ITraceLogger, NullTraceLogger>();
+        container.AddSingleton<ITraceRecorder, NullTraceRecorder>();
         container.AddSingleton<IPreSessionInitializer, PreSessionInitializer>();
         container.AddSingleton<ISessionStore, InMemorySessionStore>();
         container.AddSingleton<ICacheStore, InMemoryCacheStore>();

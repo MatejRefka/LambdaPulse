@@ -8,6 +8,7 @@
 public sealed class Trace
 {
     public string? Id { get; set; }
+    public bool Enabled { get; set; } = true;
     public string? PreSessionToken { get; set; }
     public string? AnonymousSessionToken { get; set; }
     public string? AssociatedUserId { get; set; }

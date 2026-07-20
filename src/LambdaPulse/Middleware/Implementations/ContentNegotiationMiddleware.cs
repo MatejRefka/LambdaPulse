@@ -21,7 +21,8 @@ internal sealed class ContentNegotiationMiddleware : MiddlewareBase
         {
             "application/json",
             "text/html",
-            "text/plain"
+            "text/plain",
+            "text/event-stream"
         };
     }
 

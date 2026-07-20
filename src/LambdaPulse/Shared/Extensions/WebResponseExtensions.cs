@@ -1,5 +1,6 @@
 ﻿using LambdaPulse.Engine.Features.State.Sessions;
 using LambdaPulse.Engine.Http.Abstractions;
+using System.Globalization;
 using System.Text;
 using System.Text.Json;
 using System.Text.Json.Serialization;
@@ -76,6 +77,65 @@ public static class WebResponseExtensions
         {
             webResponse.Headers["Vary"] = $"{varyHeaderValue}, {headerName}";
         }
+    }
+
+    public static async Task StartStreaming(this WebResponse webResponse, CancellationToken cancellationToken = default)
+    {
+        if (webResponse.HasStarted)
+        {
+            return;
+        }
+
+        var outputStream = webResponse.OutputStream ?? throw new InvalidOperationException("Response output stream has not been set.");
+
+        webResponse.IsStreaming = true;
+        webResponse.HasBody = true;
+
+        //streaming responses have no known content length
+        webResponse.Headers.Remove("Content-Length");
+
+        //enable HTTP chunked encoding
+        webResponse.Headers["Transfer-Encoding"] = "chunked";
+
+        var responseHeaders = $"HTTP/1.1 {webResponse.StatusCode} {webResponse.ResponsePhrase}\r\n" + string.Join("", webResponse.Headers.Select(h => $"{h.Key}: {h.Value}\r\n")) + "\r\n";
+
+        var headerBytes = Encoding.ASCII.GetBytes(responseHeaders);
+
+        //send the HTTP status and headers
+        await outputStream.WriteAsync(headerBytes, cancellationToken);
+
+        webResponse.HasStarted = true;
+    }
+
+    public static async Task WriteToStream(this WebResponse webResponse, string message, CancellationToken cancellationToken = default)
+    {
+        if (!webResponse.HasStarted)
+        {
+            throw new InvalidOperationException("Headers have not been sent yet.");
+        }
+
+        var outputStream = webResponse.OutputStream ?? throw new InvalidOperationException("Response output stream has not been set.");
+
+        var messageBytes = Encoding.UTF8.GetBytes(message);
+
+        //write the chunk length in hexadecimal
+        var chunkLength = messageBytes.Length.ToString("X", CultureInfo.InvariantCulture);
+        var chunkHeaderBytes = Encoding.ASCII.GetBytes($"{chunkLength}\r\n");
+
+        //write the chunk header
+        await outputStream.WriteAsync(chunkHeaderBytes, cancellationToken);
+        //write the message
+        await outputStream.WriteAsync(messageBytes, cancellationToken);
+        //write the trailing CRLF
+        await outputStream.WriteAsync("\r\n"u8.ToArray(), cancellationToken);
+    }
+
+    public static async Task FlushStream(this WebResponse webResponse, CancellationToken cancellationToken = default)
+    {
+        var outputStream = webResponse.OutputStream ?? throw new InvalidOperationException("Response output stream has not been set.");
+
+        //push bytes to the browser
+        await outputStream.FlushAsync(cancellationToken);
     }
 
     private static bool IsEngineCookie(string cookie)
