@@ -44,7 +44,7 @@ internal sealed class ResponseCompressionMiddleware : MiddlewareBase
 
         //add Accept-Encoding to Vary header for external caching if not already set
         webContext.WebResponse.ApplyVaryHeader("Accept-Encoding");
-        logs.Add("Compression depends on client encodings. Append Accept-Encoding to Vary header for external cache.");
+        logs.Add("Append Accept-Encoding to Vary header for external cache.");
 
         //body is empty so nothing to compress
         if (!webContext.WebResponse.HasBody)
