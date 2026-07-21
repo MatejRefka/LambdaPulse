@@ -23,6 +23,52 @@ internal sealed class ConnectionMiddleware : MiddlewareBase
     {
         var downstreamStart = DateTimeOffset.UtcNow;
 
+        //skip request execution timeout for SSE requests (GET accepting text/event-stream)
+        if (webContext.WebRequest.Method.Equals("GET", StringComparison.OrdinalIgnoreCase) && webContext.WebRequest.Headers.TryGetValue("Accept", out var acceptHeaderValue) && acceptHeaderValue.Contains("text/event-stream", StringComparison.OrdinalIgnoreCase))
+        {
+            RecordTelemetry(webContext, FlowDirection.Downstream, ExecutionEvent.Success, downstreamStart, new List<string> { "Server-sent events request detected. Skip request execution timeout." });
+            await _nextFunction(webContext, cancellationToken);
+
+            var upstreamStart = DateTimeOffset.UtcNow;
+
+            //web server behind reverse proxy -do not interfere
+            if (webContext.WebRequest.Headers.ContainsKey("X-Forwarded-For"))
+            {
+                RecordTelemetry(webContext, FlowDirection.Upstream, ExecutionEvent.Success, upstreamStart, new List<string> { "Request forwarded by a proxy." });
+                return;
+            }
+
+            //downstream middleware already set the connection header
+            if (webContext.WebResponse.Headers.ContainsKey("Connection"))
+            {
+                RecordTelemetry(webContext, FlowDirection.Upstream, ExecutionEvent.Success, upstreamStart, new List<string> { "Connection header already set by downstream middleware." });
+                return;
+            }
+
+            //Connection close requested by the client
+            if (webContext.WebRequest.Headers.TryGetValue("Connection", out var connectionHeaderValue))
+            {
+                if (connectionHeaderValue.Equals("close", StringComparison.OrdinalIgnoreCase))
+                {
+                    webContext.WebResponse.Headers["Connection"] = "close";
+                    webContext.ConnectionCloseRequested = true;
+                    RecordTelemetry(webContext, FlowDirection.Upstream, ExecutionEvent.Success, upstreamStart, new List<string> { "Client requested Connection: close. Close connection." });
+                }
+                else
+                {
+                    webContext.WebResponse.Headers["Connection"] = "keep-alive";
+                    RecordTelemetry(webContext, FlowDirection.Upstream, ExecutionEvent.Success, upstreamStart, new List<string> { "Client did not request Connection: close. Keep connection alive." });
+                }
+            }
+            else
+            {
+                //default to keep-alive if no header specified in request or set by downstream middleware
+                webContext.WebResponse.Headers["Connection"] = "keep-alive";
+                RecordTelemetry(webContext, FlowDirection.Upstream, ExecutionEvent.Success, upstreamStart, new List<string> { "Client did not provide a Connection preference. Keep connection alive." });
+            }
+            return;
+        }
+
         //request-level token. sets timeout for long mw execution + response write
         using var requestTimeoutCTS = CancellationTokenSource.CreateLinkedTokenSource(cancellationToken);
         requestTimeoutCTS.CancelAfter(_requestExecutionTimeoutMS);
