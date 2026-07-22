@@ -130,17 +130,17 @@ internal sealed class CacheMiddleware : MiddlewareBase
             return;
         }
 
-        //skip caching if response contains cookies
-        if (webContext.WebResponse.Cookies.Count > 0)
+        //skip caching if response contains application cookies
+        if (webContext.WebResponse.Cookies.Any(cookie => !IsEngineCookie(cookie)))
         {
-            RecordTelemetry(webContext, FlowDirection.Upstream, ExecutionEvent.Success, upstreamStart, new List<string> { "Response contains cookies. Leave response uncached." });
+            RecordTelemetry(webContext, FlowDirection.Upstream, ExecutionEvent.Success, upstreamStart, new List<string> { "Response contains non-engine cookies. Leave response uncached." });
             return;
         }
 
-        //skip caching if response contains Set-Cookie header
-        if (webContext.WebResponse.Headers.ContainsKey("Set-Cookie"))
+        //skip caching if response contains application Set-Cookie header
+        if (webContext.WebResponse.Headers.TryGetValue("Set-Cookie", out var setCookieHeader) && !IsEngineCookie(setCookieHeader))
         {
-            RecordTelemetry(webContext, FlowDirection.Upstream, ExecutionEvent.Success, upstreamStart, new List<string> { "Response contains Set-Cookie header. Leave response uncached." });
+            RecordTelemetry(webContext, FlowDirection.Upstream, ExecutionEvent.Success, upstreamStart, new List<string> { "Response contains non-engine Set-Cookie header. Leave response uncached." });
             return;
         }
 
@@ -179,5 +179,16 @@ internal sealed class CacheMiddleware : MiddlewareBase
         var isCacheSet = await _cacheStore.SetCachedResponse(cacheKey, cacheResponse, cancellationToken);
 
         RecordTelemetry(webContext, FlowDirection.Upstream, ExecutionEvent.Success, upstreamStart, isCacheSet ? new List<string> { "Response is eligible. Cache response." } : new List<string> { "Cache store rejected the write. Leave response uncached." });
+    }
+
+    private static bool IsEngineCookie(string cookie)
+    {
+        var separatorIndex = cookie.IndexOf('=');
+        if (separatorIndex <= 0)
+        {
+            return false;
+        }
+
+        return WebResponseExtensions.EngineCookies.Contains(cookie[..separatorIndex].Trim());
     }
 }

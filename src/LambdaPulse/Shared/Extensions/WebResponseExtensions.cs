@@ -9,7 +9,7 @@ namespace LambdaPulse.Engine.Shared.Extensions;
 
 public static class WebResponseExtensions
 {
-    private static readonly HashSet<string> EngineCookieNames = new(StringComparer.Ordinal)
+    public static readonly HashSet<string> EngineCookies = new(StringComparer.Ordinal)
     {
         SessionConstants.SessionCookieName,
         SessionConstants.PreSessionCookieName,
@@ -152,6 +152,6 @@ public static class WebResponseExtensions
         }
 
         var cookieName = cookie[..separatorIndex].Trim();
-        return EngineCookieNames.Contains(cookieName);
+        return EngineCookies.Contains(cookieName);
     }
 }
