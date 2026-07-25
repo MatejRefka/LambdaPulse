@@ -1,5 +1,4 @@
 ﻿using LambdaPulse.Engine.Configuration;
-using LambdaPulse.Engine.DI;
 using LambdaPulse.Engine.Features.Authentication;
 using LambdaPulse.Engine.Features.Compression;
 using LambdaPulse.Engine.Features.Logging;
@@ -13,6 +12,7 @@ using LambdaPulse.Engine.Http.Reading;
 using LambdaPulse.Engine.Http.Writing;
 using LambdaPulse.Engine.Middleware;
 using LambdaPulse.Engine.Middleware.Implementations;
+using PulseInject;
 
 namespace LambdaPulse.Engine.Hosting;
 

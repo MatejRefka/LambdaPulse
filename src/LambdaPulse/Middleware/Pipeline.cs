@@ -1,5 +1,5 @@
-﻿using LambdaPulse.Engine.DI;
-using LambdaPulse.Engine.Http.Abstractions;
+﻿using LambdaPulse.Engine.Http.Abstractions;
+using PulseInject;
 
 namespace LambdaPulse.Engine.Middleware;
 
