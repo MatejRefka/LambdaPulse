@@ -1,6 +1,6 @@
 ﻿using System.IO.Compression;
 
-namespace LambdaPulse.Engine.Features.Compression;
+namespace LambdaPulse.Features.Compression;
 
 internal sealed class GZipCompressor : ICompressor
 {

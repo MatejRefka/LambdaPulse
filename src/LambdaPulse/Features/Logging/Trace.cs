@@ -1,4 +1,4 @@
-﻿namespace LambdaPulse.Engine.Features.Logging;
+﻿namespace LambdaPulse.Features.Logging;
 
 /// <summary>
 /// Model representing a complete trace of a HTTP request and response, including failed request parse. 

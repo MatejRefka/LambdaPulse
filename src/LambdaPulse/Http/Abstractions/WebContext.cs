@@ -1,9 +1,9 @@
-﻿using LambdaPulse.Engine.Features.Authentication;
-using LambdaPulse.Engine.Features.Logging;
-using LambdaPulse.Engine.Features.Routing;
-using LambdaPulse.Engine.Features.State.Sessions;
+﻿using LambdaPulse.Features.Authentication;
+using LambdaPulse.Features.Logging;
+using LambdaPulse.Features.Routing;
+using LambdaPulse.Features.State.Sessions;
 
-namespace LambdaPulse.Engine.Http.Abstractions;
+namespace LambdaPulse.Http.Abstractions;
 
 public sealed class WebContext
 {

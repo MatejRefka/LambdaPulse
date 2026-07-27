@@ -1,7 +1,7 @@
-﻿using LambdaPulse.Engine.Features.Logging;
-using LambdaPulse.Engine.Http.Abstractions;
+﻿using LambdaPulse.Features.Logging;
+using LambdaPulse.Http.Abstractions;
 
-namespace LambdaPulse.Engine.Middleware;
+namespace LambdaPulse.Middleware;
 
 internal abstract class MiddlewareBase
 {

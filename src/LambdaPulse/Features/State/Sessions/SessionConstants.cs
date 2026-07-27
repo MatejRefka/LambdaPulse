@@ -1,4 +1,4 @@
-﻿namespace LambdaPulse.Engine.Features.State.Sessions;
+﻿namespace LambdaPulse.Features.State.Sessions;
 
 public static class SessionConstants
 {

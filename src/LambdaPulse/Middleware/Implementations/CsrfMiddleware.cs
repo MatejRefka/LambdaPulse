@@ -1,10 +1,10 @@
-﻿using LambdaPulse.Engine.Features.Logging;
-using LambdaPulse.Engine.Features.Security;
-using LambdaPulse.Engine.Http.Abstractions;
-using LambdaPulse.Engine.Shared.Extensions;
+﻿using LambdaPulse.Features.Logging;
+using LambdaPulse.Features.Security;
+using LambdaPulse.Http.Abstractions;
+using LambdaPulse.Shared.Extensions;
 using System.Security.Cryptography;
 
-namespace LambdaPulse.Engine.Middleware.Implementations;
+namespace LambdaPulse.Middleware.Implementations;
 
 /// <summary>
 /// Provides Cross-Site Request Forgery protection for state-changing HTTP requests.

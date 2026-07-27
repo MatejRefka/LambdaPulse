@@ -1,7 +1,7 @@
-﻿using LambdaPulse.Engine.Configuration;
+﻿using LambdaPulse.Configuration;
 using System.Collections.Concurrent;
 
-namespace LambdaPulse.Engine.Features.State.Sessions;
+namespace LambdaPulse.Features.State.Sessions;
 
 internal sealed class InMemorySessionStore : ISessionStore
 {

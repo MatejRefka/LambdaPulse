@@ -1,4 +1,4 @@
-﻿namespace LambdaPulse.Engine.Features.Authentication;
+﻿namespace LambdaPulse.Features.Authentication;
 
 public interface IUser
 {

@@ -1,4 +1,4 @@
-﻿namespace LambdaPulse.Engine.Features.Logging;
+﻿namespace LambdaPulse.Features.Logging;
 
 internal sealed class NullTraceRecorder : ITraceRecorder
 {

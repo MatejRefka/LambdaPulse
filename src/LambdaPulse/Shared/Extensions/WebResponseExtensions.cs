@@ -1,11 +1,11 @@
-﻿using LambdaPulse.Engine.Features.State.Sessions;
-using LambdaPulse.Engine.Http.Abstractions;
+﻿using LambdaPulse.Features.State.Sessions;
+using LambdaPulse.Http.Abstractions;
 using System.Globalization;
 using System.Text;
 using System.Text.Json;
 using System.Text.Json.Serialization;
 
-namespace LambdaPulse.Engine.Shared.Extensions;
+namespace LambdaPulse.Shared.Extensions;
 
 public static class WebResponseExtensions
 {

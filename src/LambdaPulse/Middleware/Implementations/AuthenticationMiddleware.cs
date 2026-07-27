@@ -1,8 +1,8 @@
-﻿using LambdaPulse.Engine.Features.Authentication;
-using LambdaPulse.Engine.Features.Logging;
-using LambdaPulse.Engine.Http.Abstractions;
+﻿using LambdaPulse.Features.Authentication;
+using LambdaPulse.Features.Logging;
+using LambdaPulse.Http.Abstractions;
 
-namespace LambdaPulse.Engine.Middleware.Implementations;
+namespace LambdaPulse.Middleware.Implementations;
 
 /// <summary>
 /// Sets the User by authenticating the incoming request using the configured authentication scheme.

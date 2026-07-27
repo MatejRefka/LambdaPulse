@@ -1,10 +1,10 @@
-﻿using LambdaPulse.Engine.Configuration;
-using LambdaPulse.Engine.Features.Logging;
-using LambdaPulse.Engine.Http.Abstractions;
-using LambdaPulse.Engine.Shared.Extensions;
+﻿using LambdaPulse.Configuration;
+using LambdaPulse.Features.Logging;
+using LambdaPulse.Http.Abstractions;
+using LambdaPulse.Shared.Extensions;
 using System.Text;
 
-namespace LambdaPulse.Engine.Middleware.Implementations;
+namespace LambdaPulse.Middleware.Implementations;
 
 /// <summary>
 /// Enforces request limits, protecting the server from requests that are too large.

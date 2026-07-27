@@ -1,20 +1,20 @@
-﻿using LambdaPulse.Engine.Configuration;
-using LambdaPulse.Engine.Features.Authentication;
-using LambdaPulse.Engine.Features.Compression;
-using LambdaPulse.Engine.Features.Logging;
-using LambdaPulse.Engine.Features.Routing;
-using LambdaPulse.Engine.Features.State.Cache;
-using LambdaPulse.Engine.Features.State.Sessions;
-using LambdaPulse.Engine.Hosting.Client;
-using LambdaPulse.Engine.Hosting.Connection;
-using LambdaPulse.Engine.Http.Parsing;
-using LambdaPulse.Engine.Http.Reading;
-using LambdaPulse.Engine.Http.Writing;
-using LambdaPulse.Engine.Middleware;
-using LambdaPulse.Engine.Middleware.Implementations;
+﻿using LambdaPulse.Configuration;
+using LambdaPulse.Features.Authentication;
+using LambdaPulse.Features.Compression;
+using LambdaPulse.Features.Logging;
+using LambdaPulse.Features.Routing;
+using LambdaPulse.Features.State.Cache;
+using LambdaPulse.Features.State.Sessions;
+using LambdaPulse.Hosting.Client;
+using LambdaPulse.Hosting.Connection;
+using LambdaPulse.Http.Parsing;
+using LambdaPulse.Http.Reading;
+using LambdaPulse.Http.Writing;
+using LambdaPulse.Middleware;
+using LambdaPulse.Middleware.Implementations;
 using PulseInject;
 
-namespace LambdaPulse.Engine.Hosting;
+namespace LambdaPulse.Hosting;
 
 public static class ServerBuilder
 {

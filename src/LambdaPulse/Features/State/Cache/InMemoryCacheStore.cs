@@ -1,6 +1,6 @@
 ﻿using System.Collections.Concurrent;
 
-namespace LambdaPulse.Engine.Features.State.Cache;
+namespace LambdaPulse.Features.State.Cache;
 
 internal sealed class InMemoryCacheStore : ICacheStore
 {

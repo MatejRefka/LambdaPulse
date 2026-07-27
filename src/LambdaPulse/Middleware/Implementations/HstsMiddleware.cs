@@ -1,8 +1,8 @@
-﻿using LambdaPulse.Engine.Configuration;
-using LambdaPulse.Engine.Features.Logging;
-using LambdaPulse.Engine.Http.Abstractions;
+﻿using LambdaPulse.Configuration;
+using LambdaPulse.Features.Logging;
+using LambdaPulse.Http.Abstractions;
 
-namespace LambdaPulse.Engine.Middleware.Implementations;
+namespace LambdaPulse.Middleware.Implementations;
 /// <summary>
 /// Adds Strict-Transport-Security header on server responses. This instructs the browser to never use HTTP for the set domain.
 /// Any HTTP requests to the server are upgraded to HTTPS by the browser before sending. Server must be configured for HTTPS.

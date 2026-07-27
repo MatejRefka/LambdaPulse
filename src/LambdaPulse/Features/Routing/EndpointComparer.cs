@@ -1,4 +1,4 @@
-﻿namespace LambdaPulse.Engine.Features.Routing;
+﻿namespace LambdaPulse.Features.Routing;
 
 /// <summary>
 /// Provides a comparer for two Endpoints. Prioritizes static path segments over parameterized segments.

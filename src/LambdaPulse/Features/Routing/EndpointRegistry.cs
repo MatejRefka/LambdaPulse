@@ -1,4 +1,4 @@
-﻿namespace LambdaPulse.Engine.Features.Routing;
+﻿namespace LambdaPulse.Features.Routing;
 
 internal sealed class EndpointRegistry : IEndpointRegistry
 {

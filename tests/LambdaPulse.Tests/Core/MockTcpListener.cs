@@ -1,4 +1,4 @@
-﻿using LambdaPulse.Engine.Hosting.Connection;
+﻿using LambdaPulse.Hosting.Connection;
 using System.Net.Sockets;
 using System.Threading.Channels;
 

@@ -1,7 +1,7 @@
-﻿using LambdaPulse.Engine.Http.Abstractions;
+﻿using LambdaPulse.Http.Abstractions;
 using PulseInject;
 
-namespace LambdaPulse.Engine.Middleware;
+namespace LambdaPulse.Middleware;
 
 internal sealed class Pipeline
 {

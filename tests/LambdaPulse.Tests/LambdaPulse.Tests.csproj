@@ -30,7 +30,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\LambdaPulse.Engine\LambdaPulse.Engine.csproj" />
+    <ProjectReference Include="..\..\src\LambdaPulse\LambdaPulse.csproj" />
   </ItemGroup>
 
   <ItemGroup>

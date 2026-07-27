@@ -1,4 +1,4 @@
-﻿namespace LambdaPulse.Engine.Features.Security;
+﻿namespace LambdaPulse.Features.Security;
 
 public static class SecurityConstants
 {

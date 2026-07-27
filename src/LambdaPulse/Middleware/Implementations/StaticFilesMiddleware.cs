@@ -1,10 +1,10 @@
-﻿using LambdaPulse.Engine.Configuration;
-using LambdaPulse.Engine.Features.Logging;
-using LambdaPulse.Engine.Http.Abstractions;
-using LambdaPulse.Engine.Shared.Extensions;
+﻿using LambdaPulse.Configuration;
+using LambdaPulse.Features.Logging;
+using LambdaPulse.Http.Abstractions;
+using LambdaPulse.Shared.Extensions;
 using System.Globalization;
 
-namespace LambdaPulse.Engine.Middleware.Implementations;
+namespace LambdaPulse.Middleware.Implementations;
 
 /// <summary>
 /// Serves static files for GET request explicitly targeting a file. 

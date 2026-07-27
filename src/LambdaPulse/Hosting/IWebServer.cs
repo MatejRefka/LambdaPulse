@@ -1,4 +1,4 @@
-﻿namespace LambdaPulse.Engine.Hosting;
+﻿namespace LambdaPulse.Hosting;
 
 public interface IWebServer : IDisposable
 {

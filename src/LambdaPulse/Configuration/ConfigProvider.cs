@@ -1,7 +1,7 @@
-﻿using LambdaPulse.Engine.Configuration.Models;
+﻿using LambdaPulse.Configuration.Models;
 using System.Text.Json;
 
-namespace LambdaPulse.Engine.Configuration;
+namespace LambdaPulse.Configuration;
 
 /// <summary>
 /// Parses config.json into Config data model

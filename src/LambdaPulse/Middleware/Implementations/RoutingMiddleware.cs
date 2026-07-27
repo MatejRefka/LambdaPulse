@@ -1,8 +1,8 @@
-﻿using LambdaPulse.Engine.Features.Logging;
-using LambdaPulse.Engine.Features.Routing;
-using LambdaPulse.Engine.Http.Abstractions;
+﻿using LambdaPulse.Features.Logging;
+using LambdaPulse.Features.Routing;
+using LambdaPulse.Http.Abstractions;
 
-namespace LambdaPulse.Engine.Middleware.Implementations;
+namespace LambdaPulse.Middleware.Implementations;
 
 /// <summary>
 /// Determines whether the request matches any registered endpoints based on the HTTP method and request path.

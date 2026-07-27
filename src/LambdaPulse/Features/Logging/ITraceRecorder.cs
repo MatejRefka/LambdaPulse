@@ -1,4 +1,4 @@
-﻿namespace LambdaPulse.Engine.Features.Logging;
+﻿namespace LambdaPulse.Features.Logging;
 
 /// <summary>
 /// WebRequest Trace recording. Records the request lifecycle.

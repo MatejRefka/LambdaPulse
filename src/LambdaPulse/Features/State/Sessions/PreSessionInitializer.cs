@@ -1,7 +1,7 @@
-using LambdaPulse.Engine.Configuration;
-using LambdaPulse.Engine.Http.Abstractions;
+using LambdaPulse.Configuration;
+using LambdaPulse.Http.Abstractions;
 
-namespace LambdaPulse.Engine.Features.State.Sessions;
+namespace LambdaPulse.Features.State.Sessions;
 
 internal sealed class PreSessionInitializer : IPreSessionInitializer
 {

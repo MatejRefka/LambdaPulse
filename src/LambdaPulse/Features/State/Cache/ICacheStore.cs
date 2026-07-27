@@ -1,4 +1,4 @@
-﻿namespace LambdaPulse.Engine.Features.State.Cache;
+﻿namespace LambdaPulse.Features.State.Cache;
 
 public interface ICacheStore
 {

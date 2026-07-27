@@ -1,4 +1,4 @@
-﻿namespace LambdaPulse.Engine.Http.Abstractions;
+﻿namespace LambdaPulse.Http.Abstractions;
 
 public sealed class WebRequest
 {

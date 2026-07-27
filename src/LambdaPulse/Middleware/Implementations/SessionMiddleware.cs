@@ -1,10 +1,10 @@
-﻿using LambdaPulse.Engine.Configuration;
-using LambdaPulse.Engine.Features.Authentication;
-using LambdaPulse.Engine.Features.Logging;
-using LambdaPulse.Engine.Features.State.Sessions;
-using LambdaPulse.Engine.Http.Abstractions;
+﻿using LambdaPulse.Configuration;
+using LambdaPulse.Features.Authentication;
+using LambdaPulse.Features.Logging;
+using LambdaPulse.Features.State.Sessions;
+using LambdaPulse.Http.Abstractions;
 
-namespace LambdaPulse.Engine.Middleware.Implementations;
+namespace LambdaPulse.Middleware.Implementations;
 
 /// <summary>
 /// Reads sessionId from request cookies and loads session data from the session store.

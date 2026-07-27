@@ -1,7 +1,7 @@
-﻿using LambdaPulse.Engine.Features.State.Cache;
-using LambdaPulse.Engine.Http.Abstractions;
+﻿using LambdaPulse.Features.State.Cache;
+using LambdaPulse.Http.Abstractions;
 
-namespace LambdaPulse.Engine.Features.Routing;
+namespace LambdaPulse.Features.Routing;
 
 public sealed class Endpoint
 {

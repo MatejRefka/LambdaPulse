@@ -1,6 +1,6 @@
-﻿using LambdaPulse.Engine.Http.Abstractions;
+﻿using LambdaPulse.Http.Abstractions;
 
-namespace LambdaPulse.Engine.Features.Authentication;
+namespace LambdaPulse.Features.Authentication;
 
 internal sealed class SessionAuthenticationScheme : IAuthenticationScheme
 {
