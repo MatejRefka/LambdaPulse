@@ -19,15 +19,15 @@ internal sealed class SecurityMiddleware : MiddlewareBase
     private readonly string? _crossOriginEmbedderPolicy;
     private readonly bool _removeServerHeader;
 
-    public SecurityMiddleware(Func<WebContext, CancellationToken, Task> nextFunction, IConfigProvider configProvider) : base(nextFunction)
+    public SecurityMiddleware(Func<WebContext, CancellationToken, Task> nextFunction, Config config) : base(nextFunction)
     {
-        _xContentTypeOptions = configProvider.ServerConfig.MiddlewareConfig.SecurityMiddleware.XContentTypeOptions;
-        _referrerPolicy = configProvider.ServerConfig.MiddlewareConfig.SecurityMiddleware.ReferrerPolicy;
-        _permissionsPolicy = configProvider.ServerConfig.MiddlewareConfig.SecurityMiddleware.PermissionsPolicy;
-        _crossOriginOpenerPolicy = configProvider.ServerConfig.MiddlewareConfig.SecurityMiddleware.CrossOriginOpenerPolicy;
-        _crossOriginResourcePolicy = configProvider.ServerConfig.MiddlewareConfig.SecurityMiddleware.CrossOriginResourcePolicy;
-        _crossOriginEmbedderPolicy = configProvider.ServerConfig.MiddlewareConfig.SecurityMiddleware.CrossOriginEmbedderPolicy;
-        _removeServerHeader = configProvider.ServerConfig.MiddlewareConfig.SecurityMiddleware.RemoveServerHeader;
+        _xContentTypeOptions = config.ServerConfig.MiddlewareConfig.SecurityConfig.XContentTypeOptions;
+        _referrerPolicy = config.ServerConfig.MiddlewareConfig.SecurityConfig.ReferrerPolicy;
+        _permissionsPolicy = config.ServerConfig.MiddlewareConfig.SecurityConfig.PermissionsPolicy;
+        _crossOriginOpenerPolicy = config.ServerConfig.MiddlewareConfig.SecurityConfig.CrossOriginOpenerPolicy;
+        _crossOriginResourcePolicy = config.ServerConfig.MiddlewareConfig.SecurityConfig.CrossOriginResourcePolicy;
+        _crossOriginEmbedderPolicy = config.ServerConfig.MiddlewareConfig.SecurityConfig.CrossOriginEmbedderPolicy;
+        _removeServerHeader = config.ServerConfig.MiddlewareConfig.SecurityConfig.RemoveServerHeader;
     }
 
     public override async Task Invoke(WebContext webContext, CancellationToken cancellationToken = default)

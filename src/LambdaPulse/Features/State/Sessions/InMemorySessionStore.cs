@@ -1,5 +1,6 @@
-﻿using LambdaPulse.Configuration;
-using System.Collections.Concurrent;
+﻿using System.Collections.Concurrent;
+
+using LambdaPulse.Configuration;
 
 namespace LambdaPulse.Features.State.Sessions;
 
@@ -10,10 +11,10 @@ internal sealed class InMemorySessionStore : ISessionStore
     private readonly TimeSpan _absoluteTimeout;
     private readonly TimeSpan _idleTimeout;
 
-    public InMemorySessionStore(IConfigProvider configProvider)
+    public InMemorySessionStore(Config config)
     {
-        _absoluteTimeout = TimeSpan.FromMinutes(configProvider.ServerConfig.MiddlewareConfig.SessionMiddleware.AbsoluteTimeoutMinutes);
-        _idleTimeout = TimeSpan.FromMinutes(configProvider.ServerConfig.MiddlewareConfig.SessionMiddleware.IdleTimeoutMinutes);
+        _absoluteTimeout = TimeSpan.FromMinutes(config.ServerConfig.MiddlewareConfig.SessionConfig.AbsoluteTimeoutMinutes);
+        _idleTimeout = TimeSpan.FromMinutes(config.ServerConfig.MiddlewareConfig.SessionConfig.IdleTimeoutMinutes);
     }
 
     public Task<Session?> GetSession(string sessionId, CancellationToken cancellation = default)

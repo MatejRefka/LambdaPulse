@@ -8,10 +8,10 @@ internal sealed class ConnectionListener : IConnectionListener, IDisposable
 {
     private readonly TcpListener _listener;
 
-    public ConnectionListener(IConfigProvider configProvider)
+    public ConnectionListener(Config config)
     {
-        var address = IPAddress.Parse(configProvider.ServerConfig.Address);
-        var port = configProvider.ServerConfig.Port;
+        var address = IPAddress.Parse(config.ServerConfig.Address);
+        var port = config.ServerConfig.Port;
         _listener = new TcpListener(address, port);
     }
 

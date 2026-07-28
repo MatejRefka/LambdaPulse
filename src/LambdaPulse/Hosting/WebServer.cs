@@ -17,13 +17,13 @@ internal sealed class WebServer : IWebServer
     private readonly CancellationTokenSource _serverCancellationSource = new();
     private bool _disposed;
 
-    public WebServer(IConnectionListener listener, IClientHandler clientHandler, IConfigProvider configProvider, IEngineLogger engineLogger)
+    public WebServer(IConnectionListener listener, IClientHandler clientHandler, Config config, IEngineLogger engineLogger)
     {
         //the contained TcpLister is application-level listener
         _listener = listener;
 
         _clientHandler = clientHandler;
-        _backlog = configProvider.ServerConfig.BackLog;
+        _backlog = config.ServerConfig.BackLog;
         _engineLogger = engineLogger;
     }
 

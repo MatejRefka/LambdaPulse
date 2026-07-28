@@ -1,4 +1,5 @@
-﻿using LambdaPulse.Hosting;
+using LambdaPulse.Configuration;
+using LambdaPulse.Hosting;
 using System.Net.Sockets;
 
 namespace LambdaPulse.Tests.Core;
@@ -8,10 +9,10 @@ public class WebServerTests
     [Fact]
     public async Task StartAndStopGracefully()
     {
-        //arange
+        //arrange
         var listener = new MockTcpListener();
         var handler = new MockClientHandler();
-        var config = new MockConfigProvider();
+        var config = new Config();
         var logger = new MockEngineLogger();
 
         var webServer = new WebServer(listener, handler, config, logger);
@@ -34,7 +35,7 @@ public class WebServerTests
         //arrange
         var listener = new MockTcpListener();
         var handler = new MockClientHandler();
-        var config = new MockConfigProvider();
+        var config = new Config();
         var logger = new MockEngineLogger();
 
         var webServer = new WebServer(listener, handler, config, logger);
@@ -56,10 +57,10 @@ public class WebServerTests
     [Fact]
     public async Task SupportMultipleClientsConcurrently()
     {
-        //arange
+        //arrange
         var listener = new MockTcpListener();
         var handler = new MockClientHandler();
-        var config = new MockConfigProvider();
+        var config = new Config();
         var logger = new MockEngineLogger();
 
         var webServer = new WebServer(listener, handler, config, logger);
@@ -87,7 +88,7 @@ public class WebServerTests
         //arrange
         var listener = new MockTcpListener();
         var handler = new MockClientHandler(throwException: true);
-        var config = new MockConfigProvider();
+        var config = new Config();
         var logger = new MockEngineLogger();
 
         var webServer = new WebServer(listener, handler, config, logger);
@@ -100,10 +101,38 @@ public class WebServerTests
 
         await Task.Delay(100);
 
-        //asert
+        //assert
         Assert.Equal(2, handler.ClientConnections);
 
         await webServer.StopServer();
         await serverListeningTask;
+    }
+
+    [Fact]
+    public async Task UseConfiguredBacklog()
+    {
+        //arrange
+        const int configuredBacklog = 37;
+        var listener = new MockTcpListener();
+        var handler = new MockClientHandler();
+        var config = new Config
+        {
+            ServerConfig = new ServerConfig
+            {
+                BackLog = configuredBacklog
+            }
+        };
+        var logger = new MockEngineLogger();
+
+        var webServer = new WebServer(listener, handler, config, logger);
+
+        //act
+        var serverListeningTask = webServer.StartServer();
+        await Task.Delay(100);
+        await webServer.StopServer();
+        await serverListeningTask;
+
+        //assert
+        Assert.Equal(configuredBacklog, listener.StartedBacklog);
     }
 }

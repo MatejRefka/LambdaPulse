@@ -1,4 +1,4 @@
-﻿using LambdaPulse.Hosting.Connection;
+using LambdaPulse.Hosting.Connection;
 using System.Net.Sockets;
 using System.Threading.Channels;
 
@@ -8,7 +8,12 @@ public class MockTcpListener : IConnectionListener
 {
     private readonly Channel<TcpClient> _connections = Channel.CreateUnbounded<TcpClient>();
 
-    public void Start(int backlog) { }
+    public int? StartedBacklog { get; private set; }
+
+    public void Start(int backlog)
+    {
+        StartedBacklog = backlog;
+    }
 
     public void Stop() { }
 

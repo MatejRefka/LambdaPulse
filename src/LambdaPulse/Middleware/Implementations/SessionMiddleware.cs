@@ -17,10 +17,10 @@ internal sealed class SessionMiddleware : MiddlewareBase
     private readonly ISessionStore _sessionStore;
     private readonly bool _cookieSecure;
 
-    public SessionMiddleware(Func<WebContext, CancellationToken, Task> nextFunction, ISessionStore sessionStore, IConfigProvider configProvider) : base(nextFunction)
+    public SessionMiddleware(Func<WebContext, CancellationToken, Task> nextFunction, ISessionStore sessionStore, Config config) : base(nextFunction)
     {
         _sessionStore = sessionStore;
-        _cookieSecure = configProvider.ServerConfig.MiddlewareConfig.SessionMiddleware.CookieSecure;
+        _cookieSecure = config.ServerConfig.MiddlewareConfig.SessionConfig.CookieSecure;
     }
 
     public override async Task Invoke(WebContext webContext, CancellationToken cancellationToken = default)

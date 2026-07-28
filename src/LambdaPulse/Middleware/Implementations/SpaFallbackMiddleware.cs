@@ -14,9 +14,9 @@ internal sealed class SpaFallbackMiddleware : MiddlewareBase
 
     private readonly string _indexPageRelativePath;
 
-    public SpaFallbackMiddleware(Func<WebContext, CancellationToken, Task> nextFunction, IConfigProvider configProvider) : base(nextFunction)
+    public SpaFallbackMiddleware(Func<WebContext, CancellationToken, Task> nextFunction, Config config) : base(nextFunction)
     {
-        _indexPageRelativePath = configProvider.ServerConfig.MiddlewareConfig.SpaFallbackMiddleware.IndexPageRelativePath;
+        _indexPageRelativePath = config.ServerConfig.MiddlewareConfig.SpaFallbackConfig.IndexPageRelativePath;
     }
 
     public override async Task Invoke(WebContext webContext, CancellationToken cancellationToken = default)

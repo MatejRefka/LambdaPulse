@@ -41,13 +41,4 @@
     <Folder Include="Core\Middleware\" />
   </ItemGroup>
 
-  <ItemGroup>
-    <None Update="mockConfig.dev.json">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
-    <None Update="mockConfig.json">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
-  </ItemGroup>
-
 </Project>

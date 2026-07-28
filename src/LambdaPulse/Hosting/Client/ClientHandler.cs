@@ -21,7 +21,7 @@ internal sealed class ClientHandler : IClientHandler
     private readonly IPreSessionInitializer _preSessionInitializer;
     private readonly int _readTimeoutMS;
 
-    public ClientHandler(Func<WebContext, CancellationToken, Task> pipeline, IRequestReader requestReader, IRequestParser requestParser, IResponseWriter responseWriter, IConfigProvider configProvider, IEngineLogger engineLogger, ITraceRecorder traceRecorder, IPreSessionInitializer preSessionInitializer)
+    public ClientHandler(Func<WebContext, CancellationToken, Task> pipeline, IRequestReader requestReader, IRequestParser requestParser, IResponseWriter responseWriter, Config config, IEngineLogger engineLogger, ITraceRecorder traceRecorder, IPreSessionInitializer preSessionInitializer)
     {
         _pipeline = pipeline;
         _requestReader = requestReader;
@@ -30,7 +30,7 @@ internal sealed class ClientHandler : IClientHandler
         _engineLogger = engineLogger;
         _traceRecorder = traceRecorder;
         _preSessionInitializer = preSessionInitializer;
-        _readTimeoutMS = configProvider.ServerConfig.ReadTimeoutMS;
+        _readTimeoutMS = config.ServerConfig.ReadTimeoutMS;
     }
 
     public async Task HandleClient(TcpClient tcpClient, CancellationToken serverCancellationToken = default)

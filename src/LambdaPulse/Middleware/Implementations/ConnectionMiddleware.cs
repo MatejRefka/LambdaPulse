@@ -14,9 +14,9 @@ internal sealed class ConnectionMiddleware : MiddlewareBase
     protected override string MiddlewareName => "Connection";
 
     private readonly int _requestExecutionTimeoutMS;
-    public ConnectionMiddleware(Func<WebContext, CancellationToken, Task> nextFunction, IConfigProvider configProvider) : base(nextFunction)
+    public ConnectionMiddleware(Func<WebContext, CancellationToken, Task> nextFunction, Config config) : base(nextFunction)
     {
-        _requestExecutionTimeoutMS = configProvider.ServerConfig.MiddlewareConfig.ConnectionMiddleware.RequestExecutionTimeoutMS;
+        _requestExecutionTimeoutMS = config.ServerConfig.MiddlewareConfig.ConnectionConfig.RequestExecutionTimeoutMS;
     }
 
     public override async Task Invoke(WebContext webContext, CancellationToken cancellationToken = default)

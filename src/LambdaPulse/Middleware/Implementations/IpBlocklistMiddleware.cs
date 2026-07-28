@@ -14,9 +14,9 @@ internal sealed class IpBlocklistMiddleware : MiddlewareBase
 
     private readonly HashSet<string> _blockedIpAddresses;
 
-    public IpBlocklistMiddleware(Func<WebContext, CancellationToken, Task> nextFunction, IConfigProvider configProvider) : base(nextFunction)
+    public IpBlocklistMiddleware(Func<WebContext, CancellationToken, Task> nextFunction, Config config) : base(nextFunction)
     {
-        _blockedIpAddresses = configProvider.ServerConfig.MiddlewareConfig.IpBlocklistMiddleware.BlockedIpAddresses;
+        _blockedIpAddresses = config.ServerConfig.MiddlewareConfig.IpBlocklistConfig.BlockedIpAddresses;
     }
 
     public override async Task Invoke(WebContext webContext, CancellationToken cancellationToken = default)

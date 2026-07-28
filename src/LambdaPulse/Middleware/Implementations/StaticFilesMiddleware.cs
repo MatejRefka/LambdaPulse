@@ -1,8 +1,9 @@
-﻿using LambdaPulse.Configuration;
+﻿using System.Globalization;
+
+using LambdaPulse.Configuration;
 using LambdaPulse.Features.Logging;
 using LambdaPulse.Http.Abstractions;
 using LambdaPulse.Shared.Extensions;
-using System.Globalization;
 
 namespace LambdaPulse.Middleware.Implementations;
 
@@ -19,9 +20,9 @@ internal sealed class StaticFilesMiddleware : MiddlewareBase
     private readonly string _fileRootPath;
     private readonly Dictionary<string, string> _mimeTypes;
 
-    public StaticFilesMiddleware(Func<WebContext, CancellationToken, Task> nextFunction, IConfigProvider configProvider) : base(nextFunction)
+    public StaticFilesMiddleware(Func<WebContext, CancellationToken, Task> nextFunction, Config config) : base(nextFunction)
     {
-        _fileRootPath = Path.GetFullPath(configProvider.ServerConfig.MiddlewareConfig.StaticFilesMiddleware.FileRootPath);
+        _fileRootPath = Path.GetFullPath(config.ServerConfig.MiddlewareConfig.StaticFilesConfig.FileRootPath);
         //protect against directory traversal
         if (!_fileRootPath.EndsWith(Path.DirectorySeparatorChar))
         {
@@ -48,6 +49,14 @@ internal sealed class StaticFilesMiddleware : MiddlewareBase
     {
         var downstreamStart = DateTimeOffset.UtcNow;
         var downstreamLogs = new List<string>();
+
+        if (_fileRootPath.Length == 0)
+        {
+            RecordTelemetry(webContext, FlowDirection.Downstream, ExecutionEvent.Success, downstreamStart, new List<string> { "Static file root is not configured. Skip static file handling." });
+            await _nextFunction(webContext, cancellationToken);
+            RecordTelemetry(webContext, FlowDirection.Upstream, ExecutionEvent.Success, DateTimeOffset.UtcNow);
+            return;
+        }
 
         //non-GET requests continue to downstream middleware
         if (!string.Equals(webContext.WebRequest.Method, "GET", StringComparison.OrdinalIgnoreCase))

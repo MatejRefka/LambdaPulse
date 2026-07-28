@@ -1,8 +1,9 @@
-﻿using LambdaPulse.Configuration;
+﻿using System.Globalization;
+
+using LambdaPulse.Configuration;
 using LambdaPulse.Features.Logging;
 using LambdaPulse.Http.Abstractions;
 using LambdaPulse.Shared.Extensions;
-using System.Globalization;
 
 namespace LambdaPulse.Middleware.Implementations;
 
@@ -21,14 +22,14 @@ internal sealed class CorsMiddleware : MiddlewareBase
     private readonly HashSet<string> _allowedMethods;
     private readonly HashSet<string> _allowedHeaders;
     private readonly int _preflightMaxAgeSeconds;
-    public CorsMiddleware(Func<WebContext, CancellationToken, Task> nextFunction, IConfigProvider configProvider) : base(nextFunction)
+    public CorsMiddleware(Func<WebContext, CancellationToken, Task> nextFunction, Config config) : base(nextFunction)
     {
-        _allowedOrigins = configProvider.ServerConfig.MiddlewareConfig.CorsMiddleware.AllowedOrigins;
-        _allowCredentials = configProvider.ServerConfig.MiddlewareConfig.CorsMiddleware.AllowCredentials;
-        _exposedHeaders = configProvider.ServerConfig.MiddlewareConfig.CorsMiddleware.ExposedHeaders;
-        _allowedMethods = configProvider.ServerConfig.MiddlewareConfig.CorsMiddleware.AllowedMethods;
-        _allowedHeaders = configProvider.ServerConfig.MiddlewareConfig.CorsMiddleware.AllowedHeaders;
-        _preflightMaxAgeSeconds = configProvider.ServerConfig.MiddlewareConfig.CorsMiddleware.PreflightMaxAgeSeconds;
+        _allowedOrigins = config.ServerConfig.MiddlewareConfig.CorsConfig.AllowedOrigins;
+        _allowCredentials = config.ServerConfig.MiddlewareConfig.CorsConfig.AllowCredentials;
+        _exposedHeaders = config.ServerConfig.MiddlewareConfig.CorsConfig.ExposedHeaders;
+        _allowedMethods = config.ServerConfig.MiddlewareConfig.CorsConfig.AllowedMethods;
+        _allowedHeaders = config.ServerConfig.MiddlewareConfig.CorsConfig.AllowedHeaders;
+        _preflightMaxAgeSeconds = config.ServerConfig.MiddlewareConfig.CorsConfig.PreflightMaxAgeSeconds;
     }
 
     public override async Task Invoke(WebContext webContext, CancellationToken cancellationToken = default)

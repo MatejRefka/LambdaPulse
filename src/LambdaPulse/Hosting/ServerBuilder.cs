@@ -12,19 +12,20 @@ using LambdaPulse.Http.Reading;
 using LambdaPulse.Http.Writing;
 using LambdaPulse.Middleware;
 using LambdaPulse.Middleware.Implementations;
+
 using PulseInject;
 
 namespace LambdaPulse.Hosting;
 
 public static class ServerBuilder
 {
-    public static IWebServer Build(Action<IEndpointRegistry>? configureEndpoints = null, Action<DependencyContainer>? configureServices = null)
+    public static IWebServer Build(Action<IEndpointRegistry>? configureEndpoints = null, Action<DependencyContainer>? configureServices = null, Config? config = null)
     {
         //register services
         var container = new DependencyContainer();
 
         //register default implementation
-        RegisterDefaultServices(container);
+        RegisterDefaultServices(container, config ?? new Config());
 
         //allow users to override default implementations
         configureServices?.Invoke(container);
@@ -69,9 +70,9 @@ public static class ServerBuilder
         return webServer ?? throw new InvalidOperationException("Cannot construct WebServer.");
     }
 
-    private static void RegisterDefaultServices(DependencyContainer container)
+    private static void RegisterDefaultServices(DependencyContainer container, Config config)
     {
-        container.AddSingleton<IConfigProvider, ConfigProvider>();
+        container.AddSingleton(config);
 
         container.AddSingleton<IConnectionListener, ConnectionListener>();
 

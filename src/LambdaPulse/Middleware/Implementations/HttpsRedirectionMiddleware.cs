@@ -14,9 +14,9 @@ internal sealed class HttpsRedirectionMiddleware : MiddlewareBase
     protected override string MiddlewareName => "HTTPS";
 
     private readonly bool _isEnabled;
-    public HttpsRedirectionMiddleware(Func<WebContext, CancellationToken, Task> nextFunction, IConfigProvider configProvider) : base(nextFunction)
+    public HttpsRedirectionMiddleware(Func<WebContext, CancellationToken, Task> nextFunction, Config config) : base(nextFunction)
     {
-        _isEnabled = configProvider.ServerConfig.MiddlewareConfig.HttpsRedirectionMiddleware.IsEnabled;
+        _isEnabled = config.ServerConfig.MiddlewareConfig.HttpsRedirectionConfig.IsEnabled;
     }
 
     public override async Task Invoke(WebContext webContext, CancellationToken cancellationToken = default)

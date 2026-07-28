@@ -14,11 +14,11 @@ internal sealed class HstsMiddleware : MiddlewareBase
     private readonly int _maxAge;
     private readonly bool _includeSubDomains;
     private readonly bool _preload;
-    public HstsMiddleware(Func<WebContext, CancellationToken, Task> nextFunction, IConfigProvider configProvider) : base(nextFunction)
+    public HstsMiddleware(Func<WebContext, CancellationToken, Task> nextFunction, Config config) : base(nextFunction)
     {
-        _maxAge = configProvider.ServerConfig.MiddlewareConfig.HstsMiddleware.MaxAge;
-        _includeSubDomains = configProvider.ServerConfig.MiddlewareConfig.HstsMiddleware.IncludeSubDomains;
-        _preload = configProvider.ServerConfig.MiddlewareConfig.HstsMiddleware.Preload;
+        _maxAge = config.ServerConfig.MiddlewareConfig.HstsConfig.MaxAge;
+        _includeSubDomains = config.ServerConfig.MiddlewareConfig.HstsConfig.IncludeSubDomains;
+        _preload = config.ServerConfig.MiddlewareConfig.HstsConfig.Preload;
     }
 
     public override async Task Invoke(WebContext webContext, CancellationToken cancellationToken = default)

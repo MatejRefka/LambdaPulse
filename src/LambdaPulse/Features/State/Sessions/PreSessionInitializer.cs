@@ -7,9 +7,9 @@ internal sealed class PreSessionInitializer : IPreSessionInitializer
 {
     private readonly bool _cookieSecure;
 
-    public PreSessionInitializer(IConfigProvider configProvider)
+    public PreSessionInitializer(Config config)
     {
-        _cookieSecure = configProvider.ServerConfig.MiddlewareConfig.SessionMiddleware.CookieSecure;
+        _cookieSecure = config.ServerConfig.MiddlewareConfig.SessionConfig.CookieSecure;
     }
 
     public void Initialize(WebContext webContext)

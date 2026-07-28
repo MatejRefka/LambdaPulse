@@ -1,8 +1,9 @@
-﻿using LambdaPulse.Configuration;
+﻿using System.Text;
+
+using LambdaPulse.Configuration;
 using LambdaPulse.Features.Logging;
 using LambdaPulse.Http.Abstractions;
 using LambdaPulse.Shared.Extensions;
-using System.Text;
 
 namespace LambdaPulse.Middleware.Implementations;
 
@@ -18,11 +19,11 @@ internal sealed class RequestLimitsMiddleware : MiddlewareBase
     private readonly int _maxBodySizeBytes;
     private readonly IEngineLogger _engineLogger;
 
-    public RequestLimitsMiddleware(Func<WebContext, CancellationToken, Task> nextFunction, IConfigProvider configProvider, IEngineLogger engineLogger) : base(nextFunction)
+    public RequestLimitsMiddleware(Func<WebContext, CancellationToken, Task> nextFunction, Config config, IEngineLogger engineLogger) : base(nextFunction)
     {
-        _maxControlDataSizeBytes = configProvider.ServerConfig.MiddlewareConfig.RequestLimitsMiddleware.MaxControlDataSizeBytes;
-        _maxHeaderSizeBytes = configProvider.ServerConfig.MiddlewareConfig.RequestLimitsMiddleware.MaxHeaderSizeBytes;
-        _maxBodySizeBytes = configProvider.ServerConfig.MiddlewareConfig.RequestLimitsMiddleware.MaxBodySizeBytes;
+        _maxControlDataSizeBytes = config.ServerConfig.MiddlewareConfig.RequestLimitsConfig.MaxControlDataSizeBytes;
+        _maxHeaderSizeBytes = config.ServerConfig.MiddlewareConfig.RequestLimitsConfig.MaxHeaderSizeBytes;
+        _maxBodySizeBytes = config.ServerConfig.MiddlewareConfig.RequestLimitsConfig.MaxBodySizeBytes;
         _engineLogger = engineLogger;
     }
 
