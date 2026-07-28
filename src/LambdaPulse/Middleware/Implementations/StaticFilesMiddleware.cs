@@ -17,18 +17,11 @@ internal sealed class StaticFilesMiddleware : MiddlewareBase
 {
     protected override string MiddlewareName => "Static Files";
 
-    private readonly string _fileRootPath;
+    private readonly string? _fileRootPath;
     private readonly Dictionary<string, string> _mimeTypes;
 
     public StaticFilesMiddleware(Func<WebContext, CancellationToken, Task> nextFunction, Config config) : base(nextFunction)
     {
-        _fileRootPath = Path.GetFullPath(config.ServerConfig.MiddlewareConfig.StaticFilesConfig.FileRootPath);
-        //protect against directory traversal
-        if (!_fileRootPath.EndsWith(Path.DirectorySeparatorChar))
-        {
-            _fileRootPath += Path.DirectorySeparatorChar;
-        }
-
         _mimeTypes = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase)
         {
             { ".html", "text/html" },
@@ -43,6 +36,19 @@ internal sealed class StaticFilesMiddleware : MiddlewareBase
             { ".json", "application/json" },
             { ".txt", "text/plain" },
         };
+
+        var fileRootPath = config.ServerConfig.MiddlewareConfig.StaticFilesConfig.FileRootPath;
+        if (fileRootPath == null)
+        {
+            return;
+        }
+
+        _fileRootPath = Path.GetFullPath(fileRootPath);
+        //protect against directory traversal
+        if (!_fileRootPath.EndsWith(Path.DirectorySeparatorChar))
+        {
+            _fileRootPath += Path.DirectorySeparatorChar;
+        }
     }
 
     public override async Task Invoke(WebContext webContext, CancellationToken cancellationToken = default)
@@ -50,7 +56,7 @@ internal sealed class StaticFilesMiddleware : MiddlewareBase
         var downstreamStart = DateTimeOffset.UtcNow;
         var downstreamLogs = new List<string>();
 
-        if (_fileRootPath.Length == 0)
+        if (_fileRootPath == null)
         {
             RecordTelemetry(webContext, FlowDirection.Downstream, ExecutionEvent.Success, downstreamStart, new List<string> { "Static file root is not configured. Skip static file handling." });
             await _nextFunction(webContext, cancellationToken);
@@ -107,6 +113,11 @@ internal sealed class StaticFilesMiddleware : MiddlewareBase
 
     private async Task ServeStaticFile(string filePath, string relativePath, WebContext webContext, List<string> logs, CancellationToken cancellationToken = default)
     {
+        if (_fileRootPath == null)
+        {
+            return;
+        }
+
         //normalize path
         filePath = Path.GetFullPath(filePath);
 

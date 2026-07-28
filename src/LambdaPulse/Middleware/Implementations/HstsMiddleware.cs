@@ -11,11 +11,13 @@ internal sealed class HstsMiddleware : MiddlewareBase
 {
     protected override string MiddlewareName => "HSTS";
 
+    private readonly bool _isEnabled;
     private readonly int _maxAge;
     private readonly bool _includeSubDomains;
     private readonly bool _preload;
     public HstsMiddleware(Func<WebContext, CancellationToken, Task> nextFunction, Config config) : base(nextFunction)
     {
+        _isEnabled = config.ServerConfig.MiddlewareConfig.HstsConfig.IsEnabled;
         _maxAge = config.ServerConfig.MiddlewareConfig.HstsConfig.MaxAge;
         _includeSubDomains = config.ServerConfig.MiddlewareConfig.HstsConfig.IncludeSubDomains;
         _preload = config.ServerConfig.MiddlewareConfig.HstsConfig.Preload;
@@ -28,10 +30,10 @@ internal sealed class HstsMiddleware : MiddlewareBase
 
         var upstreamStart = DateTimeOffset.UtcNow;
 
-        //HSTS only applies to HTTPS
-        if (!webContext.WebRequest.Headers.TryGetValue("X-Forwarded-Proto", out var fwProtocol) || !string.Equals(fwProtocol, "https", StringComparison.OrdinalIgnoreCase))
+        //HSTS must be enabled and only applies to HTTPS
+        if (!_isEnabled || !webContext.WebRequest.Headers.TryGetValue("X-Forwarded-Proto", out var fwProtocol) || !string.Equals(fwProtocol, "https", StringComparison.OrdinalIgnoreCase))
         {
-            RecordTelemetry(webContext, FlowDirection.Upstream, ExecutionEvent.Success, upstreamStart, new List<string> { "Request was not forwarded as HTTPS. Skip HSTS." });
+            RecordTelemetry(webContext, FlowDirection.Upstream, ExecutionEvent.Success, upstreamStart, new List<string> { "HSTS is disabled or request was not forwarded as HTTPS. Skip HSTS." });
             return;
         }
 

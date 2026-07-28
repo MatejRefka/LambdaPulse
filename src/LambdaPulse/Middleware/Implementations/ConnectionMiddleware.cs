@@ -7,13 +7,13 @@ namespace LambdaPulse.Middleware.Implementations;
 
 /// <summary>
 /// Sets the connection response header.
-/// Enforces request execution timeout set by the server's configuration via a request-level CTS which is passed to downstream middleware.
+/// Optionally enforces a configured request execution timeout via a request-level CTS.
 /// </summary>
 internal sealed class ConnectionMiddleware : MiddlewareBase
 {
     protected override string MiddlewareName => "Connection";
 
-    private readonly int _requestExecutionTimeoutMS;
+    private readonly int? _requestExecutionTimeoutMS;
     public ConnectionMiddleware(Func<WebContext, CancellationToken, Task> nextFunction, Config config) : base(nextFunction)
     {
         _requestExecutionTimeoutMS = config.ServerConfig.MiddlewareConfig.ConnectionConfig.RequestExecutionTimeoutMS;
@@ -23,10 +23,10 @@ internal sealed class ConnectionMiddleware : MiddlewareBase
     {
         var downstreamStart = DateTimeOffset.UtcNow;
 
-        //skip request execution timeout for SSE requests (GET accepting text/event-stream)
-        if (webContext.WebRequest.Method.Equals("GET", StringComparison.OrdinalIgnoreCase) && webContext.WebRequest.Headers.TryGetValue("Accept", out var acceptHeaderValue) && acceptHeaderValue.Contains("text/event-stream", StringComparison.OrdinalIgnoreCase))
+        //skip request execution timeout when one is not configured or for SSE requests (GET accepting text/event-stream)
+        if (_requestExecutionTimeoutMS == null || (webContext.WebRequest.Method.Equals("GET", StringComparison.OrdinalIgnoreCase) && webContext.WebRequest.Headers.TryGetValue("Accept", out var acceptHeaderValue) && acceptHeaderValue.Contains("text/event-stream", StringComparison.OrdinalIgnoreCase)))
         {
-            RecordTelemetry(webContext, FlowDirection.Downstream, ExecutionEvent.Success, downstreamStart, new List<string> { "Server-sent events request detected. Skip request execution timeout." });
+            RecordTelemetry(webContext, FlowDirection.Downstream, ExecutionEvent.Success, downstreamStart, new List<string> { "Request execution timeout not configured or server-sent events request detected. Skip request execution timeout." });
             await _nextFunction(webContext, cancellationToken);
 
             var upstreamStart = DateTimeOffset.UtcNow;
@@ -71,7 +71,7 @@ internal sealed class ConnectionMiddleware : MiddlewareBase
 
         //request-level token. sets timeout for long mw execution + response write
         using var requestTimeoutCTS = CancellationTokenSource.CreateLinkedTokenSource(cancellationToken);
-        requestTimeoutCTS.CancelAfter(_requestExecutionTimeoutMS);
+        requestTimeoutCTS.CancelAfter(_requestExecutionTimeoutMS.Value);
 
         try
         {

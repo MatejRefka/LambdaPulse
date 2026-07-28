@@ -12,7 +12,7 @@ internal sealed class SpaFallbackMiddleware : MiddlewareBase
 {
     protected override string MiddlewareName => "SPA Fallback";
 
-    private readonly string _indexPageRelativePath;
+    private readonly string? _indexPageRelativePath;
 
     public SpaFallbackMiddleware(Func<WebContext, CancellationToken, Task> nextFunction, Config config) : base(nextFunction)
     {
@@ -22,6 +22,14 @@ internal sealed class SpaFallbackMiddleware : MiddlewareBase
     public override async Task Invoke(WebContext webContext, CancellationToken cancellationToken = default)
     {
         var downstreamStart = DateTimeOffset.UtcNow;
+
+        if (_indexPageRelativePath == null)
+        {
+            RecordTelemetry(webContext, FlowDirection.Downstream, ExecutionEvent.Success, downstreamStart, new List<string> { "SPA fallback index is not configured. Skip SPA fallback." });
+            await _nextFunction(webContext, cancellationToken);
+            RecordTelemetry(webContext, FlowDirection.Upstream, ExecutionEvent.Success, DateTimeOffset.UtcNow);
+            return;
+        }
 
         //skip non-GET requests
         if (!string.Equals(webContext.WebRequest.Method, "GET", StringComparison.OrdinalIgnoreCase))

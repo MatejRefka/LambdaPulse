@@ -21,11 +21,14 @@ public static class ServerBuilder
 {
     public static IWebServer Build(Action<IEndpointRegistry>? configureEndpoints = null, Action<DependencyContainer>? configureServices = null, Config? config = null)
     {
+        config ??= new Config();
+        ValidateConfig(config);
+
         //register services
         var container = new DependencyContainer();
 
         //register default implementation
-        RegisterDefaultServices(container, config ?? new Config());
+        RegisterDefaultServices(container, config);
 
         //allow users to override default implementations
         configureServices?.Invoke(container);
@@ -95,5 +98,23 @@ public static class ServerBuilder
         container.AddSingleton<ICompressor, GZipCompressor>();
 
         container.AddSingleton<WebServer>();
+    }
+
+    private static void ValidateConfig(Config config)
+    {
+        var fileRootPath = config.ServerConfig.MiddlewareConfig.StaticFilesConfig.FileRootPath;
+        var indexPageRelativePath = config.ServerConfig.MiddlewareConfig.SpaFallbackConfig.IndexPageRelativePath;
+        var httpsRedirectionEnabled = config.ServerConfig.MiddlewareConfig.HttpsRedirectionConfig.IsEnabled;
+        var cookieSecure = config.ServerConfig.MiddlewareConfig.SessionConfig.CookieSecure;
+
+        if (fileRootPath != null && indexPageRelativePath == null)
+        {
+            throw new InvalidOperationException("A static file root path must be configured when SPA fallback is enabled.");
+        }
+
+        if (!httpsRedirectionEnabled && cookieSecure)
+        {
+            throw new InvalidOperationException("Secure session cookies require HTTPS redirection to be enabled.");
+        }
     }
 }

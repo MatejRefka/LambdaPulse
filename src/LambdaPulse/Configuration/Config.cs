@@ -9,8 +9,8 @@ public sealed class ServerConfig
 {
     public string Address { get; init; } = "127.0.0.1";
     public int Port { get; init; } = 8080;
-    public int BackLog { get; init; } = 100;
-    public int ReadTimeoutMS { get; init; } = 120_000;
+    public int BackLog { get; init; } = 512; //Kestrel's default
+    public int ReadTimeoutMS { get; init; } = 120_000; //2 minutes
     public MiddlewareConfig MiddlewareConfig { get; init; } = new();
 }
 
@@ -30,19 +30,19 @@ public sealed class MiddlewareConfig
 
 public sealed class RequestLimitsConfig
 {
-    public int MaxControlDataSizeBytes { get; init; } = 3_000_000;
-    public int MaxHeaderSizeBytes { get; init; } = 15_000;
-    public int MaxBodySizeBytes { get; init; } = 3_000_000;
+    public int MaxControlDataSizeBytes { get; init; } = 8_192; //8KB, Kestrel's default
+    public int MaxHeaderSizeBytes { get; init; } = 32_768; //32KB, Kestrel's default
+    public int MaxBodySizeBytes { get; init; } = 3_000_000; //3MB, the body is loaded into memory (not streamed)
 }
 
 public sealed class ConnectionConfig
 {
-    public int RequestExecutionTimeoutMS { get; init; } = 10_000;
+    public int? RequestExecutionTimeoutMS { get; init; } = null;
 }
 
 public sealed class IpBlocklistConfig
 {
-    public HashSet<string> BlockedIpAddresses { get; init; } = new();
+    public HashSet<string> BlockedIpAddresses { get; init; } = [];
 }
 
 public sealed class HttpsRedirectionConfig
@@ -52,8 +52,9 @@ public sealed class HttpsRedirectionConfig
 
 public sealed class HstsConfig
 {
-    public int MaxAge { get; init; } = 63_072_000;
-    public bool IncludeSubDomains { get; init; } = true;
+    public bool IsEnabled { get; set; }
+    public int MaxAge { get; init; } = 31_536_000; //one year
+    public bool IncludeSubDomains { get; init; }
     public bool Preload { get; init; }
 }
 
@@ -61,54 +62,36 @@ public sealed class SecurityConfig
 {
     public bool XContentTypeOptions { get; init; } = true;
     public string? ReferrerPolicy { get; init; } = "strict-origin-when-cross-origin";
-    public string? PermissionsPolicy { get; init; } = "camera=(), microphone=(), geolocation=()";
-    public string? CrossOriginOpenerPolicy { get; init; } = "same-origin";
-    public string? CrossOriginResourcePolicy { get; init; } = "same-origin";
-    public string? CrossOriginEmbedderPolicy { get; init; } = "require-corp";
+    public string? PermissionsPolicy { get; init; }
+    public string? CrossOriginOpenerPolicy { get; init; }
+    public string? CrossOriginResourcePolicy { get; init; }
+    public string? CrossOriginEmbedderPolicy { get; init; }
     public bool RemoveServerHeader { get; init; } = true;
 }
 
 public sealed class SessionConfig
 {
     public int IdleTimeoutMinutes { get; init; } = 20;
-    public int AbsoluteTimeoutMinutes { get; init; } = 720;
+    public int AbsoluteTimeoutMinutes { get; init; } = 720; //12 hours
     public bool CookieSecure { get; init; } = true;
 }
 
 public sealed class StaticFilesConfig
 {
-    public string FileRootPath { get; init; } = "";
+    public string? FileRootPath { get; init; }
 }
 
 public sealed class SpaConfig
 {
-    public string IndexPageRelativePath { get; init; } = "";
+    public string? IndexPageRelativePath { get; init; }
 }
 
 public sealed class CorsConfig
 {
-    public HashSet<string> AllowedOrigins { get; init; } = new(StringComparer.OrdinalIgnoreCase)
-    {
-        "http://localhost:8081"
-    };
-    public bool AllowCredentials { get; init; } = true;
-    public HashSet<string> ExposedHeaders { get; init; } = new(StringComparer.OrdinalIgnoreCase)
-    {
-        "X-Request-Id"
-    };
-    public HashSet<string> AllowedMethods { get; init; } = new(StringComparer.OrdinalIgnoreCase)
-    {
-        "GET",
-        "POST",
-        "PUT",
-        "DELETE",
-        "OPTIONS"
-    };
-    public HashSet<string> AllowedHeaders { get; init; } = new(StringComparer.OrdinalIgnoreCase)
-    {
-        "Authorization",
-        "Content-Type",
-        "X-CSRF-Token"
-    };
-    public int PreflightMaxAgeSeconds { get; init; } = 60;
+    public HashSet<string> AllowedOrigins { get; init; } = new(StringComparer.OrdinalIgnoreCase);
+    public bool AllowCredentials { get; init; }
+    public HashSet<string> ExposedHeaders { get; init; } = new(StringComparer.OrdinalIgnoreCase);
+    public HashSet<string> AllowedMethods { get; init; } = new(StringComparer.OrdinalIgnoreCase);
+    public HashSet<string> AllowedHeaders { get; init; } = new(StringComparer.OrdinalIgnoreCase);
+    public int PreflightMaxAgeSeconds { get; init; } = 600; //10 minutes
 }
