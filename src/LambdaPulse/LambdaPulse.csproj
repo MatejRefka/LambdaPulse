@@ -45,6 +45,10 @@
           PackagePath="" />
   </ItemGroup>
 
+  <ItemGroup>
+    <InternalsVisibleTo Include="LambdaPulse.Tests" />
+  </ItemGroup>
+
 	<ItemGroup>
 	  <PackageReference Include="PulseInject" Version="0.1.0-beta.1" />
 	</ItemGroup>
