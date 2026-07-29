@@ -1,26 +1,49 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
 	<PropertyGroup>
-		<OutputType>Library</OutputType>
 		<TargetFramework>net10.0</TargetFramework>
 		<ImplicitUsings>enable</ImplicitUsings>
 		<Nullable>enable</Nullable>
-		<EnforceCodeStyleInBuild>False</EnforceCodeStyleInBuild>
-	</PropertyGroup>
 
-	<PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
-	  <NoWarn />
-	  <WarningLevel>4</WarningLevel>
-	</PropertyGroup>
+    <Version>0.1.0-beta.1</Version>
 
-	<PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
-	  <NoWarn />
-	  <WarningLevel>4</WarningLevel>
-	</PropertyGroup>
+    <AssemblyName>LambdaPulse</AssemblyName>
+    <RootNamespace>LambdaPulse</RootNamespace>
 
-	<ItemGroup>
-		<InternalsVisibleTo Include="LambdaPulse.Tests" />
-	</ItemGroup>
+    <IsPackable>true</IsPackable>
+    <PackageId>LambdaPulse</PackageId>
+    <Title>LambdaPulse</Title>
+    <Description>
+      Custom HTTP web server engine with a request pipeline supporting 20+ pluggable middleware components.
+    </Description>
+    <Authors>Matej Refka</Authors>
+    <Copyright>Copyright © 2026 Matej Refka</Copyright>
+
+    <PackageLicenseExpression>MIT</PackageLicenseExpression>
+    <PackageRequireLicenseAcceptance>false</PackageRequireLicenseAcceptance>
+
+    <PackageProjectUrl>https://github.com/MatejRefka/LambdaPulse</PackageProjectUrl>
+    <RepositoryUrl>https://github.com/MatejRefka/LambdaPulse</RepositoryUrl>
+    <RepositoryType>git</RepositoryType>
+
+    <PublishRepositoryUrl>true</PublishRepositoryUrl>
+    <EmbedUntrackedSources>true</EmbedUntrackedSources>
+
+    <PackageTags>http;server;web-server;middleware;pipeline</PackageTags>
+
+    <PackageReadmeFile>README.md</PackageReadmeFile>
+
+    <GenerateDocumentationFile>true</GenerateDocumentationFile>
+
+    <IncludeSymbols>true</IncludeSymbols>
+    <SymbolPackageFormat>snupkg</SymbolPackageFormat>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <None Include="../../README.md"
+          Pack="true"
+          PackagePath="" />
+  </ItemGroup>
 
 	<ItemGroup>
 	  <PackageReference Include="PulseInject" Version="0.1.0-beta.1" />
