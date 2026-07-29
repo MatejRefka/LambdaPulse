@@ -107,7 +107,7 @@ public static class ServerBuilder
         var httpsRedirectionEnabled = config.ServerConfig.MiddlewareConfig.HttpsRedirectionConfig.IsEnabled;
         var cookieSecure = config.ServerConfig.MiddlewareConfig.SessionConfig.CookieSecure;
 
-        if (fileRootPath != null && indexPageRelativePath == null)
+        if (indexPageRelativePath != null && fileRootPath == null)
         {
             throw new InvalidOperationException("A static file root path must be configured when SPA fallback is enabled.");
         }
