@@ -107,6 +107,16 @@ public static class ServerBuilder
         var httpsRedirectionEnabled = config.ServerConfig.MiddlewareConfig.HttpsRedirectionConfig.IsEnabled;
         var cookieSecure = config.ServerConfig.MiddlewareConfig.SessionConfig.CookieSecure;
 
+        if (fileRootPath != null && string.IsNullOrWhiteSpace(fileRootPath))
+        {
+            throw new ArgumentException("Static file root path cannot be blank.", nameof(fileRootPath));
+        }
+
+        if (indexPageRelativePath != null && string.IsNullOrWhiteSpace(indexPageRelativePath))
+        {
+            throw new ArgumentException("SPA index page path cannot be blank.", nameof(indexPageRelativePath));
+        }
+
         if (indexPageRelativePath != null && fileRootPath == null)
         {
             throw new InvalidOperationException("A static file root path must be configured when SPA fallback is enabled.");
