@@ -16,7 +16,7 @@ public class ConfigTests
         Assert.Equal("127.0.0.1", config.ServerConfig.Address);
         Assert.Equal(8080, config.ServerConfig.Port);
         Assert.Equal(100, config.ServerConfig.BackLog);
-        Assert.Equal(120_000, config.ServerConfig.ReadTimeoutMS);
+        Assert.Equal(120_000, config.ServerConfig.RequestReadTimeoutMS);
 
         var middleware = config.ServerConfig.MiddlewareConfig;
 

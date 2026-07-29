@@ -1,3 +1,6 @@
+using System.Net;
+using System.Net.Sockets;
+
 using LambdaPulse.Configuration;
 using LambdaPulse.Features.Logging;
 using LambdaPulse.Features.State.Sessions;
@@ -5,8 +8,6 @@ using LambdaPulse.Http.Abstractions;
 using LambdaPulse.Http.Parsing;
 using LambdaPulse.Http.Reading;
 using LambdaPulse.Http.Writing;
-using System.Net;
-using System.Net.Sockets;
 
 namespace LambdaPulse.Hosting.Client;
 
@@ -19,7 +20,7 @@ internal sealed class ClientHandler : IClientHandler
     private readonly IEngineLogger _engineLogger;
     private readonly ITraceRecorder _traceRecorder;
     private readonly IPreSessionInitializer _preSessionInitializer;
-    private readonly int _readTimeoutMS;
+    private readonly int _requestReadTimeoutMS;
 
     public ClientHandler(Func<WebContext, CancellationToken, Task> pipeline, IRequestReader requestReader, IRequestParser requestParser, IResponseWriter responseWriter, Config config, IEngineLogger engineLogger, ITraceRecorder traceRecorder, IPreSessionInitializer preSessionInitializer)
     {
@@ -30,7 +31,7 @@ internal sealed class ClientHandler : IClientHandler
         _engineLogger = engineLogger;
         _traceRecorder = traceRecorder;
         _preSessionInitializer = preSessionInitializer;
-        _readTimeoutMS = config.ServerConfig.ReadTimeoutMS;
+        _requestReadTimeoutMS = config.ServerConfig.RequestReadTimeoutMS;
     }
 
     public async Task HandleClient(TcpClient tcpClient, CancellationToken serverCancellationToken = default)
@@ -52,7 +53,7 @@ internal sealed class ClientHandler : IClientHandler
             {
                 //connection-level token. sets idle timeout between requests
                 using var readTimeoutCts = CancellationTokenSource.CreateLinkedTokenSource(clientCancellationToken);
-                readTimeoutCts.CancelAfter(_readTimeoutMS);
+                readTimeoutCts.CancelAfter(_requestReadTimeoutMS);
                 var readTimeoutToken = readTimeoutCts.Token;
 
                 string? requestString = null;

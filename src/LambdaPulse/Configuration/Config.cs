@@ -10,7 +10,7 @@ public sealed class ServerConfig
     public string Address { get; init; } = "127.0.0.1";
     public int Port { get; init; } = 8080;
     public int BackLog { get; init; } = 512; //Kestrel's default
-    public int ReadTimeoutMS { get; init; } = 120_000; //2 minutes
+    public int RequestReadTimeoutMS { get; init; } = 120_000; //2 minutes
     public MiddlewareConfig MiddlewareConfig { get; init; } = new();
 }
 
