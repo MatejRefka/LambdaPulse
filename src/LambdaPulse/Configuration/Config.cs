@@ -73,7 +73,7 @@ public sealed class SessionConfig
 {
     public int IdleTimeoutMinutes { get; init; } = 20;
     public int AbsoluteTimeoutMinutes { get; init; } = 720; //12 hours
-    public bool CookieSecure { get; init; } = true;
+    public bool CookieSecure { get; init; } = false;
 }
 
 public sealed class StaticFilesConfig
