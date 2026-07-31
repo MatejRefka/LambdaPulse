@@ -72,8 +72,6 @@ internal sealed class SessionMiddleware : MiddlewareBase
         }
         else
         {
-            webContext.PreSessionToken = null;
-            webContext.Trace.PreSessionToken = null;
             webContext.Trace.UserId = authenticatedUserId;
             var secureAttribute = _cookieSecure ? "; Secure" : string.Empty;
             webContext.WebResponse.Cookies.Add($"{SessionConstants.AnonymousSessionCookieName}=; Path=/; Max-Age=0; HttpOnly{secureAttribute}; SameSite=Lax");
@@ -89,7 +87,7 @@ internal sealed class SessionMiddleware : MiddlewareBase
         var upstreamLogs = new List<string>();
 
         var authenticatedUserIdAfterPipeline = await webContext.Session.GetValue<string>(AuthenticationConstants.UserIdSessionKey);
-        if (!string.IsNullOrWhiteSpace(authenticatedUserIdAfterPipeline) && (!string.IsNullOrWhiteSpace(webContext.PreSessionToken) || !string.IsNullOrWhiteSpace(webContext.AnonymousSessionToken)))
+        if (string.IsNullOrWhiteSpace(authenticatedUserId) && !string.IsNullOrWhiteSpace(authenticatedUserIdAfterPipeline) && (!string.IsNullOrWhiteSpace(webContext.PreSessionToken) || !string.IsNullOrWhiteSpace(webContext.AnonymousSessionToken)))
         {
             var secureAttribute = _cookieSecure ? "; Secure" : string.Empty;
             webContext.WebResponse.Cookies.Add($"{SessionConstants.AnonymousSessionCookieName}=; Path=/; Max-Age=0; HttpOnly{secureAttribute}; SameSite=Lax");
