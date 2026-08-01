@@ -50,7 +50,8 @@ internal sealed class HttpsRedirectionMiddleware : MiddlewareBase
             var queryString = string.Join("&", webContext.WebRequest.QueryParameters.Select(param => $"{param.Key}={param.Value}"));
 
             //default port is 443 if not specified
-            var redirectUrl = $"https://{hostNoPort}{webContext.WebRequest.Path}?{queryString}";
+            var querySuffix = string.IsNullOrWhiteSpace(queryString) ? string.Empty : $"?{queryString}";
+            var redirectUrl = $"https://{hostNoPort}{webContext.WebRequest.Path}{querySuffix}";
 
             webContext.WebResponse.StatusCode = 307;
             webContext.WebResponse.ResponsePhrase = "Temporary Redirect";
