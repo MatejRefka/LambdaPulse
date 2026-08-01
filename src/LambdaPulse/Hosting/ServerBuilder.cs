@@ -17,8 +17,14 @@ using PulseInject;
 
 namespace LambdaPulse.Hosting;
 
+/// <summary>
+/// Creates fully configured LambdaPulse server instance.
+/// </summary>
 public static class ServerBuilder
 {
+    /// <summary>
+    /// Builds a fully configured LambdaPulse server instance with the specified configuration, services, and endpoints.
+    /// </summary>
     public static IWebServer Build(Action<IEndpointRegistry>? configureEndpoints = null, Action<DependencyContainer>? configureServices = null, Config? config = null)
     {
         config ??= new Config();
