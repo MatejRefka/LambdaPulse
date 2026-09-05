@@ -1,0 +1,80 @@
+name: Release package
+
+on:
+  push:
+    tags:
+      - "v*"
+
+permissions:
+  contents: read
+
+concurrency:
+  group: release-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  publish:
+    name: Build, test and publish
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    permissions:
+      contents: read
+      id-token: write
+
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v6
+        with:
+          persist-credentials: false
+
+      - name: Set up .NET
+        uses: actions/setup-dotnet@v5
+        with:
+          dotnet-version: 10.0.x
+
+      - name: Validate release version
+        id: version
+        shell: bash
+        run: |
+          set -euo pipefail
+
+          version="${GITHUB_REF_NAME#v}"
+          if [[ ! "$version" =~ ^[0-9]+\.[0-9]+\.[0-9]+(-[0-9A-Za-z]+([.-][0-9A-Za-z]+)*)?$ ]]; then
+            echo "::error::Tag '$GITHUB_REF_NAME' is not a supported version tag. Use a tag such as v0.1.0-beta.2."
+            exit 1
+          fi
+
+          project_version=$(sed -n 's:.*<Version>\([^<]*\)</Version>.*:\1:p' src/LambdaPulse/LambdaPulse.csproj | head -n 1)
+          if [[ "$version" != "$project_version" ]]; then
+            echo "::error::Tag version '$version' does not match project version '$project_version'."
+            exit 1
+          fi
+
+          echo "version=$version" >> "$GITHUB_OUTPUT"
+
+      - name: Restore dependencies
+        run: dotnet restore LambdaPulse.sln
+
+      - name: Build
+        run: dotnet build LambdaPulse.sln --configuration Release --no-restore
+
+      - name: Run tests
+        run: dotnet test LambdaPulse.sln --configuration Release --no-build --no-restore
+
+      - name: Pack NuGet package
+        run: dotnet pack src/LambdaPulse/LambdaPulse.csproj --configuration Release --no-build --no-restore --output artifacts/packages
+
+      - name: Sign in to NuGet.org with OIDC
+        id: login
+        uses: NuGet/login@v1
+        with:
+          user: matejrefka
+
+      - name: Publish package and symbols
+        env:
+          VERSION: ${{ steps.version.outputs.version }}
+          NUGET_API_KEY: ${{ steps.login.outputs.NUGET_API_KEY }}
+        run: >-
+          dotnet nuget push "artifacts/packages/LambdaPulse.$VERSION.nupkg"
+          --api-key "$NUGET_API_KEY"
+          --source https://api.nuget.org/v3/index.json
