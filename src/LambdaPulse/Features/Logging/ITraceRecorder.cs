@@ -6,5 +6,8 @@
 /// </summary>
 public interface ITraceRecorder
 {
+    /// <summary>
+    /// Records the request lifecycle trace.
+    /// </summary>
     void Record(Trace trace);
 }

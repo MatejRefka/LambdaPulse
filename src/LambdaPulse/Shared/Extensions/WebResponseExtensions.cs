@@ -1,14 +1,21 @@
-﻿using LambdaPulse.Features.State.Sessions;
-using LambdaPulse.Http.Abstractions;
-using System.Globalization;
+﻿using System.Globalization;
 using System.Text;
 using System.Text.Json;
 using System.Text.Json.Serialization;
 
+using LambdaPulse.Features.State.Sessions;
+using LambdaPulse.Http.Abstractions;
+
 namespace LambdaPulse.Shared.Extensions;
 
+/// <summary>
+/// Extension methods for the WebResponse class.
+/// </summary>
 public static class WebResponseExtensions
 {
+    /// <summary>
+    /// Engine cookies that should not be removed from the response.
+    /// </summary>
     public static readonly HashSet<string> EngineCookies = new(StringComparer.Ordinal)
     {
         SessionConstants.SessionCookieName,
@@ -16,6 +23,9 @@ public static class WebResponseExtensions
         SessionConstants.AnonymousSessionCookieName
     };
 
+    /// <summary>
+    /// CamelCase JSON options with KebabCaseLower enum converter for serialization.
+    /// </summary>
     public static readonly JsonSerializerOptions CamelCase = new()
     {
         PropertyNamingPolicy = JsonNamingPolicy.CamelCase,
@@ -25,12 +35,18 @@ public static class WebResponseExtensions
         }
     };
 
+    /// <summary>
+    /// Writes a given byte array to the body of the WebResponse.
+    /// </summary>
     public static async Task WriteBytesToBody(this WebResponse webResponse, byte[] bytes, CancellationToken cancellationToken = default)
     {
         webResponse.HasBody = true;
         await webResponse.Body.WriteAsync(bytes, cancellationToken);
     }
 
+    /// <summary>
+    /// Writes a given string to the body of the WebResponse.
+    /// </summary>
     public static async Task WriteStringToBody(this WebResponse webResponse, string text, CancellationToken cancellationToken = default)
     {
         var bytes = Encoding.UTF8.GetBytes(text);
@@ -44,6 +60,9 @@ public static class WebResponseExtensions
         await webResponse.Body.WriteAsync(bytes, cancellationToken);
     }
 
+    /// <summary>
+    /// Writes a given anonymous object as JSON to the body of the WebResponse.
+    /// </summary>
     public static async Task WriteJsonToBody<T>(this WebResponse webResponse, T anonymousObject, CancellationToken cancellationToken = default)
     {
         var json = JsonSerializer.Serialize(anonymousObject, CamelCase);
@@ -55,6 +74,9 @@ public static class WebResponseExtensions
         await webResponse.Body.WriteAsync(bytes, cancellationToken);
     }
 
+    /// <summary>
+    /// Clears the WebResponse.
+    /// </summary>
     public static void ClearResponse(this WebResponse webResponse)
     {
         webResponse.StatusCode = null;
@@ -66,6 +88,10 @@ public static class WebResponseExtensions
         webResponse.HasBody = false;
     }
 
+    /// <summary>
+    /// Applies a Vary header to the WebResponse. 
+    /// If the Vary header already exists, it appends the new header name to the existing value.
+    /// </summary>
     public static void ApplyVaryHeader(this WebResponse webResponse, string headerName)
     {
         webResponse.Headers.TryGetValue("Vary", out var varyHeaderValue);
@@ -79,6 +105,9 @@ public static class WebResponseExtensions
         }
     }
 
+    /// <summary>
+    /// Starts streaming the response to the client by sending the HTTP status and headers.
+    /// </summary>
     public static async Task StartStreaming(this WebResponse webResponse, CancellationToken cancellationToken = default)
     {
         if (webResponse.HasStarted)
@@ -107,6 +136,9 @@ public static class WebResponseExtensions
         webResponse.HasStarted = true;
     }
 
+    /// <summary>
+    /// Writes a string to the response stream in chunked transfer encoding format.
+    /// </summary>
     public static async Task WriteToStream(this WebResponse webResponse, string message, CancellationToken cancellationToken = default)
     {
         if (!webResponse.HasStarted)
@@ -130,6 +162,9 @@ public static class WebResponseExtensions
         await outputStream.WriteAsync("\r\n"u8.ToArray(), cancellationToken);
     }
 
+    /// <summary>
+    /// Flushes the response stream to ensure that all buffered data is sent to the client.
+    /// </summary>
     public static async Task FlushStream(this WebResponse webResponse, CancellationToken cancellationToken = default)
     {
         var outputStream = webResponse.OutputStream ?? throw new InvalidOperationException("Response output stream has not been set.");

@@ -2,6 +2,9 @@
 
 namespace LambdaPulse.Shared.Extensions;
 
+/// <summary>
+/// Extension methods for parsing HTTP headers.
+/// </summary>
 public static class HeaderExtensions
 {
     /// <summary>
