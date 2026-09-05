@@ -176,9 +176,9 @@ internal sealed class CacheMiddleware : MiddlewareBase
             ExpiresAt = DateTimeOffset.UtcNow.AddSeconds(webContext.Endpoint.CachePolicy.DurationSeconds)
         };
 
-        var isCacheSet = await _cacheStore.SetCachedResponse(cacheKey, cacheResponse, cancellationToken);
+        await _cacheStore.SaveCachedResponse(cacheKey, cacheResponse, cancellationToken);
 
-        RecordTelemetry(webContext, FlowDirection.Upstream, ExecutionEvent.Success, upstreamStart, isCacheSet ? new List<string> { "Response is eligible. Cache response." } : new List<string> { "Cache store rejected the write. Leave response uncached." });
+        RecordTelemetry(webContext, FlowDirection.Upstream, ExecutionEvent.Success, upstreamStart, new List<string> { "Response is eligible. Cache response." });
     }
 
     private static bool IsEngineCookie(string cookie)
