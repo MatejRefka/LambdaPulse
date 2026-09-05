@@ -1,0 +1,44 @@
+name: CI
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    branches:
+      - main
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ci-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  validate:
+    name: Build, test and pack
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v6
+
+      - name: Set up .NET
+        uses: actions/setup-dotnet@v5
+        with:
+          dotnet-version: 10.0.x
+
+      - name: Restore dependencies
+        run: dotnet restore LambdaPulse.sln
+
+      - name: Build
+        run: dotnet build LambdaPulse.sln --configuration Release --no-restore
+
+      - name: Run tests
+        run: dotnet test LambdaPulse.sln --configuration Release --no-build --no-restore
+
+      - name: Pack NuGet package
+        run: dotnet pack src/LambdaPulse/LambdaPulse.csproj --configuration Release --no-build --no-restore --output artifacts/packages
