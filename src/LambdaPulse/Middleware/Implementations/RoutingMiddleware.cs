@@ -11,9 +11,9 @@ internal sealed class RoutingMiddleware : MiddlewareBase
 {
     protected override string MiddlewareName => "Routing";
 
-    private readonly EndpointRegistry _endpointRegistry;
+    private readonly IEndpointRegistry _endpointRegistry;
 
-    public RoutingMiddleware(Func<WebContext, CancellationToken, Task> nextFunction, EndpointRegistry endpointRegistry) : base(nextFunction)
+    public RoutingMiddleware(Func<WebContext, CancellationToken, Task> nextFunction, IEndpointRegistry endpointRegistry) : base(nextFunction)
     {
         _endpointRegistry = endpointRegistry;
     }
