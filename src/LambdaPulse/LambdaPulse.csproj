@@ -40,9 +40,7 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <None Include="../../README.md"
-          Pack="true"
-          PackagePath="" />
+    <None Include="../../README.md" Pack="true" PackagePath="" />
   </ItemGroup>
 
   <ItemGroup>
@@ -50,7 +48,7 @@
   </ItemGroup>
 
 	<ItemGroup>
-	  <PackageReference Include="PulseInject" Version="0.1.0-beta.1" />
+	  <PackageReference Include="PulseInject" Version="0.1.0-beta.2" />
 	</ItemGroup>
 
 </Project>
