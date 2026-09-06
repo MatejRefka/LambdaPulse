@@ -21,9 +21,18 @@ internal sealed class InvokeMiddleware : MiddlewareBase
 
         if (webContext.Endpoint != null)
         {
-            //user application code is invoked here
-            await webContext.Endpoint.ApplicationFunction(webContext, cancellationToken);
-            logs.Add("Endpoint matched the request. Invoke endpoint.");
+            try
+            {
+                //user application code is invoked here
+                await webContext.Endpoint.ApplicationFunction(webContext, cancellationToken);
+                logs.Add("Endpoint matched the request. Invoke endpoint.");
+            }
+            catch
+            {
+                logs.Add("Endpoint threw an unhandled exception.");
+                RecordTelemetry(webContext, FlowDirection.Downstream, ExecutionEvent.Error, downstreamStart, logs);
+                throw;
+            }
         }
 
         RecordTelemetry(webContext, FlowDirection.Downstream, ExecutionEvent.Success, downstreamStart);
