@@ -23,7 +23,7 @@ LambdaPulse is a lightweight HTTP/1.1 web server engine with a request/response 
 LambdaPulse is available as a pre-release package from [NuGet.org](https://www.nuget.org/packages/LambdaPulse)
 
 ```bash
-dotnet add package LambdaPulse --version 0.1.0-beta.1
+dotnet add package LambdaPulse --version 0.1.0-beta.3
 ```
 
 > **Beta:** LambdaPulse is under active development and its public API may change before version 1.0.
